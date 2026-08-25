@@ -67,3 +67,5 @@ Thumbs.db
 *.sln
 *.sw?
 
+.env.example
+
