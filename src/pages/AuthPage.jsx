@@ -17,12 +17,16 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
     loading: authLoading,
     signInWithPassword,
     signUp,
-    resetPassword
+    resetPassword,
+    updateUserPassword
   } = useAuth()
 
-  // Se já estiver logado, redireciona automaticamente para o portal correspondente
+  // Verifica se o usuário está na rota de recuperação de senha
+  const isRecovery = location.pathname.includes('redefinir-senha') || location.hash.includes('type=recovery')
+
+  // Se já estiver logado (e não estiver redefinindo senha), redireciona automaticamente para o portal correspondente
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && !isRecovery) {
       if (profile?.tipo_usuario === 'ADMIN') {
         navigate('/admin', { replace: true })
       } else if (profile?.tipo_usuario === 'ESCOLA') {
@@ -31,10 +35,10 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
         navigate('/portal/paciente', { replace: true })
       }
     }
-  }, [user, profile, authLoading, navigate])
+  }, [user, profile, authLoading, navigate, isRecovery])
 
-  // Single Source of Truth: derive mode from URL (/login vs /cadastro)
-  const mode = location.pathname.includes('cadastro') ? 'signup' : 'login'
+  // Single Source of Truth: derive mode from URL (/login vs /cadastro vs /redefinir-senha)
+  const mode = isRecovery ? 'recovery' : location.pathname.includes('cadastro') ? 'signup' : 'login'
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
@@ -48,6 +52,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
     nome_completo: '',
     email: '',
     password: '',
+    confirmPassword: '',
     instituicao_nome: ''
   })
 
@@ -169,7 +174,23 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
     setSuccessMsg('')
 
     try {
-      if (mode === 'login') {
+      if (mode === 'recovery') {
+        if (!formData.password || !formData.confirmPassword) {
+          throw new Error('Por favor, preencha a nova senha e a confirmação.')
+        }
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error('As senhas não coincidem. Por favor, digite a mesma senha nos dois campos.')
+        }
+        const { checks } = passwordStrength
+        if (!checks.length || !checks.upper || !checks.lower || !checks.num || !checks.special) {
+          throw new Error('A senha deve conter no mínimo 8 caracteres, com pelo menos: 1 maiúscula, 1 minúscula, 1 número e 1 caractere especial.')
+        }
+        await updateUserPassword(formData.password)
+        setSuccessMsg('Senha redefinida com sucesso! Redirecionando para o login...')
+        setTimeout(() => {
+          navigate('/login')
+        }, 1500)
+      } else if (mode === 'login') {
         if (!formData.email || !formData.password) {
           throw new Error('Por favor, informe seu e-mail e sua senha.')
         }
@@ -268,44 +289,48 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
         {/* ========================================================================= */}
         <div className="lg:col-span-5 xl:col-span-5 w-full max-w-md xl:max-w-lg mx-auto py-4 px-2 sm:px-4 space-y-6">
           
-          {/* Top Switcher Buttons (Above Title) */}
-          <div className="gsap-switcher inline-flex items-center gap-2 p-1 rounded-full bg-[#E2E8F0] border border-[#CBD5E1]">
-            <button
-              type="button"
-              onClick={() => handleModeChange('login')}
-              className={`py-2 px-6 rounded-full text-xs font-cta transition-all cursor-pointer ${
-                mode === 'login'
-                  ? 'bg-[#002B49] text-white shadow-xs font-bold'
-                  : 'text-[#64748B] hover:text-[#002B49] font-medium'
-              }`}
-            >
-              Entrar
-            </button>
+          {/* Top Switcher Buttons (Above Title - Oculto em modo recovery) */}
+          {mode !== 'recovery' && (
+            <div className="gsap-switcher inline-flex items-center gap-2 p-1 rounded-full bg-[#E2E8F0] border border-[#CBD5E1]">
+              <button
+                type="button"
+                onClick={() => handleModeChange('login')}
+                className={`py-2 px-6 rounded-full text-xs font-cta transition-all cursor-pointer ${
+                  mode === 'login'
+                    ? 'bg-[#002B49] text-white shadow-xs font-bold'
+                    : 'text-[#64748B] hover:text-[#002B49] font-medium'
+                }`}
+              >
+                Entrar
+              </button>
 
-            <button
-              type="button"
-              onClick={() => handleModeChange('signup')}
-              className={`py-2 px-6 rounded-full text-xs font-cta transition-all cursor-pointer ${
-                mode === 'signup'
-                  ? 'bg-[#002B49] text-white shadow-xs font-bold'
-                  : 'text-[#64748B] hover:text-[#002B49] font-medium'
-              }`}
-            >
-              Criar conta
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => handleModeChange('signup')}
+                className={`py-2 px-6 rounded-full text-xs font-cta transition-all cursor-pointer ${
+                  mode === 'signup'
+                    ? 'bg-[#002B49] text-white shadow-xs font-bold'
+                    : 'text-[#64748B] hover:text-[#002B49] font-medium'
+                }`}
+              >
+                Criar conta
+              </button>
+            </div>
+          )}
 
           {/* Heading and Subtitle */}
           <div className="gsap-header space-y-1.5">
             <h1 className="text-3xl sm:text-4xl font-heading font-extrabold tracking-tight text-[#002B49]">
-              {mode === 'login' ? 'Entrar' : 'Criar conta'}
+              {mode === 'recovery' ? 'Redefinir Senha' : mode === 'login' ? 'Entrar' : 'Criar conta'}
             </h1>
             <p className="text-xs sm:text-sm font-sans text-[#64748B]">
-              {mode === 'login'
-                ? 'Que bom ver você de volta por aqui! Acesse sua área restrita.'
-                : userType === 'ESCOLA'
-                  ? 'Cadastre sua instituição para acompanhar relatórios pedagógicos e diretrizes de PDI.'
-                  : 'Crie seu acesso e comece a acompanhar sua jornada de aprendizagem.'}
+              {mode === 'recovery'
+                ? 'Digite sua nova senha segura para recuperar o acesso à sua conta.'
+                : mode === 'login'
+                  ? 'Que bom ver você de volta por aqui! Acesse sua área restrita.'
+                  : userType === 'ESCOLA'
+                    ? 'Cadastre sua instituição para acompanhar relatórios pedagógicos e diretrizes de PDI.'
+                    : 'Crie seu acesso e comece a acompanhar sua jornada de aprendizagem.'}
             </p>
           </div>
 
@@ -398,26 +423,28 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
               </div>
             )}
 
-            {/* EMAIL Field */}
-            <div className="gsap-field space-y-1.5">
-              <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
-                E-MAIL
-              </label>
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Seu endereço de e-mail"
-                className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
-              />
-            </div>
+            {/* EMAIL Field (Oculto em modo de recuperação de senha) */}
+            {mode !== 'recovery' && (
+              <div className="gsap-field space-y-1.5">
+                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                  E-MAIL
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Seu endereço de e-mail"
+                  className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                />
+              </div>
+            )}
 
             {/* PASSWORD Field with Eye Toggle and Strength Meter */}
             <div className="gsap-field space-y-1.5">
               <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
-                SENHA
+                {mode === 'recovery' ? 'NOVA SENHA' : 'SENHA'}
               </label>
               
               <div className="relative">
@@ -427,8 +454,8 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Sua senha"
-                  minLength={mode === 'signup' ? 8 : 6}
+                  placeholder={mode === 'recovery' ? 'Crie uma nova senha' : 'Sua senha'}
+                  minLength={mode === 'login' ? 6 : 8}
                   className="w-full pl-4 pr-11 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
                 />
                 
@@ -447,8 +474,8 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                 </button>
               </div>
 
-              {/* Password Strength Meter (Fiel ao Anexo) */}
-              {mode === 'signup' && formData.password && (
+              {/* Password Strength Meter (Exibido no Cadastro e na Recuperação de Senha) */}
+              {(mode === 'signup' || mode === 'recovery') && formData.password && (
                 <div className="space-y-2 pt-2 animate-in fade-in duration-200">
                   <div className="flex items-center gap-3">
                     {/* 4 Segmented Strength Bars */}
@@ -466,20 +493,20 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                     </div>
 
                     {/* Status Label on the Right */}
-                    <span className={`text-xs font-cta font-bold shrink-0 transition-colors ${passwordStrength.color}`}>
+                    <span className={`text-[11px] font-sans font-bold uppercase tracking-wider ${passwordStrength.color}`}>
                       {passwordStrength.label}
                     </span>
                   </div>
 
                   {/* Requirements Checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-[11px] font-sans text-[#64748B]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1.5 pt-1 text-[11px] font-sans text-[#64748B]">
                     <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.length ? 'text-[#002B49] font-semibold' : ''}`}>
                       {passwordStrength.checks.length ? (
                         <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 stroke-[3]" />
                       ) : (
                         <X className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
                       )}
-                      <span>Pelo menos 8 dígitos</span>
+                      <span>No mínimo 8 caracteres</span>
                     </div>
 
                     <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.upper ? 'text-[#002B49] font-semibold' : ''}`}>
@@ -521,6 +548,24 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                 </div>
               )}
             </div>
+
+            {/* CONFIRM PASSWORD Field (Recovery only) */}
+            {mode === 'recovery' && (
+              <div className="gsap-field space-y-1.5">
+                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                  CONFIRMAR NOVA SENHA
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Digite a nova senha novamente"
+                  className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                />
+              </div>
+            )}
 
             {/* FORGOT PASSWORD? (Login only, right aligned) */}
             {mode === 'login' && (
@@ -591,7 +636,13 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                 disabled={loading}
                 className="w-full py-4 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] font-cta font-bold text-sm uppercase tracking-wider transition shadow-md hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-60"
               >
-                {loading ? 'Processando...' : mode === 'login' ? 'Entrar' : 'Criar conta'}
+                {loading
+                  ? 'Processando...'
+                  : mode === 'recovery'
+                    ? 'Salvar Nova Senha'
+                    : mode === 'login'
+                      ? 'Entrar'
+                      : 'Criar conta'}
               </button>
             </div>
           </form>

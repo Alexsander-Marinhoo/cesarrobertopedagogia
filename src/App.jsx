@@ -36,6 +36,9 @@ export default function App() {
             {/* Dedicated Sign Up Route */}
             <Route path="/cadastro" element={<AuthPage initialMode="signup" />} />
 
+            {/* Dedicated Password Reset Route */}
+            <Route path="/redefinir-senha" element={<AuthPage initialMode="recovery" />} />
+
             {/* Módulos 2 e 3: Portal Unificado (Aluno / Paciente / Escola / Coordenação) */}
             <Route path="/dashboard" element={<PatientPortalPage />} />
             <Route path="/portal" element={<PatientPortalPage />} />
