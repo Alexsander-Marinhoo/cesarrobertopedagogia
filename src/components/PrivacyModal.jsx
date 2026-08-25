@@ -172,11 +172,11 @@ export default function PrivacyModal({ isOpen, onClose }) {
                   </div>
                   <div>
                     <div className="text-xs font-bold text-[#002B49]">Canal de Atendimento de Privacidade:</div>
-                    <div className="text-xs text-slate-600 font-medium">privacidade@cesarlobanopedagogia.com.br</div>
+                    <div className="text-xs text-slate-600 font-medium">cesar.psicopedagogia@gmail.com</div>
                   </div>
                 </div>
                 <a
-                  href="mailto:privacidade@cesarlobanopedagogia.com.br"
+                  href="mailto:cesar.psicopedagogia@gmail.com"
                   className="px-3.5 py-1.5 rounded-full bg-[#002B49] text-white text-xs font-cta font-bold hover:bg-[#073B63] transition shrink-0"
                 >
                   Enviar E-mail
