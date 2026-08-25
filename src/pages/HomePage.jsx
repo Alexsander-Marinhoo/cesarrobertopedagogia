@@ -15,7 +15,6 @@ import ServiceDetailModal from '../components/ServiceDetailModal'
 import MaterialDownloadModal from '../components/MaterialDownloadModal'
 import ArticleModal from '../components/ArticleModal'
 import PrivacyModal from '../components/PrivacyModal'
-import CookieBanner from '../components/CookieBanner'
 import FloatingWhatsAppButton from '../components/FloatingWhatsAppButton'
 import { initLenis, smoothScrollTo } from '../utils/lenis'
 import { useAuth } from '../context/AuthContext'
@@ -135,9 +134,6 @@ export default function HomePage() {
 
       {/* Floating WhatsApp Action Button */}
       <FloatingWhatsAppButton />
-
-      {/* LGPD Cookie & SSL Security Consent Banner */}
-      <CookieBanner onOpenPrivacy={() => setIsPrivacyOpen(true)} />
     </div>
   )
 }
