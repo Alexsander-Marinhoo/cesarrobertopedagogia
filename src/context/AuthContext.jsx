@@ -118,6 +118,7 @@ export function AuthProvider({ children }) {
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login`,
         data: {
           nome_completo: metadata.nome_completo,
           telefone: metadata.telefone,
