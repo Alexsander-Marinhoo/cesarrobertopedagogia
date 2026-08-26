@@ -297,7 +297,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
         <FadeInCardGroup cardSelector=".gsap-card" className="max-w-3xl mx-auto">
           {/* Booking Form Card */}
           <div className="w-full">
-            <div className="gsap-card bg-white rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border-2 border-slate-300 shadow-2xl shadow-[#002B49]/8 flex flex-col justify-between">
+            <div className="gsap-card bg-[#002B49] rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border-2 border-[#002B49] shadow-2xl shadow-[#002B49]/30 flex flex-col justify-between text-white">
               <div>
                 {submitted ? (
                   /* Success Card State (matching user attachment) */
@@ -307,10 +307,10 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                     </div>
 
                     <div className="space-y-2 max-w-md mx-auto">
-                      <h4 className="text-2xl sm:text-3xl font-serif font-bold text-[#002B49]">
+                      <h4 className="text-2xl sm:text-3xl font-serif font-bold text-white">
                         Agendamento Registrado!
                       </h4>
-                      <p className="text-sm font-sans text-slate-700 leading-relaxed">
+                      <p className="text-sm font-sans text-slate-200 leading-relaxed">
                         Sua solicitação foi salva no sistema com sucesso. Para confirmar o atendimento com prioridade, clique no botão abaixo para enviar os detalhes pelo WhatsApp ao Prof. Cesar Roberto.
                       </p>
                     </div>
@@ -329,11 +329,11 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                       </div>
                     )}
 
-                    <div className="pt-4 border-t border-slate-200 flex items-center justify-center gap-4">
+                    <div className="pt-4 border-t border-white/15 flex items-center justify-center gap-4">
                       <button
                         type="button"
                         onClick={() => setSubmitted(false)}
-                        className="text-xs font-cta font-bold text-[#002B49] hover:underline cursor-pointer"
+                        className="text-xs font-cta font-bold text-[#D4AF37] hover:underline cursor-pointer"
                       >
                         ← Fazer outro agendamento
                       </button>
@@ -344,7 +344,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                     {/* Row 1: Name & Phone */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       <div>
-                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                        <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                           Seu Nome Completo *
                         </label>
                         <input
@@ -353,12 +353,12 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="Ex: João da Silva"
-                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                         />
                       </div>
 
                       <div>
-                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                        <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                           WhatsApp (Com DDD) *
                         </label>
                         <input
@@ -367,14 +367,14 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                           value={formData.phone}
                           onChange={handlePhoneChange}
                           placeholder="(32) 99847-0152"
-                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                         />
                       </div>
                     </div>
 
                     {/* Faixa Etária do Paciente */}
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                         Para quem é o Atendimento? (Faixa Etária)
                       </label>
                       <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -389,8 +389,8 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                             onClick={() => setPatientAgeGroup(patientAgeGroup === faixa.label ? '' : faixa.label)}
                             className={`py-3 px-2 rounded-2xl border-2 text-xs sm:text-sm font-sans transition text-center cursor-pointer ${
                               patientAgeGroup === faixa.label
-                                ? 'bg-[#002B49] text-white border-[#002B49] shadow-md font-bold ring-2 ring-[#D4AF37]/50'
-                                : 'bg-slate-100/90 hover:bg-slate-200 text-slate-800 border-slate-300 font-bold'
+                                ? 'bg-white text-[#002B49] border-white shadow-md font-extrabold ring-2 ring-[#D4AF37]'
+                                : 'bg-white/15 hover:bg-white/25 text-white border-white/30 font-bold'
                             }`}
                           >
                             {faixa.label}
@@ -402,14 +402,14 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                     {/* Row 2: Service & Modality */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       <div>
-                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                        <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                           Especialidade / Serviço *
                         </label>
                         <select
                           required
                           value={service}
                           onChange={(e) => setService(e.target.value)}
-                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
                         >
                           <option value="" disabled>
                             Selecione a especialidade desejada...
@@ -423,14 +423,14 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                       </div>
 
                       <div>
-                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                        <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                           Formato (Modalidade) *
                         </label>
                         <select
                           required
                           value={modality}
                           onChange={(e) => setModality(e.target.value)}
-                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
                         >
                           <option value="" disabled>
                             Selecione o formato de atendimento...
@@ -447,7 +447,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
 
                     {/* Row 3: Date Picker with Attendance Days Validation */}
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                         Dia de Atendimento * (Segunda a Sexta)
                       </label>
 
@@ -458,13 +458,13 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                           min={todayISO}
                           value={selectedDate}
                           onChange={handleDateChange}
-                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-bold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-bold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
                         />
                       </div>
 
                       {dateError && (
-                        <p className="mt-2 text-xs sm:text-sm text-rose-700 font-sans font-bold flex items-center gap-1.5 p-2.5 rounded-xl bg-rose-50 border border-rose-200">
-                          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+                        <p className="mt-2 text-xs sm:text-sm text-rose-200 font-sans font-bold flex items-center gap-1.5 p-2.5 rounded-xl bg-rose-950/80 border border-rose-500/50">
+                          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
                           <span>{dateError}</span>
                         </p>
                       )}
@@ -472,9 +472,9 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
 
                     {/* Row 4: Interactive Time Slots Grid (Rendered only when valid weekday is selected) */}
                     {selectedDate && !isWeekend(selectedDate) ? (
-                      <div className="animate-in fade-in slide-in-from-top-2 duration-300 p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 space-y-3">
+                      <div className="animate-in fade-in slide-in-from-top-2 duration-300 p-4 rounded-2xl bg-[#001F35] border-2 border-white/20 space-y-3">
                         <div className="flex items-center justify-between">
-                          <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide block">
+                          <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide block">
                             Horário de Preferência *
                           </label>
                           {bookedSlots.length > 0 && (
@@ -506,10 +506,10 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                                 }
                                 className={`py-3 px-3 rounded-xl text-sm font-sans transition text-center ${
                                   isUnavailable
-                                    ? 'bg-slate-200/50 text-slate-400 border border-slate-300 cursor-not-allowed opacity-50 select-none line-through shadow-none'
+                                    ? 'bg-white/10 text-slate-400 border border-white/15 cursor-not-allowed opacity-50 select-none line-through shadow-none'
                                     : isSelected
-                                    ? 'bg-[#002B49] text-white font-extrabold border-2 border-[#002B49] shadow-md ring-2 ring-[#D4AF37] cursor-pointer scale-[1.02]'
-                                    : 'bg-white text-[#002B49] font-bold border-2 border-slate-300 hover:bg-slate-100 hover:border-slate-400 cursor-pointer shadow-2xs'
+                                    ? 'bg-[#D4AF37] text-[#002B49] font-black border-2 border-[#D4AF37] shadow-md ring-2 ring-white cursor-pointer scale-[1.02]'
+                                    : 'bg-white text-[#002B49] font-bold border-2 border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs'
                                 }`}
                               >
                                 {slot}
@@ -519,9 +519,9 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                         </div>
                       </div>
                     ) : (
-                      <div className="p-4 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-300 text-center">
-                        <p className="text-xs sm:text-sm font-sans font-medium text-slate-600 flex items-center justify-center gap-2">
-                          <CalendarDays className="w-4 h-4 text-[#002B49] shrink-0" />
+                      <div className="p-4 rounded-2xl bg-[#001F35] border-2 border-dashed border-white/30 text-center">
+                        <p className="text-xs sm:text-sm font-sans font-medium text-slate-200 flex items-center justify-center gap-2">
+                          <CalendarDays className="w-4 h-4 text-[#D4AF37] shrink-0" />
                           <span>Selecione um dia útil acima para visualizar os horários disponíveis.</span>
                         </p>
                       </div>
@@ -529,7 +529,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
 
                     {/* Row 5: Notes */}
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                         Observações ou Queixa Principal (Opcional)
                       </label>
                       <textarea
@@ -537,21 +537,21 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                         placeholder="Descreva brevemente a dificuldade escolar, queixa ou objetivo do atendimento..."
-                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs resize-none"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs resize-none"
                       />
                     </div>
 
                     {/* Bottom Action & Guarantee */}
-                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">
-                      <div className="text-[11px] font-sans text-slate-500 flex items-center gap-1.5 text-center sm:text-left">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/15">
+                      <div className="text-[11px] font-sans text-slate-300 flex items-center gap-1.5 text-center sm:text-left">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                         <span>Sessão salva no sistema com confirmação direta pelo WhatsApp.</span>
                       </div>
 
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white font-cta font-bold text-xs sm:text-sm uppercase tracking-wider inline-flex items-center justify-center gap-2.5 transition shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] cursor-pointer shrink-0 disabled:opacity-50"
+                        className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] font-cta font-extrabold text-xs sm:text-sm uppercase tracking-wider inline-flex items-center justify-center gap-2.5 transition shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.99] cursor-pointer shrink-0 disabled:opacity-50"
                       >
                         <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
                         <span>{isSubmitting ? 'Registrando...' : 'Confirmar Agendamento'}</span>

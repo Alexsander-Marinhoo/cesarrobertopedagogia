@@ -538,26 +538,26 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* ========================================================================= */}
-          {/* RIGHT COLUMN: Admin Login Form (Identical to /login, without toggle) */}
+          {/* RIGHT COLUMN: Admin Login Form (High Contrast Blue Card) */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-5 xl:col-span-5 w-full max-w-md xl:max-w-lg mx-auto py-4 px-2 sm:px-4 space-y-6">
+          <div className="lg:col-span-5 xl:col-span-5 w-full max-w-md xl:max-w-lg mx-auto p-6 sm:p-8 rounded-[28px] sm:rounded-[36px] bg-[#002B49] border-2 border-[#002B49] text-white shadow-2xl space-y-6">
             
             {/* Header */}
             <div className="space-y-1.5">
-              <h1 className="text-3xl sm:text-4xl font-heading font-extrabold tracking-tight text-[#002B49]">
+              <h1 className="text-3xl sm:text-4xl font-heading font-extrabold tracking-tight text-white">
                 Painel Administrativo
               </h1>
-              <p className="text-xs sm:text-sm font-sans text-[#64748B]">
+              <p className="text-xs sm:text-sm font-sans text-slate-200">
                 Acesso exclusivo para o Prof. Cesar Roberto Loureiro e coordenação técnica.
               </p>
             </div>
 
             {/* Subtle Divider Line */}
-            <div className="border-b border-[#CBD5E1] pt-1" />
+            <div className="border-b border-white/15 pt-1" />
 
             {/* Feedback Error Message */}
             {displayedError && (
-              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-sans animate-in fade-in">
+              <div className="p-3.5 rounded-2xl bg-rose-950/80 border-2 border-rose-500 text-rose-200 text-xs font-sans animate-in fade-in">
                 {displayedError}
               </div>
             )}
@@ -567,7 +567,7 @@ export default function AdminDashboardPage() {
               
               {/* EMAIL Field */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-white block">
                   E-MAIL DE ADMINISTRADOR
                 </label>
                 <input
@@ -576,13 +576,13 @@ export default function AdminDashboardPage() {
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
                   placeholder="seuemail@exemplo.com"
-                  className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                  className="w-full px-4 py-3.5 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                 />
               </div>
 
               {/* PASSWORD Field */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-white block">
                   SENHA DE ACESSO
                 </label>
                 <div className="relative">
@@ -592,14 +592,14 @@ export default function AdminDashboardPage() {
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     placeholder="Sua senha"
-                    className="w-full pl-4 pr-11 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                    className="w-full pl-4 pr-11 py-3.5 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                   />
                   
                   {/* Show/Hide Password Eye Button */}
                   <button
                     type="button"
                     onClick={() => setShowAdminPassword(!showAdminPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#002B49] transition cursor-pointer p-1"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#002B49] transition cursor-pointer p-1"
                     aria-label={showAdminPassword ? 'Ocultar senha' : 'Exibir senha'}
                   >
                     {showAdminPassword ? (
@@ -616,17 +616,17 @@ export default function AdminDashboardPage() {
                 <button
                   type="submit"
                   disabled={loginLoading}
-                  className="w-full py-4 rounded-xl bg-[#002B49] hover:bg-[#073B63] text-white font-cta font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-md disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] font-cta font-extrabold text-xs uppercase tracking-wider transition cursor-pointer shadow-lg hover:shadow-xl hover:scale-[1.01] disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {loginLoading ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-[#002B49] border-t-transparent rounded-full animate-spin" />
                       <span>Verificando...</span>
                     </div>
                   ) : (
                     <>
                       <span>Entrar no Painel</span>
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4 stroke-[3]" />
                     </>
                   )}
                 </button>
@@ -639,7 +639,7 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 onClick={() => navigate('/')}
-                className="text-xs font-sans text-[#64748B] hover:text-[#002B49] transition inline-flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-sans text-slate-300 hover:text-white transition inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Voltar à página inicial</span>
@@ -2755,20 +2755,20 @@ export default function AdminDashboardPage() {
       {/* ========================================================================= */}
       {showNewProntuarioModal && (
         <div className="fixed inset-0 z-50 bg-[#00182A]/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6">
-          <div className="w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl border-2 border-slate-300 shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#002B49] rounded-2xl sm:rounded-3xl border-2 border-[#002B49] text-white shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3 sm:pb-4">
+            <div className="flex items-center justify-between border-b border-white/15 pb-3 sm:pb-4">
               <div className="space-y-0.5">
-                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-[#002B49]">
+                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">
                   Emitir Laudo / Registro Clínico
                 </h3>
-                <p className="text-xs sm:text-sm font-sans text-slate-600">
+                <p className="text-xs sm:text-sm font-sans text-slate-200">
                   O documento será anexado com sigilo ao prontuário do paciente.
                 </p>
               </div>
               <button
                 onClick={() => setShowNewProntuarioModal(false)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-[#002B49]"
+                className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2778,14 +2778,14 @@ export default function AdminDashboardPage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Paciente *
                   </label>
                   <select
                     required
                     value={prontuarioForm.paciente_id}
                     onChange={(e) => setProntuarioForm((prev) => ({ ...prev, paciente_id: e.target.value }))}
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                   >
                     <option value="">Selecione o paciente...</option>
                     {usersList.map((u) => (
@@ -2797,13 +2797,13 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Tipo de Registro *
                   </label>
                   <select
                     value={prontuarioForm.tipo_registro}
                     onChange={(e) => setProntuarioForm((prev) => ({ ...prev, tipo_registro: e.target.value }))}
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                   >
                     <option value="AVALIACAO_NEUROCOGNITIVA">Avaliação Neurocognitiva</option>
                     <option value="PARECER_TECNICO">Parecer Técnico Pedagógico</option>
@@ -2814,7 +2814,7 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Título / Nome do Arquivo *
                 </label>
                 <input
@@ -2823,12 +2823,12 @@ export default function AdminDashboardPage() {
                   value={prontuarioForm.arquivo_nome}
                   onChange={(e) => setProntuarioForm((prev) => ({ ...prev, arquivo_nome: e.target.value }))}
                   placeholder="Ex: Relatório de Avaliação Neuropsicopedagógica 2026.pdf"
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Caminho do Arquivo / URL do Laudo
                 </label>
                 <input
@@ -2836,12 +2836,12 @@ export default function AdminDashboardPage() {
                   value={prontuarioForm.arquivo_laudo_url}
                   onChange={(e) => setProntuarioForm((prev) => ({ ...prev, arquivo_laudo_url: e.target.value }))}
                   placeholder="laudos/avaliacao-2026.pdf ou https://..."
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Observações Clínicas &amp; Análise
                 </label>
                 <textarea
@@ -2849,12 +2849,12 @@ export default function AdminDashboardPage() {
                   value={prontuarioForm.observacoes_clinicas}
                   onChange={(e) => setProntuarioForm((prev) => ({ ...prev, observacoes_clinicas: e.target.value }))}
                   placeholder="Descreva as observações de atenção, raciocínio, memória e comportamento..."
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition resize-none"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition resize-none"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Plano de Intervenção Pedagógica
                 </label>
                 <textarea
@@ -2862,21 +2862,21 @@ export default function AdminDashboardPage() {
                   value={prontuarioForm.plano_intervencao}
                   onChange={(e) => setProntuarioForm((prev) => ({ ...prev, plano_intervencao: e.target.value }))}
                   placeholder="Estratégias de mediação, rotina de estudos e orientações para família e escola..."
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition resize-none"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition resize-none"
                 />
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-200">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-white/15">
                 <button
                   type="button"
                   onClick={() => setShowNewProntuarioModal(false)}
-                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-cta font-bold cursor-pointer text-center"
+                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-cta font-bold cursor-pointer text-center transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider transition cursor-pointer shadow-md text-center"
+                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] text-xs font-cta font-extrabold uppercase tracking-wider transition cursor-pointer shadow-lg hover:shadow-xl text-center"
                 >
                   Salvar e Emitir Laudo
                 </button>
@@ -2893,23 +2893,23 @@ export default function AdminDashboardPage() {
       {/* ========================================================================= */}
       {showNewRelatorioModal && (
         <div className="fixed inset-0 z-50 bg-[#00182A]/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6">
-          <div className="w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl border-2 border-slate-300 shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#002B49] rounded-2xl sm:rounded-3xl border-2 border-[#002B49] text-white shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3 sm:pb-4">
+            <div className="flex items-center justify-between border-b border-white/15 pb-3 sm:pb-4">
               <div className="space-y-0.5">
                 <span className="text-xs font-cta font-bold uppercase tracking-wider text-[#D4AF37]">
                   Módulo de Parceria Escolar (B2B)
                 </span>
-                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-[#002B49]">
+                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">
                   Emitir Parecer Pedagógico / PDI Escolar
                 </h3>
-                <p className="text-xs sm:text-sm font-sans text-slate-600">
+                <p className="text-xs sm:text-sm font-sans text-slate-200">
                   O documento será vinculado à escola parceira e alimentará o portal e o alinhamento BNCC.
                 </p>
               </div>
               <button
                 onClick={() => setShowNewRelatorioModal(false)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-[#002B49]"
+                className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -2919,14 +2919,14 @@ export default function AdminDashboardPage() {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Escola Conveniada de Destino *
                   </label>
                   <select
                     required
                     value={relatorioForm.escola_id}
                     onChange={(e) => setRelatorioForm((prev) => ({ ...prev, escola_id: e.target.value }))}
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                   >
                     <option value="">Selecione a escola...</option>
                     {usersList
@@ -2947,7 +2947,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Nome do Aluno Encaminhado *
                   </label>
                   <input
@@ -2956,20 +2956,20 @@ export default function AdminDashboardPage() {
                     value={relatorioForm.aluno_nome}
                     onChange={(e) => setRelatorioForm((prev) => ({ ...prev, aluno_nome: e.target.value }))}
                     placeholder="Ex: Enzo Gabriel da Silva"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Tipo de Documento *
                   </label>
                   <select
                     value={relatorioForm.tipo_documento}
                     onChange={(e) => setRelatorioForm((prev) => ({ ...prev, tipo_documento: e.target.value }))}
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                   >
                     <option value="PDI_PEI">Plano de Desenvolvimento Individual (PDI / PEI)</option>
                     <option value="RELATORIO_DEVOLUTIVA">Parecer Pedagógico &amp; Devolutiva Institucional</option>
@@ -2979,7 +2979,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Título do Parecer / PDI
                   </label>
                   <input
@@ -2987,13 +2987,13 @@ export default function AdminDashboardPage() {
                     value={relatorioForm.titulo}
                     onChange={(e) => setRelatorioForm((prev) => ({ ...prev, titulo: e.target.value }))}
                     placeholder="Ex: PDI 2026 - Adaptações Curriculares"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Parecer Pedagógico &amp; Diretrizes de Sala de Aula (BNCC) *
                 </label>
                 <textarea
@@ -3002,13 +3002,13 @@ export default function AdminDashboardPage() {
                   value={relatorioForm.descricao}
                   onChange={(e) => setRelatorioForm((prev) => ({ ...prev, descricao: e.target.value }))}
                   placeholder="Descreva detalhadamente a avaliação diagnóstica, as adaptações curriculares recomendadas..."
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition resize-none"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Nome do Arquivo PDF
                   </label>
                   <input
@@ -3016,12 +3016,12 @@ export default function AdminDashboardPage() {
                     value={relatorioForm.arquivo_nome}
                     onChange={(e) => setRelatorioForm((prev) => ({ ...prev, arquivo_nome: e.target.value }))}
                     placeholder="Ex: PDI_Institucional_Enzo_2026.pdf"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Link / Caminho do Arquivo
                   </label>
                   <input
@@ -3029,24 +3029,24 @@ export default function AdminDashboardPage() {
                     value={relatorioForm.arquivo_url}
                     onChange={(e) => setRelatorioForm((prev) => ({ ...prev, arquivo_url: e.target.value }))}
                     placeholder="relatorios-escolas/pdi-2026.pdf ou https://..."
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-200">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-white/15">
                 <button
                   type="button"
                   onClick={() => setShowNewRelatorioModal(false)}
-                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-cta font-bold cursor-pointer text-center"
+                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-cta font-bold cursor-pointer text-center transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider transition cursor-pointer shadow-md flex items-center justify-center gap-2 text-center"
+                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] text-xs font-cta font-extrabold uppercase tracking-wider transition cursor-pointer shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-center"
                 >
-                  <Building2 className="w-4 h-4 text-[#D4AF37]" />
+                  <Building2 className="w-4 h-4 text-[#002B49]" />
                   <span>Emitir Parecer / PDI</span>
                 </button>
               </div>
@@ -3062,20 +3062,20 @@ export default function AdminDashboardPage() {
       {/* ========================================================================= */}
       {showNewAgendamentoModal && (
         <div className="fixed inset-0 z-50 bg-[#00182A]/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6">
-          <div className="w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 border-slate-300 shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] overflow-y-auto">
+          <div className="w-full max-w-lg bg-[#002B49] rounded-2xl sm:rounded-3xl border-2 border-[#002B49] text-white shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3 sm:pb-4">
+            <div className="flex items-center justify-between border-b border-white/15 pb-3 sm:pb-4">
               <div className="space-y-0.5">
-                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-[#002B49]">
+                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">
                   Agendar Atendimento / Consultoria
                 </h3>
-                <p className="text-xs sm:text-sm font-sans text-slate-600">
+                <p className="text-xs sm:text-sm font-sans text-slate-200">
                   Cadastrar sessão clínica ou reunião institucional na agenda.
                 </p>
               </div>
               <button
                 onClick={() => setShowNewAgendamentoModal(false)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-[#002B49]"
+                className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3084,7 +3084,7 @@ export default function AdminDashboardPage() {
             <form onSubmit={handleCreateAgendamento} className="space-y-4">
               
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Paciente ou Escola *
                 </label>
                 <select
@@ -3103,7 +3103,7 @@ export default function AdminDashboardPage() {
                       servico: defaultService
                     }))
                   }}
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                 >
                   <option value="">Selecione o solicitante...</option>
                   {usersList.map((u) => (
@@ -3116,13 +3116,13 @@ export default function AdminDashboardPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Modalidade
                   </label>
                   <select
                     value={agendamentoForm.modalidade}
                     onChange={(e) => setAgendamentoForm((prev) => ({ ...prev, modalidade: e.target.value }))}
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                   >
                     <option value="PRESENCIAL">Presencial (Consultório / Escola)</option>
                     <option value="ONLINE">Atendimento / Reunião Online</option>
@@ -3130,7 +3130,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Data e Horário *
                   </label>
                   <input
@@ -3138,13 +3138,13 @@ export default function AdminDashboardPage() {
                     required
                     value={agendamentoForm.data_hora}
                     onChange={(e) => setAgendamentoForm((prev) => ({ ...prev, data_hora: e.target.value }))}
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-bold text-[#002B49] focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-bold text-[#002B49] focus:outline-none transition cursor-pointer"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Serviço / Objetivo *
                 </label>
                 <input
@@ -3153,7 +3153,7 @@ export default function AdminDashboardPage() {
                   value={agendamentoForm.servico}
                   onChange={(e) => setAgendamentoForm((prev) => ({ ...prev, servico: e.target.value }))}
                   placeholder="Ex: Sessão de Intervenção ou Consultoria Pedagógica"
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                 />
 
                 {/* Quick Service Suggestions */}
@@ -3169,7 +3169,7 @@ export default function AdminDashboardPage() {
                       key={sug}
                       type="button"
                       onClick={() => setAgendamentoForm((prev) => ({ ...prev, servico: sug }))}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-[10.5px] font-sans font-bold text-[#002B49] transition cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[#001F35] hover:bg-[#D4AF37] hover:text-[#002B49] border border-white/20 text-[10.5px] font-sans font-bold text-slate-200 transition cursor-pointer"
                     >
                       {sug}
                     </button>
@@ -3178,7 +3178,7 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Observações
                 </label>
                 <textarea
@@ -3186,21 +3186,21 @@ export default function AdminDashboardPage() {
                   value={agendamentoForm.observacoes}
                   onChange={(e) => setAgendamentoForm((prev) => ({ ...prev, observacoes: e.target.value }))}
                   placeholder="Instruções para o atendimento ou pauta da reunião..."
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition resize-none"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition resize-none"
                 />
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-200">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-white/15">
                 <button
                   type="button"
                   onClick={() => setShowNewAgendamentoModal(false)}
-                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-cta font-bold cursor-pointer text-center"
+                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-cta font-bold cursor-pointer text-center transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-xs font-cta font-bold uppercase tracking-wider transition cursor-pointer shadow-md text-center"
+                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] text-xs font-cta font-extrabold uppercase tracking-wider transition cursor-pointer shadow-lg hover:shadow-xl text-center"
                 >
                   Confirmar Agendamento
                 </button>
@@ -3217,17 +3217,17 @@ export default function AdminDashboardPage() {
       {/* ========================================================================= */}
       {showNewCursoModal && (
         <div className="fixed inset-0 z-50 bg-[#00182A]/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6">
-          <div className="w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl border-2 border-slate-300 shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#002B49] rounded-2xl sm:rounded-3xl border-2 border-[#002B49] text-white shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3 sm:pb-4">
+            <div className="flex items-center justify-between border-b border-white/15 pb-3 sm:pb-4">
               <div className="space-y-0.5">
                 <span className="text-xs font-cta font-bold uppercase tracking-wider text-[#D4AF37]">
                   Ambiente Virtual de Aprendizagem (AVA)
                 </span>
-                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-[#002B49]">
+                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">
                   {editingCurso ? 'Editar Informações do Curso' : 'Criar Novo Curso no AVA'}
                 </h3>
-                <p className="text-xs sm:text-sm font-sans text-slate-600">
+                <p className="text-xs sm:text-sm font-sans text-slate-200">
                   Os dados são sincronizados em tempo real com o catálogo do consultório.
                 </p>
               </div>
@@ -3236,7 +3236,7 @@ export default function AdminDashboardPage() {
                   setShowNewCursoModal(false)
                   setEditingCurso(null)
                 }}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-[#002B49]"
+                className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3246,7 +3246,7 @@ export default function AdminDashboardPage() {
               
               {/* Título do Curso */}
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Título do Curso *
                 </label>
                 <input
@@ -3262,7 +3262,7 @@ export default function AdminDashboardPage() {
                     }))
                   }}
                   placeholder="Ex: Neurociência Aplicada à Sala de Aula"
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                 />
               </div>
 
@@ -3270,15 +3270,15 @@ export default function AdminDashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                    <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                       Identificador / Slug URL
                     </label>
                     <button
                       type="button"
                       onClick={() => setCursoForm((prev) => ({ ...prev, slug: generateSlug(prev.titulo || 'curso') }))}
-                      className="text-xs text-[#002B49] hover:text-[#D4AF37] font-cta font-bold"
+                      className="text-xs text-[#D4AF37] hover:underline font-cta font-bold cursor-pointer"
                     >
-                      Gerar da título
+                      Gerar do título
                     </button>
                   </div>
                   <input
@@ -3286,12 +3286,12 @@ export default function AdminDashboardPage() {
                     value={cursoForm.slug}
                     onChange={(e) => setCursoForm((prev) => ({ ...prev, slug: e.target.value }))}
                     placeholder="curso-neuroeducacao"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition font-mono"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition font-mono"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Preço de Investimento (R$) *
                   </label>
                   <input
@@ -3301,7 +3301,7 @@ export default function AdminDashboardPage() {
                     value={cursoForm.preco}
                     onChange={(e) => setCursoForm((prev) => ({ ...prev, preco: e.target.value }))}
                     placeholder="297.00"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                   />
                 </div>
               </div>
@@ -3309,7 +3309,7 @@ export default function AdminDashboardPage() {
               {/* Carga Horária e Certificado */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Carga Horária *
                   </label>
                   <input
@@ -3318,12 +3318,12 @@ export default function AdminDashboardPage() {
                     value={cursoForm.carga_horaria}
                     onChange={(e) => setCursoForm((prev) => ({ ...prev, carga_horaria: e.target.value }))}
                     placeholder="Ex: 40 horas"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                     Informações do Certificado
                   </label>
                   <input
@@ -3331,14 +3331,14 @@ export default function AdminDashboardPage() {
                     value={cursoForm.certificado_info}
                     onChange={(e) => setCursoForm((prev) => ({ ...prev, certificado_info: e.target.value }))}
                     placeholder="Ex: Certificado Válido pelo MEC / Extensão"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                   />
                 </div>
               </div>
 
               {/* URL da Miniatura */}
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   URL da Miniatura / Capa do Curso
                 </label>
                 <input
@@ -3346,13 +3346,13 @@ export default function AdminDashboardPage() {
                   value={cursoForm.thumbnail_url}
                   onChange={(e) => setCursoForm((prev) => ({ ...prev, thumbnail_url: e.target.value }))}
                   placeholder="https://images.unsplash.com/... (ou deixe em branco)"
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
                 />
               </div>
 
               {/* Descrição do Curso */}
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Descrição do Curso
                 </label>
                 <textarea
@@ -3360,21 +3360,21 @@ export default function AdminDashboardPage() {
                   value={cursoForm.descricao}
                   onChange={(e) => setCursoForm((prev) => ({ ...prev, descricao: e.target.value }))}
                   placeholder="Apresentação dos objetivos, público-alvo e benefícios..."
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition resize-none"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition resize-none"
                 />
               </div>
 
               {/* Estrutura Inicial de Módulos e Videoaulas (Ao Criar) */}
               {!editingCurso && (
-                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-100 border-2 border-slate-300 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-cta font-bold text-[#002B49] uppercase tracking-wider">
+                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#001F35] border-2 border-white/20 space-y-3 text-white">
+                  <div className="flex items-center gap-2 text-xs font-cta font-bold text-[#D4AF37] uppercase tracking-wider">
                     <Layers className="w-4 h-4 text-[#D4AF37]" />
                     <span>Módulo e Aula Inicial (Opcional)</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-[#002B49]">
+                      <label className="block text-xs font-sans font-bold text-white">
                         Título do 1º Módulo
                       </label>
                       <input
@@ -3382,12 +3382,12 @@ export default function AdminDashboardPage() {
                         value={cursoForm.modulo_titulo}
                         onChange={(e) => setCursoForm((prev) => ({ ...prev, modulo_titulo: e.target.value }))}
                         placeholder="Módulo 1: Fundamentos"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-xs font-sans font-semibold text-[#002B49] focus:outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-[#002B49]">
+                      <label className="block text-xs font-sans font-bold text-white">
                         Título da 1ª Videoaula
                       </label>
                       <input
@@ -3395,14 +3395,14 @@ export default function AdminDashboardPage() {
                         value={cursoForm.aula_titulo}
                         onChange={(e) => setCursoForm((prev) => ({ ...prev, aula_titulo: e.target.value }))}
                         placeholder="Aula 1: Introdução"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-xs font-sans font-semibold text-[#002B49] focus:outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-[#002B49]">
+                      <label className="block text-xs font-sans font-bold text-white">
                         Link do Vídeo (YouTube/Vimeo/MP4)
                       </label>
                       <input
@@ -3410,12 +3410,12 @@ export default function AdminDashboardPage() {
                         value={cursoForm.aula_video_url}
                         onChange={(e) => setCursoForm((prev) => ({ ...prev, aula_video_url: e.target.value }))}
                         placeholder="https://www.youtube.com/watch?v=..."
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-xs font-sans font-semibold text-[#002B49] focus:outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-[#002B49]">
+                      <label className="block text-xs font-sans font-bold text-white">
                         Link do PDF de Apoio
                       </label>
                       <input
@@ -3423,7 +3423,7 @@ export default function AdminDashboardPage() {
                         value={cursoForm.aula_pdf_url}
                         onChange={(e) => setCursoForm((prev) => ({ ...prev, aula_pdf_url: e.target.value }))}
                         placeholder="materiais/apostila-modulo1.pdf"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-xs font-sans font-semibold text-[#002B49] focus:outline-none"
+                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
                       />
                     </div>
                   </div>
@@ -3437,30 +3437,30 @@ export default function AdminDashboardPage() {
                   id="curso_ativo"
                   checked={cursoForm.ativo}
                   onChange={(e) => setCursoForm((prev) => ({ ...prev, ativo: e.target.checked }))}
-                  className="w-5 h-5 rounded text-[#002B49] focus:ring-[#D4AF37] border-2 border-slate-400 cursor-pointer"
+                  className="w-5 h-5 rounded text-[#D4AF37] focus:ring-[#D4AF37] border-2 border-slate-300 cursor-pointer accent-[#D4AF37]"
                 />
-                <label htmlFor="curso_ativo" className="text-xs sm:text-sm font-sans text-slate-800 font-bold cursor-pointer">
+                <label htmlFor="curso_ativo" className="text-xs sm:text-sm font-sans text-slate-200 font-bold cursor-pointer">
                   Publicar curso imediatamente no site institucional e no AVA
                 </label>
               </div>
 
               {/* Actions Footer */}
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-200">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-white/15">
                 <button
                   type="button"
                   onClick={() => {
                     setShowNewCursoModal(false)
                     setEditingCurso(null)
                   }}
-                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-cta font-bold cursor-pointer text-center"
+                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-cta font-bold cursor-pointer text-center transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider transition cursor-pointer shadow-md flex items-center justify-center gap-2 text-center"
+                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] text-xs font-cta font-extrabold uppercase tracking-wider transition cursor-pointer shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-center"
                 >
-                  <Check className="w-4 h-4 text-[#D4AF37]" />
+                  <Check className="w-4 h-4 text-[#002B49] stroke-[3]" />
                   <span>{editingCurso ? 'Salvar Alterações' : 'Criar Curso'}</span>
                 </button>
               </div>
@@ -3476,20 +3476,20 @@ export default function AdminDashboardPage() {
       {/* ========================================================================= */}
       {showNewMatriculaModal && (
         <div className="fixed inset-0 z-50 bg-[#00182A]/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6">
-          <div className="w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 border-slate-300 shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] overflow-y-auto">
+          <div className="w-full max-w-lg bg-[#002B49] rounded-2xl sm:rounded-3xl border-2 border-[#002B49] text-white shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] overflow-y-auto">
             
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3 sm:pb-4">
+            <div className="flex items-center justify-between border-b border-white/15 pb-3 sm:pb-4">
               <div className="space-y-0.5">
-                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-[#002B49]">
+                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">
                   Liberar Acesso a Curso (AVA)
                 </h3>
-                <p className="text-xs sm:text-sm font-sans text-slate-600">
+                <p className="text-xs sm:text-sm font-sans text-slate-200">
                   Libere o curso para o aluno após a negociação no WhatsApp.
                 </p>
               </div>
               <button
                 onClick={() => setShowNewMatriculaModal(false)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-[#002B49]"
+                className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3498,14 +3498,14 @@ export default function AdminDashboardPage() {
             <form onSubmit={handleCreateMatricula} className="space-y-4">
               
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Aluno *
                 </label>
                 <select
                   required
                   value={matriculaForm.usuario_id}
                   onChange={(e) => setMatriculaForm((prev) => ({ ...prev, usuario_id: e.target.value }))}
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                 >
                   <option value="">Selecione o aluno...</option>
                   {usersList.map((u) => (
@@ -3517,14 +3517,14 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide">
+                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
                   Curso *
                 </label>
                 <select
                   required
                   value={matriculaForm.curso_id}
                   onChange={(e) => setMatriculaForm((prev) => ({ ...prev, curso_id: e.target.value }))}
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition"
+                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                 >
                   <option value="">Selecione o curso...</option>
                   {cursosList.map((c) => (
@@ -3535,17 +3535,17 @@ export default function AdminDashboardPage() {
                 </select>
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-slate-200">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-white/15">
                 <button
                   type="button"
                   onClick={() => setShowNewMatriculaModal(false)}
-                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-cta font-bold cursor-pointer text-center"
+                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-cta font-bold cursor-pointer text-center transition"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider transition cursor-pointer shadow-md text-center"
+                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] text-xs font-cta font-extrabold uppercase tracking-wider transition cursor-pointer shadow-lg hover:shadow-xl text-center"
                 >
                   Liberar Matrícula
                 </button>

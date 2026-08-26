@@ -155,11 +155,11 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-xl bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border-2 border-slate-300 overflow-hidden flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-xl bg-[#002B49] rounded-[32px] sm:rounded-[36px] shadow-2xl border-2 border-[#002B49] text-white overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Header */}
-        <div className="p-6 sm:p-7 bg-[#002B49] text-white relative">
+        <div className="p-6 sm:p-7 bg-[#002B49] text-white relative border-b border-white/10">
           <button
             onClick={onClose}
             className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition cursor-pointer"
@@ -176,7 +176,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
           <h3 className="text-xl sm:text-2xl font-serif font-bold text-white">
             Acesso à Plataforma Digital
           </h3>
-          <p className="text-xs font-sans text-slate-300 mt-1">
+          <p className="text-xs font-sans text-slate-200 mt-1">
             Ambiente seguro com criptografia e conformidade rigorosa com a LGPD.
           </p>
 
@@ -207,17 +207,17 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
         </div>
 
         {/* Modal Body & Forms */}
-        <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-5">
+        <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-5 bg-[#002B49] text-white">
           
           {/* Sub Navigation Modes (Login / Cadastro / Link Mágico / Recuperação) */}
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 border-2 border-slate-300 text-xs font-cta font-bold">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#001F35] border-2 border-white/20 text-xs font-cta font-bold">
             <button
               type="button"
               onClick={() => setActiveTab('login')}
               className={`flex-1 py-2 rounded-xl transition cursor-pointer text-center ${
                 activeTab === 'login'
-                  ? 'bg-white text-[#002B49] shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#D4AF37] text-[#002B49] shadow-xs font-black'
+                  : 'text-slate-200 hover:text-white'
               }`}
             >
               Entrar
@@ -227,8 +227,8 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               onClick={() => setActiveTab('signup')}
               className={`flex-1 py-2 rounded-xl transition cursor-pointer text-center ${
                 activeTab === 'signup'
-                  ? 'bg-white text-[#002B49] shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#D4AF37] text-[#002B49] shadow-xs font-black'
+                  : 'text-slate-200 hover:text-white'
               }`}
             >
               Criar Conta
@@ -238,8 +238,8 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               onClick={() => setActiveTab('magic')}
               className={`flex-1 py-2 rounded-xl transition cursor-pointer text-center ${
                 activeTab === 'magic'
-                  ? 'bg-white text-[#002B49] shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#D4AF37] text-[#002B49] shadow-xs font-black'
+                  : 'text-slate-200 hover:text-white'
               }`}
             >
               Link Mágico
@@ -248,15 +248,15 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
 
           {/* Feedback Messages */}
           {errorMsg && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-sans flex items-start gap-2.5 animate-in fade-in">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl bg-rose-950/80 border-2 border-rose-500 text-rose-200 text-xs font-sans flex items-start gap-2.5 animate-in fade-in">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
               <span>{errorMsg}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-sans flex items-start gap-2.5 animate-in fade-in">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl bg-emerald-950/80 border-2 border-emerald-500 text-emerald-200 text-xs font-sans flex items-start gap-2.5 animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -267,7 +267,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
             {/* Field: Full Name (Signup only) */}
             {activeTab === 'signup' && (
               <div className="space-y-1.5">
-                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white block">
                   Nome Completo *
                 </label>
                 <div className="relative">
@@ -279,7 +279,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     value={formData.nome_completo}
                     onChange={handleInputChange}
                     placeholder="Ex: Mariana Silveira"
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>
@@ -288,7 +288,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
             {/* Field: School / Institution (Signup + Escola only) */}
             {activeTab === 'signup' && selectedRole === 'ESCOLA' && (
               <div className="space-y-1.5">
-                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white block">
                   Nome da Instituição Escolar *
                 </label>
                 <div className="relative">
@@ -300,7 +300,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     value={formData.instituicao_nome}
                     onChange={handleInputChange}
                     placeholder="Ex: Colégio Primeiros Passos"
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>
@@ -308,7 +308,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
 
             {/* Field: E-mail */}
             <div className="space-y-1.5">
-              <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
+              <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white block">
                 E-mail de Acesso *
               </label>
               <div className="relative">
@@ -320,7 +320,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="seuemail@exemplo.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
+                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                 />
               </div>
             </div>
@@ -328,7 +328,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
             {/* Field: Phone (Signup only) */}
             {activeTab === 'signup' && (
               <div className="space-y-1.5">
-                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white block">
                   Telefone / WhatsApp com DDD
                 </label>
                 <div className="relative">
@@ -339,7 +339,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     value={formData.telefone}
                     onChange={handleInputChange}
                     placeholder="(32) 99847-0152"
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>
@@ -349,14 +349,14 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
             {(activeTab === 'login' || activeTab === 'signup') && (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
+                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-white block">
                     Senha de Segurança *
                   </label>
                   {activeTab === 'login' && (
                     <button
                       type="button"
                       onClick={() => setActiveTab('recovery')}
-                      className="text-xs font-sans font-semibold text-[#002B49] hover:underline cursor-pointer"
+                      className="text-xs font-sans font-semibold text-[#D4AF37] hover:underline cursor-pointer"
                     >
                       Esqueceu a senha?
                     </button>
@@ -372,7 +372,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     onChange={handleInputChange}
                     placeholder="••••••••"
                     minLength={6}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>
@@ -382,7 +382,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 px-6 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white font-cta font-bold text-sm inline-flex items-center justify-center gap-2.5 transition shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-60"
+              className="w-full py-4 px-6 rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] font-cta font-extrabold text-sm inline-flex items-center justify-center gap-2.5 transition shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-60"
             >
               <span>
                 {loading
@@ -395,14 +395,14 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                   ? 'Enviar Link de Acesso sem Senha'
                   : 'Enviar Instruções de Recuperação'}
               </span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 stroke-[3]" />
             </button>
           </form>
 
           {/* Quick Demo Access Bar (One-click Testing of Phase 2 Dashboards) */}
-          <div className="pt-4 border-t border-slate-100">
+          <div className="pt-4 border-t border-white/15">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-cta font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <span className="text-[11px] font-cta font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                 Modo Demonstração (Testar Telas da Fase 2):
               </span>
@@ -412,7 +412,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               <button
                 type="button"
                 onClick={() => handleQuickDemo('PACIENTE')}
-                className="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-[#002B49] hover:text-white text-[#002B49] text-[11px] font-cta font-bold transition text-center cursor-pointer"
+                className="px-2.5 py-2 rounded-xl bg-[#001F35] border border-white/20 hover:bg-[#D4AF37] hover:text-[#002B49] text-white text-[11px] font-cta font-bold transition text-center cursor-pointer"
               >
                 Demo Paciente
               </button>
@@ -420,7 +420,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               <button
                 type="button"
                 onClick={() => handleQuickDemo('ESCOLA')}
-                className="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-[#002B49] hover:text-white text-[#002B49] text-[11px] font-cta font-bold transition text-center cursor-pointer"
+                className="px-2.5 py-2 rounded-xl bg-[#001F35] border border-white/20 hover:bg-[#D4AF37] hover:text-[#002B49] text-white text-[11px] font-cta font-bold transition text-center cursor-pointer"
               >
                 Demo Escola
               </button>
@@ -428,7 +428,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               <button
                 type="button"
                 onClick={() => handleQuickDemo('ALUNO')}
-                className="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-[#002B49] hover:text-white text-[#002B49] text-[11px] font-cta font-bold transition text-center cursor-pointer"
+                className="px-2.5 py-2 rounded-xl bg-[#001F35] border border-white/20 hover:bg-[#D4AF37] hover:text-[#002B49] text-white text-[11px] font-cta font-bold transition text-center cursor-pointer"
               >
                 Demo Aluno AVA
               </button>
@@ -436,7 +436,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               <button
                 type="button"
                 onClick={() => handleQuickDemo('ADMIN')}
-                className="px-2.5 py-2 rounded-xl bg-[#002B49] text-[#D4AF37] hover:bg-[#073B63] text-[11px] font-cta font-bold transition text-center cursor-pointer"
+                className="px-2.5 py-2 rounded-xl bg-[#D4AF37] text-[#002B49] hover:bg-[#c49f2b] text-[11px] font-cta font-bold transition text-center cursor-pointer"
               >
                 Demo Prof. Cesar
               </button>
@@ -450,8 +450,8 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
           </div>
 
           {/* LGPD Security Badge */}
-          <div className="text-[11px] font-sans text-slate-400 flex items-center justify-center gap-1.5 pt-1 text-center">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <div className="text-[11px] font-sans text-slate-300 flex items-center justify-center gap-1.5 pt-1 text-center">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span>Dados criptografados de ponta a ponta (AES-256) em conformidade com a LGPD.</span>
           </div>
 

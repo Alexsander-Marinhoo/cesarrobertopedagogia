@@ -134,28 +134,28 @@ export default function ContactSection() {
 
           {/* Right Column: Modern High-Contrast Form Card */}
           <div className="lg:col-span-7">
-            <div className="gsap-card bg-white rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border-2 border-slate-300 shadow-2xl shadow-[#002B49]/8">
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#002B49] tracking-tight">
+            <div className="gsap-card bg-[#002B49] rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border-2 border-[#002B49] shadow-2xl shadow-[#002B49]/30 text-white">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-white tracking-tight">
                 Entre em contato
               </h3>
-              <p className="text-sm font-sans text-slate-600 mt-2 mb-8">
+              <p className="text-sm font-sans text-slate-200 mt-2 mb-8">
                 Retornaremos seu contato em até 24 horas úteis.
               </p>
 
               {sent ? (
-                <div className="p-8 rounded-3xl bg-emerald-50/70 border-2 border-emerald-300 text-center space-y-4">
-                  <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                <div className="p-8 rounded-3xl bg-emerald-950/80 border-2 border-emerald-400 text-center space-y-4">
+                  <div className="w-14 h-14 rounded-full bg-emerald-900/60 text-emerald-400 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-8 h-8 stroke-[2.5]" />
                   </div>
-                  <h4 className="font-serif font-bold text-xl text-emerald-900">
+                  <h4 className="font-serif font-bold text-xl text-white">
                     Mensagem Encaminhada com Sucesso!
                   </h4>
-                  <p className="text-sm font-sans text-emerald-800 max-w-md mx-auto leading-relaxed">
+                  <p className="text-sm font-sans text-emerald-200 max-w-md mx-auto leading-relaxed">
                     Sua mensagem foi estruturada e aberta no canal oficial de atendimento. Em breve retornaremos com a atenção que você merece.
                   </p>
                   <button
                     onClick={() => setSent(false)}
-                    className="mt-2 text-xs font-cta font-bold text-[#002B49] hover:text-[#073B63] underline cursor-pointer"
+                    className="mt-2 text-xs font-cta font-bold text-[#D4AF37] hover:underline cursor-pointer"
                   >
                     Enviar outra mensagem
                   </button>
@@ -164,7 +164,7 @@ export default function ContactSection() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Field 1: Full Name */}
                   <div>
-                    <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                    <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                       Seu Nome Completo *
                     </label>
                     <input
@@ -173,20 +173,20 @@ export default function ContactSection() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Ex: Jessica Mercedes"
-                      className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200"
+                      className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition-all duration-200 shadow-2xs"
                     />
                   </div>
 
                   {/* Field 2 & 3: Role & Phone */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                         Seu Perfil / Vínculo
                       </label>
                       <select
                         value={formData.role}
                         onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition-all duration-200 cursor-pointer"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition-all duration-200 cursor-pointer shadow-2xs"
                       >
                         <option value="Família / Responsável">Família / Responsável</option>
                         <option value="Escola / Gestor / Direção">Escola / Gestor / Direção</option>
@@ -197,7 +197,7 @@ export default function ContactSection() {
                     </div>
 
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                         WhatsApp ou Telefone *
                       </label>
                       <input
@@ -206,7 +206,7 @@ export default function ContactSection() {
                         value={formData.phone}
                         onChange={handlePhoneChange}
                         placeholder="(32) 99847-0152"
-                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition-all duration-200 shadow-2xs"
                       />
                     </div>
                   </div>
@@ -214,7 +214,7 @@ export default function ContactSection() {
                   {/* Field 4 & 5: Email & Subject */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                         Endereço de E-mail
                       </label>
                       <input
@@ -222,18 +222,18 @@ export default function ContactSection() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="seuemail@exemplo.com"
-                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition-all duration-200 shadow-2xs"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                         Assunto de Interesse
                       </label>
                       <select
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition-all duration-200 cursor-pointer"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition-all duration-200 cursor-pointer shadow-2xs"
                       >
                         <option value="Atendimento Psicopedagógico">Atendimento Psicopedagógico</option>
                         <option value="Atendimento Neuropsicopedagógico">Atendimento Neuropsicopedagógico</option>
@@ -247,7 +247,7 @@ export default function ContactSection() {
 
                   {/* Field 6: Message */}
                   <div>
-                    <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                    <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
                       Mensagem *
                     </label>
                     <textarea
@@ -256,23 +256,23 @@ export default function ContactSection() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Conte-nos o que você precisa ou quais são suas principais dúvidas..."
-                      className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200 resize-none"
+                      className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition-all duration-200 resize-none shadow-2xs"
                     />
                   </div>
 
                   {/* LGPD Security note */}
-                  <div className="flex items-center gap-2 text-xs font-sans text-slate-500 pt-1">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs font-sans text-slate-300 pt-1">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span>Seus dados são protegidos e tratados sob estrito sigilo ético (LGPD).</span>
                   </div>
 
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full pl-6 pr-2 py-3.5 sm:py-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white font-cta font-bold text-sm sm:text-base inline-flex items-center justify-between transition shadow-md hover:shadow-lg cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+                    className="w-full pl-6 pr-2.5 py-3.5 sm:py-4 rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] font-cta font-extrabold text-sm sm:text-base inline-flex items-center justify-between transition shadow-lg hover:shadow-xl cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
                   >
                     <span>Enviar Mensagem</span>
-                    <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-[#002B49] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-[#002B49] text-white flex items-center justify-center">
                       <ChevronRight className="w-4 h-4 stroke-[3]" />
                     </div>
                   </button>

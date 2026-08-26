@@ -226,14 +226,14 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-[#00182A]/75 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="w-full max-w-2xl bg-white rounded-[28px] sm:rounded-[36px] shadow-2xl border-2 border-slate-300 overflow-hidden flex flex-col max-h-[92dvh] animate-in zoom-in-95 duration-200"
+        className="w-full max-w-2xl bg-[#002B49] rounded-[28px] sm:rounded-[36px] shadow-2xl border-2 border-[#002B49] text-white overflow-hidden flex flex-col max-h-[92dvh] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* ========================================================================= */}
         {/* HEADER SUPERIOR: PADRÃO CLÍNICO NAVY COM HERO DE IDENTIDADE */}
         {/* ========================================================================= */}
-        <div className="p-4 sm:p-6 bg-[#002B49] text-white relative border-b border-[#002B49]">
+        <div className="p-4 sm:p-6 bg-[#002B49] text-white relative border-b border-white/15">
           
           {/* Top Eyebrow & Close Button */}
           <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -288,7 +288,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                 <h3 className="font-serif font-extrabold text-base sm:text-xl text-white truncate">
                   {formData.nome_completo || fullName || displayName}
                 </h3>
-                <span className="px-2 py-0.5 rounded-full bg-white text-[#002B49] border border-white font-cta font-black text-[9px] sm:text-[10px] uppercase tracking-wider shadow-2xs">
+                <span className="px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#002B49] border border-[#D4AF37] font-cta font-black text-[9px] sm:text-[10px] uppercase tracking-wider shadow-2xs">
                   {profile?.tipo_usuario || 'PACIENTE'}
                 </span>
               </div>
@@ -305,7 +305,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
         {/* ========================================================================= */}
         {/* SUB-ABAS DE NAVEGAÇÃO SEGMENTADA (ESTILO DASHBOARD PILL) */}
         {/* ========================================================================= */}
-        <div className="px-3 sm:px-6 pt-2.5 pb-2 bg-slate-100 border-b-2 border-slate-300 overflow-x-auto no-scrollbar">
+        <div className="px-3 sm:px-6 pt-2.5 pb-2 bg-[#001F35] border-b-2 border-white/20 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-1.5 sm:gap-2">
             
             <button
@@ -313,11 +313,11 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
               onClick={() => setActiveSubTab('dados')}
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-cta font-bold transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap shrink-0 shadow-2xs ${
                 activeSubTab === 'dados'
-                  ? 'bg-[#002B49] text-white shadow-xs border-2 border-[#002B49]'
-                  : 'bg-white text-slate-800 hover:text-[#002B49] hover:bg-slate-50 border-2 border-slate-300'
+                  ? 'bg-[#D4AF37] text-[#002B49] shadow-xs border-2 border-[#D4AF37] font-black'
+                  : 'bg-white/10 text-slate-200 hover:bg-white/20 border-2 border-white/20'
               }`}
             >
-              <User className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'dados' ? 'text-[#D4AF37]' : 'text-slate-600'}`} />
+              <User className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'dados' ? 'text-[#002B49]' : 'text-[#D4AF37]'}`} />
               <span className="hidden sm:inline">Dados de Contato</span>
               <span className="sm:hidden">Contato</span>
             </button>
@@ -327,19 +327,19 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
               onClick={() => setActiveSubTab('detalhes')}
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-cta font-bold transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap shrink-0 shadow-2xs ${
                 activeSubTab === 'detalhes'
-                  ? 'bg-[#002B49] text-white shadow-xs border-2 border-[#002B49]'
-                  : 'bg-white text-slate-800 hover:text-[#002B49] hover:bg-slate-50 border-2 border-slate-300'
+                  ? 'bg-[#D4AF37] text-[#002B49] shadow-xs border-2 border-[#D4AF37] font-black'
+                  : 'bg-white/10 text-slate-200 hover:bg-white/20 border-2 border-white/20'
               }`}
             >
               {isSchool ? (
                 <>
-                  <Building2 className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'detalhes' ? 'text-[#D4AF37]' : 'text-slate-600'}`} />
+                  <Building2 className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'detalhes' ? 'text-[#002B49]' : 'text-[#D4AF37]'}`} />
                   <span className="hidden sm:inline">Dados da Instituição</span>
                   <span className="sm:hidden">Instituição</span>
                 </>
               ) : (
                 <>
-                  <GraduationCap className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'detalhes' ? 'text-[#D4AF37]' : 'text-slate-600'}`} />
+                  <GraduationCap className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'detalhes' ? 'text-[#002B49]' : 'text-[#D4AF37]'}`} />
                   <span className="hidden sm:inline">Informações do Aluno</span>
                   <span className="sm:hidden">Aluno</span>
                 </>
@@ -351,11 +351,11 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
               onClick={() => setActiveSubTab('seguranca')}
               className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-cta font-bold transition flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap shrink-0 shadow-2xs ${
                 activeSubTab === 'seguranca'
-                  ? 'bg-[#002B49] text-white shadow-xs border-2 border-[#002B49]'
-                  : 'bg-white text-slate-800 hover:text-[#002B49] hover:bg-slate-50 border-2 border-slate-300'
+                  ? 'bg-[#D4AF37] text-[#002B49] shadow-xs border-2 border-[#D4AF37] font-black'
+                  : 'bg-white/10 text-slate-200 hover:bg-white/20 border-2 border-white/20'
               }`}
             >
-              <Lock className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'seguranca' ? 'text-[#D4AF37]' : 'text-slate-600'}`} />
+              <Lock className={`w-3.5 h-3.5 shrink-0 ${activeSubTab === 'seguranca' ? 'text-[#002B49]' : 'text-[#D4AF37]'}`} />
               <span className="hidden sm:inline">Segurança &amp; Senha</span>
               <span className="sm:hidden">Segurança</span>
             </button>
@@ -387,7 +387,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
         {/* ========================================================================= */}
         {/* CORPO DO FORMULÁRIO COM ROLAGEM SUAVE */}
         {/* ========================================================================= */}
-        <div className="p-3.5 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 flex-1">
+        <div className="p-3.5 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 flex-1 bg-[#002B49] text-white">
 
           {/* --------------------------------------------------------------------- */}
           {/* SUB-ABA 1: DADOS PESSOAIS & CONTATO */}
@@ -396,34 +396,34 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
             <form id="profile-form" onSubmit={handleSaveProfile} className="space-y-3 sm:space-y-4">
               
               {/* Card 1: Foto e Identidade Visual (Design Slim e Elegante) */}
-              <div className="p-3 sm:p-4 rounded-2xl bg-white border-2 border-slate-300 shadow-sm flex items-center justify-between gap-3">
+              <div className="p-3 sm:p-4 rounded-2xl bg-[#001F35] border-2 border-white/20 shadow-sm flex items-center justify-between gap-3 text-white">
                 
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-100 border-2 border-slate-300 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/10 border-2 border-white/20 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
                     {formData.avatar_url ? (
                       <img src={formData.avatar_url} alt="Foto" className="w-full h-full object-cover" />
                     ) : isSchool ? (
-                      <Building2 className="w-5 h-5 text-[#002B49]" />
+                      <Building2 className="w-5 h-5 text-[#D4AF37]" />
                     ) : (
-                      <span className="font-serif font-black text-sm text-[#002B49]">{initial}</span>
+                      <span className="font-serif font-black text-sm text-[#D4AF37]">{initial}</span>
                     )}
                   </div>
                   
                   <div className="space-y-0.5 min-w-0">
-                    <div className="font-serif font-bold text-xs sm:text-sm text-[#002B49] flex items-center gap-1.5 flex-wrap">
+                    <div className="font-serif font-bold text-xs sm:text-sm text-white flex items-center gap-1.5 flex-wrap">
                       <span>Foto de Perfil</span>
                       {selectedPhotoFile && (
-                        <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-sans font-semibold">
+                        <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-500 text-emerald-300 font-sans font-semibold">
                           Pronta
                         </span>
                       )}
                       {removeAvatarPending && (
-                        <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-800 font-sans font-semibold">
+                        <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded-full bg-rose-950 border border-rose-500 text-rose-300 font-sans font-semibold">
                           Remover ao salvar
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] sm:text-[11px] font-sans text-slate-600 truncate">
+                    <p className="text-[10px] sm:text-[11px] font-sans text-slate-300 truncate">
                       JPG, PNG ou WEBP até 2MB
                     </p>
                   </div>
@@ -436,16 +436,16 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                       type="button"
                       onClick={handleRemovePhoto}
                       title="Remover foto de perfil"
-                      className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border-2 border-rose-300 text-xs font-cta font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                      className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-200 border-2 border-rose-500 text-xs font-cta font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
                     >
-                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                      <Trash2 className="w-3.5 h-3.5 text-rose-300" />
                       <span className="hidden sm:inline">Remover</span>
                     </button>
                   )}
 
                   <label
                     htmlFor="photo-upload-main"
-                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#002B49] hover:bg-[#073B63] text-[#D4AF37] border-2 border-[#D4AF37] text-xs font-cta font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
+                    className="px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] border-2 border-[#D4AF37] text-xs font-cta font-black transition flex items-center justify-center gap-1 cursor-pointer shadow-md"
                   >
                     <Camera className="w-3.5 h-3.5" />
                     <span>{formData.avatar_url || selectedPhotoFile ? 'Trocar' : 'Escolher'}</span>
@@ -462,10 +462,10 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
               </div>
 
               {/* Card 2: Campos de Informações Cadastrais */}
-              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border-2 border-slate-300 shadow-sm space-y-4">
+              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#001F35] border-2 border-white/20 shadow-sm space-y-4 text-white">
                 
                 <div className="space-y-1.5">
-                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>Nome Completo *</span>
                   </label>
@@ -476,13 +476,13 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                     value={formData.nome_completo}
                     onChange={handleInputChange}
                     placeholder="Seu nome completo"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                    className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                    <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
                       <span>Telefone / WhatsApp</span>
                     </label>
@@ -492,12 +492,12 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                       value={formData.telefone}
                       onChange={handleInputChange}
                       placeholder="Ex: (32) 99988-7766"
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                      className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                    <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                       <Mail className="w-3.5 h-3.5 text-[#D4AF37]" />
                       <span>E-mail Registrado (Fixo)</span>
                     </label>
@@ -506,16 +506,16 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                         type="email"
                         disabled
                         value={user?.email || profile?.email || ''}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-200 border-2 border-slate-300 text-xs sm:text-sm font-sans text-slate-700 cursor-not-allowed font-semibold opacity-90 pr-10"
+                        className="w-full px-4 py-3 rounded-xl bg-white/10 border-2 border-white/20 text-xs sm:text-sm font-sans text-white cursor-not-allowed font-semibold opacity-90 pr-10"
                       />
-                      <Lock className="w-3.5 h-3.5 text-slate-500 absolute right-3.5 top-1/2 -translate-y-1/2" />
+                      <Lock className="w-3.5 h-3.5 text-[#D4AF37] absolute right-3.5 top-1/2 -translate-y-1/2" />
                     </div>
                   </div>
                 </div>
 
                 {isSchool && (
                   <div className="space-y-1.5 pt-1">
-                    <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                    <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                       <Building2 className="w-3.5 h-3.5 text-[#D4AF37]" />
                       <span>Nome da Escola / Instituição de Ensino</span>
                     </label>
@@ -525,7 +525,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                       value={formData.instituicao_nome}
                       onChange={handleInputChange}
                       placeholder="Ex: Colégio Primeiros Passos"
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                      className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                     />
                   </div>
                 )}
@@ -541,12 +541,12 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
           {activeSubTab === 'detalhes' && (
             <form id="profile-form" onSubmit={handleSaveProfile} className="space-y-4">
               
-              <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border-2 border-slate-300 shadow-sm space-y-4">
+              <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#001F35] border-2 border-white/20 shadow-sm space-y-4 text-white">
                 
                 {isSchool ? (
                   <>
                     <div className="space-y-1.5">
-                      <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                      <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                         <Building2 className="w-3.5 h-3.5 text-[#D4AF37]" />
                         <span>Nome Institucional da Escola</span>
                       </label>
@@ -556,13 +556,13 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                         value={formData.instituicao_nome}
                         onChange={handleInputChange}
                         placeholder="Ex: Escola Municipal / Colégio Exemplo"
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                        className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                           <User className="w-3.5 h-3.5 text-[#D4AF37]" />
                           <span>Coordenação / Gestão Responsável</span>
                         </label>
@@ -572,12 +572,12 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                           value={formData.nome_responsavel}
                           onChange={handleInputChange}
                           placeholder="Ex: Coordenação Pedagógica / Direção"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                          className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                           <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
                           <span>Segmentos Atendidos</span>
                         </label>
@@ -587,15 +587,15 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                           value={formData.serie_escolar}
                           onChange={handleInputChange}
                           placeholder="Ex: Ed. Infantil, Fundamental I e II"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                          className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                         />
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-100 text-xs sm:text-sm font-sans text-[#002B49] flex items-start gap-3 border-2 border-slate-300">
+                    <div className="p-4 rounded-2xl bg-[#001524] text-xs sm:text-sm font-sans text-slate-200 flex items-start gap-3 border-2 border-white/20">
                       <ShieldCheck className="w-5 h-5 text-[#D4AF37] shrink-0 mt-0.5" />
                       <p className="leading-relaxed font-medium">
-                        Os dados institucionais são aplicados na emissão de pareceres escolares, relatórios de adequação da BNCC e certificação da equipe docente pelo <strong>Prof. Cesar Roberto Loureiro</strong>.
+                        Os dados institucionais são aplicados na emissão de pareceres escolares, relatórios de adequação da BNCC e certificação da equipe docente pelo <strong className="text-white">Prof. Cesar Roberto Loureiro</strong>.
                       </p>
                     </div>
                   </>
@@ -603,7 +603,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                           <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
                           <span>Idade do Aluno / Paciente</span>
                         </label>
@@ -613,12 +613,12 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                           value={formData.idade}
                           onChange={handleInputChange}
                           placeholder="Ex: 9 anos ou 14 anos"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                          className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                           <GraduationCap className="w-3.5 h-3.5 text-[#D4AF37]" />
                           <span>Série / Escolaridade</span>
                         </label>
@@ -628,14 +628,14 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                           value={formData.serie_escolar}
                           onChange={handleInputChange}
                           placeholder="Ex: 4º Ano do Ensino Fundamental"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                          className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                           <Users className="w-3.5 h-3.5 text-[#D4AF37]" />
                           <span>Nome do Responsável Legal</span>
                         </label>
@@ -645,12 +645,12 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                           value={formData.nome_responsavel}
                           onChange={handleInputChange}
                           placeholder="Ex: Mariana Silveira"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                          className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                           <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
                           <span>Grau de Parentesco</span>
                         </label>
@@ -660,15 +660,15 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                           value={formData.parentesco}
                           onChange={handleInputChange}
                           placeholder="Ex: Mãe / Pai / Responsável Legal"
-                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                          className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                         />
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-100 text-xs sm:text-sm font-sans text-[#002B49] flex items-start gap-3 border-2 border-slate-300">
+                    <div className="p-4 rounded-2xl bg-[#001524] text-xs sm:text-sm font-sans text-slate-200 flex items-start gap-3 border-2 border-white/20">
                       <ShieldCheck className="w-5 h-5 text-[#D4AF37] shrink-0 mt-0.5" />
                       <p className="leading-relaxed font-medium">
-                        Essas informações são estritamente confidenciais e protegidas pela LGPD, auxiliando o <strong>Prof. Cesar Roberto</strong> na personalização das intervenções psicopedagógicas.
+                        Essas informações são estritamente confidenciais e protegidas pela LGPD, auxiliando o <strong className="text-white">Prof. Cesar Roberto</strong> na personalização das intervenções psicopedagógicas.
                       </p>
                     </div>
                   </>
@@ -685,10 +685,10 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
           {activeSubTab === 'seguranca' && (
             <form id="password-form" onSubmit={handleSavePassword} className="space-y-4">
               
-              <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border-2 border-slate-300 shadow-sm space-y-4">
+              <div className="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#001F35] border-2 border-white/20 shadow-sm space-y-4 text-white">
                 
                 <div className="space-y-1.5">
-                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                     <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>Nova Senha</span>
                   </label>
@@ -699,7 +699,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                       value={passData.novaSenha}
                       onChange={(e) => setPassData({ ...passData, novaSenha: e.target.value })}
                       placeholder="Digite a sua nova senha"
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs pr-11"
+                      className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs pr-11"
                     />
                     <button
                       type="button"
@@ -711,7 +711,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                   </div>
                 </div>
 
-                {/* Medidor de Força e Checklist de Requisitos de Senha (Idêntico ao Cadastro) */}
+                {/* Medidor de Força e Checklist de Requisitos de Senha */}
                 {passData.novaSenha && (
                   <div className="space-y-2 pt-1 animate-in fade-in duration-200">
                     <div className="flex items-center gap-3">
@@ -723,7 +723,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                             className={`h-1.5 rounded-full transition-all duration-300 ${
                               passwordStrength.score >= level
                                 ? passwordStrength.barColor
-                                : 'bg-[#CBD5E1]'
+                                : 'bg-white/20'
                             }`}
                           />
                         ))}
@@ -736,48 +736,48 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                     </div>
 
                     {/* Lista de Requisitos */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-xs font-sans text-slate-700">
-                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.length ? 'text-[#002B49] font-bold' : ''}`}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-xs font-sans text-slate-300">
+                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.length ? 'text-white font-bold' : ''}`}>
                         {passwordStrength.checks.length ? (
                           <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 stroke-[3]" />
                         ) : (
-                          <X className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
+                          <X className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         )}
                         <span>Pelo menos 8 dígitos</span>
                       </div>
 
-                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.upper ? 'text-[#002B49] font-bold' : ''}`}>
+                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.upper ? 'text-white font-bold' : ''}`}>
                         {passwordStrength.checks.upper ? (
                           <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 stroke-[3]" />
                         ) : (
-                          <X className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
+                          <X className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         )}
                         <span>1 letra maiúscula</span>
                       </div>
 
-                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.lower ? 'text-[#002B49] font-bold' : ''}`}>
+                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.lower ? 'text-white font-bold' : ''}`}>
                         {passwordStrength.checks.lower ? (
                           <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 stroke-[3]" />
                         ) : (
-                          <X className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
+                          <X className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         )}
                         <span>1 letra minúscula</span>
                       </div>
 
-                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.num ? 'text-[#002B49] font-bold' : ''}`}>
+                      <div className={`flex items-center gap-1.5 transition-colors ${passwordStrength.checks.num ? 'text-white font-bold' : ''}`}>
                         {passwordStrength.checks.num ? (
                           <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 stroke-[3]" />
                         ) : (
-                          <X className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
+                          <X className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         )}
                         <span>1 número</span>
                       </div>
 
-                      <div className={`flex items-center gap-1.5 sm:col-span-2 transition-colors ${passwordStrength.checks.special ? 'text-[#002B49] font-bold' : ''}`}>
+                      <div className={`flex items-center gap-1.5 sm:col-span-2 transition-colors ${passwordStrength.checks.special ? 'text-white font-bold' : ''}`}>
                         {passwordStrength.checks.special ? (
                           <Check className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 stroke-[3]" />
                         ) : (
-                          <X className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
+                          <X className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         )}
                         <span>1 caractere especial (!@#$%&amp;*)</span>
                       </div>
@@ -786,7 +786,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-[#002B49] flex items-center gap-1.5">
+                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wide text-white flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>Confirmar Nova Senha</span>
                   </label>
@@ -796,11 +796,11 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                     value={passData.confirmarSenha}
                     onChange={(e) => setPassData({ ...passData, confirmarSenha: e.target.value })}
                     placeholder="Repita a nova senha para confirmação"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-500 transition shadow-2xs"
+                    className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 transition shadow-2xs"
                   />
                 </div>
 
-                <p className="text-xs font-sans text-slate-600 font-medium leading-relaxed pt-1">
+                <p className="text-xs font-sans text-slate-300 font-medium leading-relaxed pt-1">
                   A sua nova senha será atualizada instantaneamente com criptografia de ponta a ponta.
                 </p>
 
@@ -814,7 +814,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
         {/* ========================================================================= */}
         {/* FOOTER FIXO ELEGANTE (AÇÕES PRIMÁRIAS E SECUNDÁRIAS) */}
         {/* ========================================================================= */}
-        <div className="p-3.5 sm:p-5 px-4 sm:px-7 bg-white border-t border-[#EAE5DC] flex items-center justify-between gap-3 shrink-0">
+        <div className="p-3.5 sm:p-5 px-4 sm:px-7 bg-[#001F35] border-t border-white/15 flex items-center justify-between gap-3 shrink-0">
           
           <button
             type="button"
@@ -830,9 +830,9 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
                 }
               }
             }}
-            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 text-xs font-cta font-bold transition cursor-pointer shrink-0"
+            className="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-xl text-rose-300 hover:text-rose-200 hover:bg-rose-950/50 border border-transparent hover:border-rose-500/50 text-xs font-cta font-bold transition cursor-pointer shrink-0"
           >
-            <LogOut className="w-3.5 h-3.5 text-rose-500" />
+            <LogOut className="w-3.5 h-3.5 text-rose-400" />
             <span className="hidden sm:inline">Sair desta conta</span>
             <span className="sm:hidden">Sair</span>
           </button>
@@ -842,9 +842,9 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
               type="submit"
               form="password-form"
               disabled={loading}
-              className="px-5 sm:px-7 py-2.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white border border-[#D4AF37]/50 font-cta font-bold text-xs uppercase tracking-wider transition shadow-sm inline-flex items-center gap-2 cursor-pointer disabled:opacity-60 whitespace-nowrap"
+              className="px-5 sm:px-7 py-2.5 rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] font-cta font-extrabold text-xs uppercase tracking-wider transition shadow-lg hover:shadow-xl inline-flex items-center gap-2 cursor-pointer disabled:opacity-60 whitespace-nowrap"
             >
-              <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <Lock className="w-3.5 h-3.5 text-[#002B49]" />
               <span>{loading ? 'Salvando...' : 'Salvar Senha'}</span>
             </button>
           ) : (
@@ -852,17 +852,17 @@ export default function ProfileSettingsModal({ isOpen, onClose, onLogout }) {
               type="submit"
               form="profile-form"
               disabled={loading || uploadingPhoto}
-              className="px-5 sm:px-7 py-2.5 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] font-cta font-bold text-xs uppercase tracking-wider transition shadow-sm inline-flex items-center gap-2 cursor-pointer disabled:opacity-60 whitespace-nowrap"
+              className="px-5 sm:px-7 py-2.5 rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] font-cta font-extrabold text-xs uppercase tracking-wider transition shadow-lg hover:shadow-xl inline-flex items-center gap-2 cursor-pointer disabled:opacity-60 whitespace-nowrap"
             >
               {uploadingPhoto ? (
                 <>
-                  <UploadCloud className="w-3.5 h-3.5 animate-bounce" />
+                  <UploadCloud className="w-3.5 h-3.5 animate-bounce text-[#002B49]" />
                   <span className="hidden sm:inline">Enviando Foto...</span>
                   <span className="sm:hidden">Enviando...</span>
                 </>
               ) : (
                 <>
-                  <Save className="w-3.5 h-3.5" />
+                  <Save className="w-3.5 h-3.5 text-[#002B49]" />
                   <span>{loading ? 'Salvando...' : 'Salvar Alterações'}</span>
                 </>
               )}
