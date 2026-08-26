@@ -1515,11 +1515,11 @@ export default function PatientPortalPage() {
               )}
             </div>
 
-            {/* Formulário de Agendamento Adaptado */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#EAE6DF] shadow-xs space-y-4">
+            {/* Formulário de Agendamento Adaptado de Alto Contraste */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border-2 border-slate-300 shadow-xl space-y-5">
               {rescheduleSubmitted ? (
                 <div className="text-center py-6 space-y-5 animate-in fade-in duration-300">
-                  <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+                  <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-300 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
                     <CheckCircle2 className="w-9 h-9 stroke-[2.5]" />
                   </div>
 
@@ -1527,7 +1527,7 @@ export default function PatientPortalPage() {
                     <h4 className="text-2xl font-serif font-bold text-[#002B49]">
                       Solicitação Registrada!
                     </h4>
-                    <p className="text-xs sm:text-sm font-sans text-slate-600 leading-relaxed">
+                    <p className="text-sm font-sans text-slate-700 leading-relaxed">
                       Sua solicitação foi salva no sistema com sucesso. Para confirmar o atendimento com prioridade, clique no botão abaixo para enviar os detalhes pelo WhatsApp ao Prof. Cesar Roberto.
                     </p>
                   </div>
@@ -1546,7 +1546,7 @@ export default function PatientPortalPage() {
                     </div>
                   )}
 
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-center">
+                  <div className="pt-4 border-t border-slate-200 flex items-center justify-center">
                     <button
                       type="button"
                       onClick={() => setRescheduleSubmitted(false)}
@@ -1559,12 +1559,12 @@ export default function PatientPortalPage() {
               ) : (
                 <>
                   <div className="space-y-1">
-                    <h3 className="text-lg font-heading font-extrabold text-[#002B49]">
+                    <h3 className="text-xl font-heading font-extrabold text-[#002B49]">
                       {isSchool
                         ? 'Solicitar Consultoria ou Reunião com o Prof. Cesar Roberto'
                         : 'Solicitar Agendamento com o Prof. Cesar Roberto'}
                     </h3>
-                    <p className="text-xs font-sans text-slate-600">
+                    <p className="text-xs sm:text-sm font-sans text-slate-600">
                       {isSchool
                         ? 'Envie a sugestão de data e a pauta da reunião. A solicitação será salva no sistema e encaminhada para alinhamento.'
                         : 'Envie sua preferência de dia e horário. A solicitação será salva no sistema e encaminhada para confirmação.'}
@@ -1574,13 +1574,13 @@ export default function PatientPortalPage() {
                   <form onSubmit={handleSubmitReschedule} className="space-y-4 pt-2">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                           {isSchool ? 'PAUTA / TIPO DE CONSULTORIA' : 'ASSUNTO / SERVIÇO'}
                         </label>
                         <select
                           value={rescheduleForm.motivo}
                           onChange={(e) => setRescheduleForm({ ...rescheduleForm, motivo: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-[#F8F6F0] border border-[#E3DDD3] text-base sm:text-sm font-sans text-[#002B49] focus:outline-none"
+                          className="w-full px-4 py-3.5 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition cursor-pointer"
                         >
                           {isSchool ? (
                             <>
@@ -1602,7 +1602,7 @@ export default function PatientPortalPage() {
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                        <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                           {isSchool ? 'DIA DA CONSULTORIA (SEGUNDA A SEXTA)' : 'DIA DA SESSÃO (SEGUNDA A SEXTA)'}
                         </label>
                         <input
@@ -1611,11 +1611,11 @@ export default function PatientPortalPage() {
                           min={todayISO}
                           value={rescheduleForm.dataSugerida}
                           onChange={handleRescheduleDateChange}
-                          className="w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-[#F8F6F0] border border-[#E3DDD3] text-base sm:text-sm font-sans text-[#002B49] focus:outline-none cursor-pointer"
+                          className="w-full px-4 py-3.5 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-bold text-[#002B49] focus:outline-none transition cursor-pointer"
                         />
                         {rescheduleDateError && (
-                          <p className="text-xs text-rose-600 font-sans mt-1 flex items-center gap-1">
-                            <AlertCircle className="w-3.5 h-3.5" />
+                          <p className="text-xs sm:text-sm text-rose-700 font-sans font-bold mt-1.5 flex items-center gap-1 p-2 rounded-xl bg-rose-50 border border-rose-200">
+                            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                             <span>{rescheduleDateError}</span>
                           </p>
                         )}
@@ -1624,19 +1624,19 @@ export default function PatientPortalPage() {
 
                     {/* Interactive Time Slots Grid (Rendered only when valid weekday is selected) */}
                     {rescheduleForm.dataSugerida && !isWeekend(rescheduleForm.dataSugerida) ? (
-                      <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="space-y-2.5 animate-in fade-in slide-in-from-top-2 duration-300 p-4 rounded-2xl bg-slate-50 border-2 border-slate-200">
                         <div className="flex items-center justify-between">
-                          <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
-                            Horário de Preferência
+                          <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
+                            Horário de Preferência *
                           </label>
                           {portalBookedSlots.length > 0 && (
-                            <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60 font-medium">
+                            <span className="text-xs text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300 font-bold">
                               {portalBookedSlots.length} reservado(s)
                             </span>
                           )}
                         </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
                           {timeSlots.map((slot) => {
                             const isBooked = portalBookedSlots.includes(slot)
                             const isPast = isSlotPast(slot, rescheduleForm.dataSugerida)
@@ -1656,12 +1656,12 @@ export default function PatientPortalPage() {
                                     ? `Horário ${slot} indisponível nesta data`
                                     : `Selecionar ${slot}`
                                 }
-                                className={`py-2.5 px-3 rounded-xl text-xs font-sans transition text-center ${
+                                className={`py-3 px-3 rounded-xl text-sm font-sans transition text-center ${
                                   isUnavailable
-                                    ? 'bg-[#F8F6F0]/60 text-slate-400 border border-[#E3DDD3]/60 cursor-not-allowed opacity-40 line-through select-none'
+                                    ? 'bg-slate-200/60 text-slate-400 border border-slate-300 cursor-not-allowed opacity-50 line-through select-none'
                                     : isSelected
-                                    ? 'bg-[#002B49] text-white font-bold border border-[#002B49] shadow-sm ring-2 ring-[#D4AF37]/50 cursor-pointer'
-                                    : 'bg-[#F8F6F0] text-slate-700 font-semibold border border-[#E3DDD3] hover:bg-[#EDE8DF] cursor-pointer'
+                                    ? 'bg-[#002B49] text-white font-extrabold border-2 border-[#002B49] shadow-md ring-2 ring-[#D4AF37] cursor-pointer'
+                                    : 'bg-white text-[#002B49] font-bold border-2 border-slate-300 hover:bg-slate-100 hover:border-slate-400 cursor-pointer shadow-2xs'
                                 }`}
                               >
                                 {slot}
@@ -1671,32 +1671,32 @@ export default function PatientPortalPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="p-3 rounded-xl sm:rounded-2xl bg-[#F8F6F0] border border-[#E3DDD3] text-center">
-                        <p className="text-xs font-sans text-slate-500 flex items-center justify-center gap-1.5">
-                          <CalendarDays className="w-4 h-4 text-[#002B49]/60 shrink-0" />
+                      <div className="p-4 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-dashed border-slate-300 text-center">
+                        <p className="text-xs sm:text-sm font-sans font-medium text-slate-600 flex items-center justify-center gap-2">
+                          <CalendarDays className="w-4 h-4 text-[#002B49] shrink-0" />
                           <span>Selecione um dia útil acima para visualizar os horários disponíveis.</span>
                         </p>
                       </div>
                     )}
 
                     <div className="space-y-1.5">
-                      <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                      <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                         {isSchool ? 'DETALHES DA PAUTA / OBSERVAÇÕES DA COORDENAÇÃO' : 'MENSAGEM / OBSERVAÇÕES'}
                       </label>
                       <textarea
-                        rows={2}
+                        rows={3}
                         placeholder={isSchool ? 'Descreva brevemente os objetivos da reunião ou consultoria...' : 'Escreva sua mensagem com tranquilidade...'}
                         value={rescheduleForm.observacoes}
                         onChange={(e) => setRescheduleForm({ ...rescheduleForm, observacoes: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl sm:rounded-2xl bg-[#F8F6F0] border border-[#E3DDD3] text-base sm:text-sm font-sans text-[#002B49] focus:outline-none resize-none"
+                        className="w-full px-4 py-3.5 rounded-xl sm:rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition shadow-2xs resize-none"
                       />
                     </div>
 
                     <button
                       type="submit"
-                      className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] font-cta font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                      className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white font-cta font-bold text-xs sm:text-sm uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer shadow-md hover:scale-105"
                     >
-                      <Send className="w-3.5 h-3.5" />
+                      <Send className="w-4 h-4 text-[#D4AF37]" />
                       <span>{isSchool ? 'Enviar Solicitação de Consultoria' : 'Enviar Solicitação de Agendamento'}</span>
                     </button>
                   </form>
@@ -1714,7 +1714,7 @@ export default function PatientPortalPage() {
       {/* ========================================================================= */}
       {selectedLaudoPreview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 relative max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-slate-300 space-y-6 relative max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
@@ -1724,7 +1724,7 @@ export default function PatientPortalPage() {
                 <h3 className="font-heading font-extrabold text-xl text-[#002B49]">
                   {selectedLaudoPreview.titulo}
                 </h3>
-                <p className="text-xs font-sans text-slate-500">
+                <p className="text-xs sm:text-sm font-sans text-slate-600 font-medium">
                   Emitido em {selectedLaudoPreview.dataEmissao} • Prof. Cesar Roberto Loureiro
                 </p>
               </div>
@@ -1737,22 +1737,22 @@ export default function PatientPortalPage() {
               </button>
             </div>
 
-            <div className="space-y-3">
-              <div className="text-xs font-cta font-bold uppercase tracking-wider text-[#64748B]">
+            <div className="space-y-2">
+              <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49]">
                 {isSchool ? 'Parecer & Diretrizes Pedagógicas' : 'Resumo do Documento'}
               </div>
-              <p className="text-xs sm:text-sm font-sans text-slate-700 leading-relaxed bg-[#FDFBF7] p-4 rounded-2xl border border-[#EAE6DF]">
+              <p className="text-xs sm:text-sm font-sans text-slate-800 font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border-2 border-slate-300">
                 {selectedLaudoPreview.resumo}
               </p>
             </div>
 
-            <div className="space-y-3">
-              <div className="text-xs font-cta font-bold uppercase tracking-wider text-[#64748B]">
+            <div className="space-y-2">
+              <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49]">
                 {isSchool ? 'Orientações para Sala de Aula' : 'Pontos de Atenção'}
               </div>
               <div className="space-y-2">
                 {selectedLaudoPreview.pontosChave?.map((ponto, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-[#F8F6F0] text-xs font-sans text-[#002B49] flex items-start gap-2 border border-[#EAE6DF]">
+                  <div key={i} className="p-3.5 rounded-xl bg-slate-100 text-xs sm:text-sm font-sans font-semibold text-[#002B49] flex items-start gap-2.5 border-2 border-slate-300">
                     <CheckCircle2 className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
                     <span>{ponto}</span>
                   </div>
@@ -1878,7 +1878,7 @@ export default function PatientPortalPage() {
       {/* ========================================================================= */}
       {selectedCourseLesson && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-3xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 relative max-h-[92vh] overflow-y-auto">
+          <div className="w-full max-w-3xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-slate-300 space-y-6 relative max-h-[92vh] overflow-y-auto">
             
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
@@ -1888,7 +1888,7 @@ export default function PatientPortalPage() {
                 <h3 className="font-heading font-extrabold text-xl text-[#002B49]">
                   {selectedCourseLesson.titulo}
                 </h3>
-                <p className="text-xs font-sans text-slate-500">
+                <p className="text-xs sm:text-sm font-sans text-slate-600 font-medium">
                   {selectedCourseLesson.cargaHoraria} • Instrutor: {selectedCourseLesson.instrutor}
                 </p>
               </div>
@@ -1922,29 +1922,29 @@ export default function PatientPortalPage() {
             </div>
 
             <div className="space-y-3">
-              <div className="text-xs font-cta font-bold uppercase tracking-wider text-[#64748B]">
+              <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49]">
                 Grade de Módulos:
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {selectedCourseLesson.modulos?.map((mod, i) => (
                   <div
                     key={i}
-                    className="p-4 rounded-2xl bg-[#FDFBF7] border border-[#EAE6DF] flex items-center justify-between gap-3"
+                    className="p-4 rounded-2xl bg-slate-50 border-2 border-slate-300 flex items-center justify-between gap-3 shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                        mod.concluido ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                        mod.concluido ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-800 border border-slate-300'
                       }`}>
                         {mod.concluido ? '✓' : i + 1}
                       </div>
                       <div className="space-y-0.5">
                         <div className="font-heading font-bold text-xs sm:text-sm text-[#002B49]">{mod.nome}</div>
-                        <div className="text-[11px] font-sans text-slate-500">{mod.aulas} aulas gravadas • Material incluso</div>
+                        <div className="text-xs font-sans text-slate-600">{mod.aulas} aulas gravadas • Material incluso</div>
                       </div>
                     </div>
 
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase shrink-0 ${
-                      mod.concluido ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-900'
+                      mod.concluido ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-900 border border-amber-200'
                     }`}>
                       {mod.concluido ? 'Concluído' : 'Disponível'}
                     </span>

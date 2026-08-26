@@ -285,20 +285,20 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
         </div>
 
         {/* ========================================================================= */}
-        {/* RIGHT COLUMN: 100% Brand Palette & Typography Login / Sign Up Form */}
+        {/* RIGHT COLUMN: High-Contrast Brand Palette & Typography Auth Form Card */}
         {/* ========================================================================= */}
-        <div className="lg:col-span-5 xl:col-span-5 w-full max-w-md xl:max-w-lg mx-auto py-4 px-2 sm:px-4 space-y-6">
+        <div className="lg:col-span-5 xl:col-span-5 w-full max-w-md xl:max-w-lg mx-auto bg-white rounded-3xl p-6 sm:p-8 md:p-10 border-2 border-slate-300 shadow-2xl shadow-[#002B49]/8 space-y-6">
           
           {/* Top Switcher Buttons (Above Title - Oculto em modo recovery) */}
           {mode !== 'recovery' && (
-            <div className="gsap-switcher inline-flex items-center gap-2 p-1 rounded-full bg-[#E2E8F0] border border-[#CBD5E1]">
+            <div className="gsap-switcher inline-flex items-center gap-2 p-1.5 rounded-full bg-slate-100 border-2 border-slate-300">
               <button
                 type="button"
                 onClick={() => handleModeChange('login')}
                 className={`py-2 px-6 rounded-full text-xs font-cta transition-all cursor-pointer ${
                   mode === 'login'
                     ? 'bg-[#002B49] text-white shadow-xs font-bold'
-                    : 'text-[#64748B] hover:text-[#002B49] font-medium'
+                    : 'text-slate-700 hover:text-[#002B49] font-bold'
                 }`}
               >
                 Entrar
@@ -310,7 +310,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                 className={`py-2 px-6 rounded-full text-xs font-cta transition-all cursor-pointer ${
                   mode === 'signup'
                     ? 'bg-[#002B49] text-white shadow-xs font-bold'
-                    : 'text-[#64748B] hover:text-[#002B49] font-medium'
+                    : 'text-slate-700 hover:text-[#002B49] font-bold'
                 }`}
               >
                 Criar conta
@@ -323,7 +323,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
             <h1 className="text-3xl sm:text-4xl font-heading font-extrabold tracking-tight text-[#002B49]">
               {mode === 'recovery' ? 'Redefinir Senha' : mode === 'login' ? 'Entrar' : 'Criar conta'}
             </h1>
-            <p className="text-xs sm:text-sm font-sans text-[#64748B]">
+            <p className="text-xs sm:text-sm font-sans text-slate-600">
               {mode === 'recovery'
                 ? 'Digite sua nova senha segura para recuperar o acesso à sua conta.'
                 : mode === 'login'
@@ -335,17 +335,17 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
           </div>
 
           {/* Subtle Divider Line */}
-          <div className="border-b border-[#CBD5E1] pt-1" />
+          <div className="border-b border-slate-200 pt-1" />
 
           {/* Feedback Messages */}
           {errorMsg && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-sans animate-in fade-in">
+            <div className="p-3.5 rounded-2xl bg-rose-50 border-2 border-rose-200 text-rose-900 text-xs sm:text-sm font-sans font-semibold animate-in fade-in">
               {errorMsg}
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-sans animate-in fade-in">
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-200 text-emerald-900 text-xs sm:text-sm font-sans font-semibold animate-in fade-in">
               {successMsg}
             </div>
           )}
@@ -356,17 +356,17 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
             {/* Profile Type Toggle (Sign up only) */}
             {mode === 'signup' && (
               <div className="gsap-field space-y-2">
-                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   TIPO DE CONTA
                 </label>
-                <div className="p-1 rounded-2xl bg-[#E8EDF2] grid grid-cols-2 gap-1 border border-slate-200/80">
+                <div className="p-1.5 rounded-2xl bg-slate-100 grid grid-cols-2 gap-1.5 border-2 border-slate-300">
                   <button
                     type="button"
                     onClick={() => setUserType('ALUNO')}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-cta font-bold transition flex items-center justify-center cursor-pointer ${
+                    className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-cta font-bold transition flex items-center justify-center cursor-pointer ${
                       userType === 'ALUNO'
                         ? 'bg-[#002B49] text-white shadow-sm'
-                        : 'bg-transparent text-[#64748B] hover:text-[#002B49]'
+                        : 'bg-transparent text-slate-700 hover:text-[#002B49]'
                     }`}
                   >
                     <span>Aluno / Paciente</span>
@@ -375,10 +375,10 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                   <button
                     type="button"
                     onClick={() => setUserType('ESCOLA')}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-cta font-bold transition flex items-center justify-center cursor-pointer ${
+                    className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-cta font-bold transition flex items-center justify-center cursor-pointer ${
                       userType === 'ESCOLA'
                         ? 'bg-[#002B49] text-white shadow-sm'
-                        : 'bg-transparent text-[#64748B] hover:text-[#002B49]'
+                        : 'bg-transparent text-slate-700 hover:text-[#002B49]'
                     }`}
                   >
                     <span>Escola / Instituição</span>
@@ -390,7 +390,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
             {/* NAME Field (Sign up only) */}
             {mode === 'signup' && (
               <div className="gsap-field space-y-1.5">
-                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   {userType === 'ESCOLA' ? 'NOME DO RESPONSÁVEL / COORDENADOR' : 'NOME COMPLETO'}
                 </label>
                 <input
@@ -400,7 +400,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                   value={formData.nome_completo}
                   onChange={handleInputChange}
                   placeholder={userType === 'ESCOLA' ? 'Ex: Profª Cláudia Mendes' : 'Seu nome completo'}
-                  className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                  className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                 />
               </div>
             )}
@@ -408,7 +408,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
             {/* ESCOLA NAME Field (Escola only) */}
             {mode === 'signup' && userType === 'ESCOLA' && (
               <div className="gsap-field space-y-1.5 animate-in fade-in duration-200">
-                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   NOME DA ESCOLA / INSTITUIÇÃO *
                 </label>
                 <input
@@ -418,7 +418,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                   value={formData.instituicao_nome}
                   onChange={handleInputChange}
                   placeholder="Ex: Colégio Primeiros Passos"
-                  className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                  className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                 />
               </div>
             )}
@@ -426,7 +426,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
             {/* EMAIL Field (Oculto em modo de recuperação de senha) */}
             {mode !== 'recovery' && (
               <div className="gsap-field space-y-1.5">
-                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   E-MAIL
                 </label>
                 <input
@@ -436,14 +436,14 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Seu endereço de e-mail"
-                  className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                  className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                 />
               </div>
             )}
 
             {/* PASSWORD Field with Eye Toggle and Strength Meter */}
             <div className="gsap-field space-y-1.5">
-              <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+              <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                 {mode === 'recovery' ? 'NOVA SENHA' : 'SENHA'}
               </label>
               
@@ -456,20 +456,20 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                   onChange={handleInputChange}
                   placeholder={mode === 'recovery' ? 'Crie uma nova senha' : 'Sua senha'}
                   minLength={mode === 'login' ? 6 : 8}
-                  className="w-full pl-4 pr-11 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                  className="w-full pl-4 pr-11 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                 />
                 
                 {/* Show/Hide Password Eye Button */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#64748B] hover:text-[#002B49] transition cursor-pointer p-1"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-[#002B49] transition cursor-pointer p-1"
                   aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
                 >
                   {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
+                    <EyeOff className="w-5 h-5" />
                   ) : (
-                    <Eye className="w-4 h-4" />
+                    <Eye className="w-5 h-5" />
                   )}
                 </button>
               </div>
@@ -552,7 +552,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
             {/* CONFIRM PASSWORD Field (Recovery only) */}
             {mode === 'recovery' && (
               <div className="gsap-field space-y-1.5">
-                <label className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] block">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   CONFIRMAR NOVA SENHA
                 </label>
                 <input
@@ -562,7 +562,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   placeholder="Digite a nova senha novamente"
-                  className="w-full px-4 py-3 rounded-xl bg-[#E8EDF2] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#002B49] placeholder:text-[#94A3B8] focus:outline-none transition shadow-2xs"
+                  className="w-full px-4 py-3.5 rounded-xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                 />
               </div>
             )}
@@ -573,7 +573,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
                 <button
                   type="button"
                   onClick={handleForgotPassword}
-                  className="text-[11px] font-cta font-bold uppercase tracking-wider text-[#64748B] hover:text-[#002B49] transition cursor-pointer"
+                  className="text-xs font-cta font-bold uppercase tracking-wider text-[#002B49] hover:underline transition cursor-pointer"
                 >
                   ESQUECEU A SENHA?
                 </button>

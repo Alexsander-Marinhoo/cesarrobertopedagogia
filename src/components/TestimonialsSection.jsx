@@ -48,21 +48,15 @@ export default function TestimonialsSection() {
                 </p>
               </div>
 
-              <div className="pt-3 mt-3 border-t border-slate-100 flex items-center gap-3">
-                <img
-                  src={t.avatar}
-                  alt={t.name}
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border border-slate-200 shrink-0"
-                  loading="lazy"
-                />
-                <div className="min-w-0">
-                  <div className="font-serif font-bold text-xs sm:text-[13px] text-[#002B49] truncate">
-                    {t.name}
-                  </div>
-                  <div className="text-[10px] font-cta font-bold uppercase tracking-wider text-slate-500 truncate">
-                    {t.role} • {t.city}
-                  </div>
+              <div className="pt-3 mt-3 border-t border-slate-100 flex flex-col justify-center">
+                <div className="font-serif font-bold text-xs sm:text-[13px] text-[#002B49] truncate">
+                  {t.name}
                 </div>
+                {t.role && (
+                  <div className="text-[10px] font-cta font-bold uppercase tracking-wider text-slate-500 truncate mt-0.5">
+                    {t.role}{t.city ? ` • ${t.city}` : ''}
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -81,21 +75,15 @@ export default function TestimonialsSection() {
                 </p>
               </div>
 
-              <div className="pt-3 mt-3 border-t border-slate-100 flex items-center gap-3">
-                <img
-                  src={t.avatar}
-                  alt={t.name}
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border border-slate-200 shrink-0"
-                  loading="lazy"
-                />
-                <div className="min-w-0">
-                  <div className="font-serif font-bold text-xs sm:text-[13px] text-[#002B49] truncate">
-                    {t.name}
-                  </div>
-                  <div className="text-[10px] font-cta font-bold uppercase tracking-wider text-slate-500 truncate">
-                    {t.role} • {t.city}
-                  </div>
+              <div className="pt-3 mt-3 border-t border-slate-100 flex flex-col justify-center">
+                <div className="font-serif font-bold text-xs sm:text-[13px] text-[#002B49] truncate">
+                  {t.name}
                 </div>
+                {t.role && (
+                  <div className="text-[10px] font-cta font-bold uppercase tracking-wider text-slate-500 truncate mt-0.5">
+                    {t.role}{t.city ? ` • ${t.city}` : ''}
+                  </div>
+                )}
               </div>
             </div>
           ))}

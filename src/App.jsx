@@ -9,6 +9,7 @@ const AuthPage = lazy(() => import('./pages/AuthPage'))
 const PatientPortalPage = lazy(() => import('./pages/portal/PatientPortalPage'))
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'))
 const TermsPrivacyPage = lazy(() => import('./pages/TermsPrivacyPage'))
+const CoursesAvaPage = lazy(() => import('./pages/CoursesAvaPage'))
 
 function LoadingFallback() {
   return (
@@ -48,6 +49,10 @@ export default function App() {
 
             {/* Rota Oculta Exclusiva para o Prof. Cesar Roberto Loureiro */}
             <Route path="/admin" element={<AdminDashboardPage />} />
+
+            {/* Catálogo Completo de Cursos & Plataforma AVA */}
+            <Route path="/cursos-ava" element={<CoursesAvaPage />} />
+            <Route path="/cursos" element={<Navigate to="/cursos-ava" replace />} />
 
             {/* Legal: Termos de Uso & Política de Privacidade */}
             <Route path="/termos" element={<TermsPrivacyPage />} />

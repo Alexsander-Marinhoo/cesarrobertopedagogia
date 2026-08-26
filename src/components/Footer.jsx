@@ -8,6 +8,10 @@ export default function Footer({ onOpenPrivacy: _onOpenPrivacy }) {
   }
 
   const handleLinkClick = (e, href) => {
+    if (window.location.pathname !== '/') {
+      window.location.href = `/${href}`
+      return
+    }
     e.preventDefault()
     if (href === '#inicio') {
       smoothScrollTo(0, { duration: 1.2 })

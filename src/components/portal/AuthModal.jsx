@@ -155,7 +155,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-xl bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-xl bg-white rounded-[32px] sm:rounded-[36px] shadow-2xl border-2 border-slate-300 overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Top Header */}
@@ -190,10 +190,10 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                   key={r.id}
                   type="button"
                   onClick={() => setSelectedRole(r.id)}
-                  className={`p-2.5 rounded-2xl text-left transition border cursor-pointer flex flex-col justify-between min-h-[76px] ${
+                  className={`p-2.5 rounded-2xl text-left transition border-2 cursor-pointer flex flex-col justify-between min-h-[76px] ${
                     isSelected
                       ? 'bg-[#D4AF37] text-[#002B49] border-[#D4AF37] shadow-sm font-bold'
-                      : 'bg-white/10 hover:bg-white/15 text-slate-200 border-white/10'
+                      : 'bg-white/10 hover:bg-white/15 text-slate-200 border-white/20'
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isSelected ? 'text-[#002B49]' : 'text-[#D4AF37]'}`} />
@@ -210,14 +210,14 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
         <div className="p-6 sm:p-8 overflow-y-auto flex-1 space-y-5">
           
           {/* Sub Navigation Modes (Login / Cadastro / Link Mágico / Recuperação) */}
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-cta font-bold">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 border-2 border-slate-300 text-xs font-cta font-bold">
             <button
               type="button"
               onClick={() => setActiveTab('login')}
               className={`flex-1 py-2 rounded-xl transition cursor-pointer text-center ${
                 activeTab === 'login'
                   ? 'bg-white text-[#002B49] shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Entrar
@@ -228,7 +228,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               className={`flex-1 py-2 rounded-xl transition cursor-pointer text-center ${
                 activeTab === 'signup'
                   ? 'bg-white text-[#002B49] shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Criar Conta
@@ -239,7 +239,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
               className={`flex-1 py-2 rounded-xl transition cursor-pointer text-center ${
                 activeTab === 'magic'
                   ? 'bg-white text-[#002B49] shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Link Mágico
@@ -266,12 +266,12 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
             
             {/* Field: Full Name (Signup only) */}
             {activeTab === 'signup' && (
-              <div>
-                <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   Nome Completo *
                 </label>
                 <div className="relative">
-                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     name="nome_completo"
@@ -279,7 +279,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     value={formData.nome_completo}
                     onChange={handleInputChange}
                     placeholder="Ex: Mariana Silveira"
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-sans focus:bg-white focus:border-[#002B49] focus:outline-none transition"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>
@@ -287,12 +287,12 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
 
             {/* Field: School / Institution (Signup + Escola only) */}
             {activeTab === 'signup' && selectedRole === 'ESCOLA' && (
-              <div>
-                <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   Nome da Instituição Escolar *
                 </label>
                 <div className="relative">
-                  <School className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <School className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     name="instituicao_nome"
@@ -300,19 +300,19 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     value={formData.instituicao_nome}
                     onChange={handleInputChange}
                     placeholder="Ex: Colégio Primeiros Passos"
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-sans focus:bg-white focus:border-[#002B49] focus:outline-none transition"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>
             )}
 
             {/* Field: E-mail */}
-            <div>
-              <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+            <div className="space-y-1.5">
+              <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                 E-mail de Acesso *
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   name="email"
@@ -320,26 +320,26 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="seuemail@exemplo.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-sans focus:bg-white focus:border-[#002B49] focus:outline-none transition"
+                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                 />
               </div>
             </div>
 
             {/* Field: Phone (Signup only) */}
             {activeTab === 'signup' && (
-              <div>
-                <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                   Telefone / WhatsApp com DDD
                 </label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <Phone className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="tel"
                     name="telefone"
                     value={formData.telefone}
                     onChange={handleInputChange}
                     placeholder="(32) 99847-0152"
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-sans focus:bg-white focus:border-[#002B49] focus:outline-none transition"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>
@@ -347,23 +347,23 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
 
             {/* Field: Password (Login & Signup) */}
             {(activeTab === 'login' || activeTab === 'signup') && (
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 block">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49] block">
                     Senha de Segurança *
                   </label>
                   {activeTab === 'login' && (
                     <button
                       type="button"
                       onClick={() => setActiveTab('recovery')}
-                      className="text-xs font-sans text-[#002B49] hover:underline"
+                      className="text-xs font-sans font-semibold text-[#002B49] hover:underline cursor-pointer"
                     >
                       Esqueceu a senha?
                     </button>
                   )}
                 </div>
                 <div className="relative">
-                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <KeyRound className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="password"
                     name="password"
@@ -372,7 +372,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     onChange={handleInputChange}
                     placeholder="••••••••"
                     minLength={6}
-                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-sans focus:bg-white focus:border-[#002B49] focus:outline-none transition"
+                    className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#002B49] focus:ring-3 focus:ring-[#002B49]/15 text-sm font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                   />
                 </div>
               </div>

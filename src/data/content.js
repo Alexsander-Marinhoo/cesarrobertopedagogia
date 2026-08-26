@@ -18,7 +18,7 @@ export const siteData = {
     address: "Rua Soldado Darcy Ferreira, 135 - Alto do Asilo, Recreio - MG, CEP 36.740-000",
     openingHours: "Segunda a Sexta: 08h às 12h e 14h às 18h",
     experienceYears: "Especialista",
-    bioSummary: "Profissional autônomo com formação avançada em Pedagogia, Psicopedagogia e Neuropsicopedagogia, dedicado a intervenções individualizadas, acolhimento familiar e consultoria educacional.",
+    bioSummary: "Profissional com formação avançada em Pedagogia, Psicopedagogia e Neuropsicopedagogia, dedicado ao atendimento clínico individualizado para crianças, jovens (adolescentes) e adultos, além de suporte familiar e consultoria educacional.",
     slogan: "Educar é transformar vidas e construir futuros.",
     summary: "Ecossistema digital focado em autoridade acadêmica, credibilidade clínica e apoio contínuo a crianças, adolescentes, jovens, adultos, famílias, escolas e instituições públicas/privadas."
   },
@@ -27,16 +27,16 @@ export const siteData = {
     {
       id: "b2c",
       tag: "Público B2C",
-      title: "Para Famílias & Pacientes",
-      subtitle: "Acolhimento, avaliação diagnóstica e desenvolvimento do potencial de aprendizagem.",
-      description: "Dedicado a pais, mães e responsáveis que buscam compreender os desafios escolares e comportamentais de seus filhos, além de adultos que desejam aprimorar seu desempenho cognitivo e acadêmico.",
+      title: "Para Pacientes & Famílias",
+      subtitle: "Acolhimento humanizado para crianças, jovens (adolescentes) e adultos: diagnóstico, intervenção e potencial cognitivo.",
+      description: "Dedicado a crianças e adolescentes que enfrentam desafios escolares e de neurodesenvolvimento, bem como a jovens universitários e adultos que buscam aprimorar seu foco, funções executivas e desempenho cognitivo.",
       highlights: [
+        "Atendimento personalizado para todas as idades: crianças, jovens e adultos",
         "Avaliação e diagnóstico psicopedagógico e neuropsicopedagógico detalhado",
-        "Intervenções personalizadas para TDAH, Dislexia, Discalculia e TEA",
-        "Estimulação de funções executivas: foco, planejamento e memória",
+        "Intervenções para TDAH, Dislexia, Discalculia, TEA e Funções Executivas",
         "Apoio e orientação familiar contínua para rotinas de estudo eficazes"
       ],
-      ctaText: "Agendar Avaliação para meu Filho / Família",
+      ctaText: "Agendar Avaliação (Crianças, Jovens e Adultos)",
       badge: "Atendimento Clínico Humanizado"
     },
     {
@@ -92,13 +92,13 @@ export const siteData = {
       shortDesc: "Investigação profunda de como o sujeito aprende e dos fatores emocionais, pedagógicos ou cognitivos que interferem no processo de aprendizagem.",
       fullDesc: "O Atendimento Psicopedagógico identifica as causas das dificuldades de aprendizagem na leitura, escrita, cálculo ou raciocínio lógico. Através de testes padronizados, observações lúdicas e escuta empática, constrói-se um plano de intervenção sob medida para restaurar o prazer e a autonomia no aprender.",
       points: [
-        "Anamnese com a família e levantamento histórico escolar",
+        "Anamnese com a família ou paciente e levantamento histórico detalhado",
         "Avaliação das habilidades de leitura, escrita e raciocínio matemático",
         "Elaboração de Devolutiva com Laudo/Relatório detalhado",
         "Sessões de intervenção com materiais estruturados e jogos pedagógicos",
-        "Orientação e alinhamento com a equipe pedagógica da escola do paciente"
+        "Orientação e alinhamento com a equipe pedagógica ou profissional"
       ],
-      target: "Crianças, adolescentes e jovens com queixas escolares ou defasagens.",
+      target: "Crianças, jovens (adolescentes) e adultos",
       modality: "Presencial (Recreio-MG) e Teleatendimento"
     },
     {
@@ -112,10 +112,10 @@ export const siteData = {
         "Mapeamento do perfil neuropsicopedagógico e funções executivas",
         "Estimulação de foco atencional, controle inibitório e flexibilidade cognitiva",
         "Treinamento de estratégias metacognitivas (aprender a aprender)",
-        "Adaptação de estratégias para o cotidiano escolar e domiciliar",
+        "Adaptação de estratégias para o cotidiano escolar, acadêmico e profissional",
         "Relatórios técnicos fundamentados em evidências neurocientíficas"
       ],
-      target: "Pacientes de todas as idades com desafios de neurodesenvolvimento.",
+      target: "Todas as idades: crianças, jovens e adultos",
       modality: "Presencial e On-line"
     },
     {
@@ -126,13 +126,13 @@ export const siteData = {
       shortDesc: "Muito além do reforço tradicional: orientação metodológica para que o estudante desenvolva hábitos sólidos e independência acadêmica.",
       fullDesc: "Um programa de mentoria e suporte escolar que ensina técnicas ativas de estudo (resumos estruturados, mapas conceituais, gestão de tempo). O foco é recuperar lacunas conceituais e fortalecer a autoconfiança frente a provas e trabalhos.",
       points: [
-        "Diagnóstico das lacunas de conteúdo escolar",
+        "Diagnóstico das lacunas de conteúdo e aprendizagem",
         "Planejamento semanal de estudos e rotinas estruturadas",
         "Técnicas de memorização ativa e interpretação de texto",
-        "Preparação para avaliações escolares e exames",
+        "Preparação para avaliações escolares, vestibulares e concursos",
         "Acompanhamento quinzenal do progresso acadêmico"
       ],
-      target: "Estudantes do Ensino Fundamental, Médio e vestibulandos.",
+      target: "Crianças, adolescentes, vestibulandos e universitários",
       modality: "Presencial e On-line"
     },
     {
@@ -160,6 +160,7 @@ export const siteData = {
       title: "Neurociência Aplicada à Sala de Aula e Funções Executivas",
       instructor: "Prof. Cesar Roberto Loureiro",
       workload: "40 horas",
+      startDate: "Janeiro de 2027",
       modality: "100% On-line (com aulas ao vivo gravadas)",
       certificate: "Certificado Válido pelo MEC / Extensão",
       target: "Professores, Coordenadores Pedagógicos e Psicopedagogos",
@@ -179,6 +180,7 @@ export const siteData = {
       title: "Adaptações Curriculares e PDI/PEI na Prática Escolar (BNCC)",
       instructor: "Prof. Cesar Roberto Loureiro",
       workload: "30 horas",
+      startDate: "Janeiro de 2027",
       modality: "100% On-line",
       certificate: "Certificado Digital com Verificação Autêntica",
       target: "Docentes de Educação Infantil, Fundamental e Médio",
@@ -198,6 +200,7 @@ export const siteData = {
       title: "Identificação Precoce de Dislexia, Discalculia e Bloqueios de Aprendizagem",
       instructor: "Prof. Cesar Roberto Loureiro",
       workload: "20 horas",
+      startDate: "Janeiro de 2027",
       modality: "On-line com material prático para download",
       certificate: "Certificado de Capacitação Profissional",
       target: "Professores de Anos Iniciais e Alfabetizadores",
@@ -219,7 +222,6 @@ export const siteData = {
       name: "Mariana Silveira",
       role: "MÃE DE ALUNO",
       city: "RECREIO • MG",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
       text: "O diagnóstico preciso e as sessões semanais trouxeram de volta a confiança do Lucas. Hoje ele faz os deveres com prazer e autonomia!",
       rating: 5
     },
@@ -228,7 +230,6 @@ export const siteData = {
       name: "Profª Claudia Mendes",
       role: "COORDENADORA PEDAGÓGICA",
       city: "MINAS GERAIS",
-      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
       text: "A formação continuada sobre TDAH e Adaptações Curriculares ministrada pelo Prof. Cesar transformou o trabalho de todos os nossos professores.",
       rating: 5
     },
@@ -237,7 +238,6 @@ export const siteData = {
       name: "Rodrigo Almeida",
       role: "PAI DA BEATRIZ (14 ANOS)",
       city: "TELEATENDIMENTO • RJ",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
       text: "A metodologia remota e o acolhimento superaram nossas expectativas. Minha filha melhorou as notas e superou a ansiedade com provas.",
       rating: 5
     },
@@ -246,7 +246,6 @@ export const siteData = {
       name: "Clara Fonseca",
       role: "PROFESSORA DO FUNDAMENTAL",
       city: "RECREIO • MG",
-      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
       text: "Os relatórios psicopedagógicos emitidos pelo Cesar são extremamente claros e práticos para aplicarmos intervenções na sala de aula.",
       rating: 5
     },
@@ -255,7 +254,6 @@ export const siteData = {
       name: "Marcos Rocha",
       role: "PAI DO GABRIEL (8 ANOS)",
       city: "MINAS GERAIS",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
       text: "Profissional ético e muito atencioso. Conseguiu identificar com precisão as defasagens de alfabetização e traçar um plano sob medida.",
       rating: 5
     },
@@ -264,7 +262,6 @@ export const siteData = {
       name: "Ana Júlia Viana",
       role: "DIRETORA ESCOLAR",
       city: "LEOPOLDINA • MG",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
       text: "A assessoria pedagógica nos auxiliou a reestruturar todo o nosso plano de inclusão escolar e PDI com total segurança técnica e legal.",
       rating: 5
     },
@@ -273,7 +270,6 @@ export const siteData = {
       name: "Tiago André",
       role: "ESTUDANTE UNIVERSITÁRIO",
       city: "ON-LINE NACIONAL",
-      avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80",
       text: "A mentoria em funções executivas e técnicas metacognitivas mudou minha capacidade de foco e organização nos estudos da faculdade.",
       rating: 5
     },
@@ -282,7 +278,6 @@ export const siteData = {
       name: "Larissa Souza",
       role: "MÃE DA HELENA (11 ANOS)",
       city: "JUIZ DE FORA • MG",
-      avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150&auto=format&fit=crop&q=80",
       text: "Atendimento acolhedor e fundamentado na ciência. A evolução da minha filha na leitura em apenas 3 meses foi surpreendente.",
       rating: 5
     },
@@ -291,7 +286,6 @@ export const siteData = {
       name: "Helena Ribeiro",
       role: "PEDAGOGA & PSICOPEDAGOGA",
       city: "BELO HORIZONTE • MG",
-      avatar: "https://images.unsplash.com/photo-1548142813-c348350df52b?w=150&auto=format&fit=crop&q=80",
       text: "Os cursos de neurociência e avaliação do Prof. Cesar são ricos em ferramentas práticas. Recomendo para todos os colegas educadores.",
       rating: 5
     },
@@ -300,7 +294,6 @@ export const siteData = {
       name: "Carlos Eduardo Ramos",
       role: "PAI DO MATHEUS (7 ANOS)",
       city: "RECREIO • MG",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
       text: "Encontramos no consultório do Cesar um ambiente acolhedor e um profissional que realmente escuta as angústias dos pais.",
       rating: 5
     }
@@ -439,6 +432,10 @@ export const siteData = {
   ],
 
   faqs: [
+    {
+      question: "Quais faixas etárias são atendidas no consultório?",
+      answer: "O atendimento psicopedagógico e neuropsicopedagógico é completo e acolhe todas as idades: crianças (fase de alfabetização, atrasos no desenvolvimento, TDAH, Dislexia, TEA), jovens e adolescentes (gestão de tempo, rotinas de estudo, funções executivas e vestibulandos) e adultos (bloqueios cognitivos, dificuldades de foco e memória de trabalho, pós-graduandos e aprimoramento da aprendizagem ao longo da vida)."
+    },
     {
       question: "Qual a diferença entre Psicopedagogia e Neuropsicopedagogia?",
       answer: "A Psicopedagogia foca nos processos de aprendizagem e nas suas variáveis pedagógicas, sociais e afetivas. A Neuropsicopedagogia aprofunda o conhecimento do funcionamento do sistema nervoso central e das bases neurais que sustentam as funções cognitivas (atenção, memória, raciocínio), combinando neurociência com práticas educativas."

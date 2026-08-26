@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import AboutSection from '../components/AboutSection'
@@ -22,6 +22,7 @@ import { ScrollTrigger } from '../utils/gsapConfig'
 
 export default function HomePage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
 
   const [selectedServiceDetail, setSelectedServiceDetail] = useState(null)
@@ -35,9 +36,21 @@ export default function HomePage() {
     initLenis()
     const timer = setTimeout(() => {
       ScrollTrigger.refresh()
-    }, 200)
+      if (window.location.hash) {
+        smoothScrollTo(window.location.hash, { offset: -80 })
+      }
+    }, 250)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    if (location.hash) {
+      const timer = setTimeout(() => {
+        smoothScrollTo(location.hash, { offset: -80 })
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [location.hash])
 
   const scrollToBooking = () => {
     smoothScrollTo('#agendamento', { offset: -70 })

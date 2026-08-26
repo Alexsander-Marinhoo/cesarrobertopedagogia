@@ -166,6 +166,12 @@ export default function Hero({ onOpenBooking }) {
             {/* ===================================================================== */}
             <div className="lg:col-span-7 space-y-4 sm:space-y-6 md:space-y-8 xl:space-y-10 text-center lg:text-left z-10 lg:pr-6">
 
+              {/* Badge de Atendimento a Todas as Idades */}
+              <div className="gsap-hero-fade inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/10 text-slate-200 text-xs font-cta font-bold tracking-wide backdrop-blur-md shadow-xs mb-1 sm:mb-2">
+                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse shrink-0" />
+                <span>Atendimento a Todas as Idades: Crianças • Jovens • Adultos</span>
+              </div>
+
               {/* 3-Line Headline com efeito cascata 3D */}
               <h1
                 className="text-[32px] min-[370px]:text-[36px] min-[410px]:text-[38px] sm:text-4xl md:text-5xl lg:text-[62px] xl:text-[72px] font-heading font-extrabold text-white leading-[1.08] sm:leading-[1.08] lg:leading-[1.06] tracking-tight select-none"
@@ -223,7 +229,7 @@ export default function Hero({ onOpenBooking }) {
 
               {/* Subtitle com efeito fade-in */}
               <p className="gsap-hero-fade text-[13px] min-[380px]:text-[13.5px] sm:text-base md:text-lg font-sans text-slate-300 font-normal leading-relaxed max-w-sm sm:max-w-lg lg:max-w-xl mx-auto lg:mx-0">
-                No consultório do <strong>Prof. Cesar Roberto</strong>, transformamos dificuldades escolares em autonomia e confiança com a neuropsicopedagogia clínica.
+                Atendimento clínico especializado para <strong>crianças, jovens (adolescentes) e adultos</strong>. No consultório do <strong>Prof. Cesar Roberto</strong>, transformamos dificuldades escolares e cognitivas em autonomia e confiança com a neuropsicopedagogia.
               </p>
 
               {/* Linha de Ações: Empilhada no Mobile, Lado a Lado no Tablet e Desktop */}

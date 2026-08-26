@@ -69,7 +69,7 @@ export default function ContactSection() {
 
               {/* Intro Paragraph */}
               <FadeInParagraph className="text-sm sm:text-base font-sans text-slate-600 leading-relaxed">
-                Conte-nos o que está travando o desenvolvimento escolar, cognitivo ou metodológico. Atendimentos no consultório residencial em Recreio-MG e on-line em todo o Brasil.
+                Conte-nos o que está travando o desenvolvimento escolar, cognitivo ou metodológico. Atendimentos especializados para crianças, jovens (adolescentes) e adultos no consultório em Recreio-MG e on-line em todo o Brasil.
               </FadeInParagraph>
             </div>
 
@@ -132,25 +132,25 @@ export default function ContactSection() {
             </div>
           </div>
 
-          {/* Right Column: Modern Pinterest Form Card */}
+          {/* Right Column: Modern High-Contrast Form Card */}
           <div className="lg:col-span-7">
-            <div className="gsap-card bg-white rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border border-[#002B49]/10 shadow-xl shadow-[#002B49]/5">
+            <div className="gsap-card bg-white rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border-2 border-slate-300 shadow-2xl shadow-[#002B49]/8">
               <h3 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#002B49] tracking-tight">
                 Entre em contato
               </h3>
-              <p className="text-xs sm:text-sm font-sans text-slate-500 mt-2 mb-8">
+              <p className="text-sm font-sans text-slate-600 mt-2 mb-8">
                 Retornaremos seu contato em até 24 horas úteis.
               </p>
 
               {sent ? (
-                <div className="p-8 rounded-3xl bg-emerald-50/70 border border-emerald-200 text-center space-y-4">
+                <div className="p-8 rounded-3xl bg-emerald-50/70 border-2 border-emerald-300 text-center space-y-4">
                   <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-8 h-8 stroke-[2.5]" />
                   </div>
                   <h4 className="font-serif font-bold text-xl text-emerald-900">
                     Mensagem Encaminhada com Sucesso!
                   </h4>
-                  <p className="text-xs sm:text-sm font-sans text-emerald-800 max-w-md mx-auto leading-relaxed">
+                  <p className="text-sm font-sans text-emerald-800 max-w-md mx-auto leading-relaxed">
                     Sua mensagem foi estruturada e aberta no canal oficial de atendimento. Em breve retornaremos com a atenção que você merece.
                   </p>
                   <button
@@ -164,7 +164,7 @@ export default function ContactSection() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Field 1: Full Name */}
                   <div>
-                    <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-2 block">
+                    <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                       Seu Nome Completo *
                     </label>
                     <input
@@ -173,20 +173,20 @@ export default function ContactSection() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Ex: Jessica Mercedes"
-                      className="w-full px-4 py-3.5 rounded-2xl bg-[#F1F4F7] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#1E293B] placeholder:text-slate-400 focus:outline-none transition-all duration-200"
+                      className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200"
                     />
                   </div>
 
                   {/* Field 2 & 3: Role & Phone */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                         Seu Perfil / Vínculo
                       </label>
                       <select
                         value={formData.role}
                         onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-2xl bg-[#F1F4F7] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#1E293B] focus:outline-none transition-all duration-200"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition-all duration-200 cursor-pointer"
                       >
                         <option value="Família / Responsável">Família / Responsável</option>
                         <option value="Escola / Gestor / Direção">Escola / Gestor / Direção</option>
@@ -197,7 +197,7 @@ export default function ContactSection() {
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                         WhatsApp ou Telefone *
                       </label>
                       <input
@@ -206,7 +206,7 @@ export default function ContactSection() {
                         value={formData.phone}
                         onChange={handlePhoneChange}
                         placeholder="(32) 99847-0152"
-                        className="w-full px-4 py-3.5 rounded-2xl bg-[#F1F4F7] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#1E293B] placeholder:text-slate-400 focus:outline-none transition-all duration-200"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
                   </div>
@@ -214,7 +214,7 @@ export default function ContactSection() {
                   {/* Field 4 & 5: Email & Subject */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                         Endereço de E-mail
                       </label>
                       <input
@@ -222,18 +222,18 @@ export default function ContactSection() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="seuemail@exemplo.com"
-                        className="w-full px-4 py-3.5 rounded-2xl bg-[#F1F4F7] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#1E293B] placeholder:text-slate-400 focus:outline-none transition-all duration-200"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-2 block">
+                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                         Assunto de Interesse
                       </label>
                       <select
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        className="w-full px-4 py-3.5 rounded-2xl bg-[#F1F4F7] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#1E293B] focus:outline-none transition-all duration-200"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition-all duration-200 cursor-pointer"
                       >
                         <option value="Atendimento Psicopedagógico">Atendimento Psicopedagógico</option>
                         <option value="Atendimento Neuropsicopedagógico">Atendimento Neuropsicopedagógico</option>
@@ -247,7 +247,7 @@ export default function ContactSection() {
 
                   {/* Field 6: Message */}
                   <div>
-                    <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-2 block">
+                    <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                       Mensagem *
                     </label>
                     <textarea
@@ -256,7 +256,7 @@ export default function ContactSection() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Conte-nos o que você precisa ou quais são suas principais dúvidas..."
-                      className="w-full px-4 py-3.5 rounded-2xl bg-[#F1F4F7] border border-transparent focus:border-[#002B49] focus:bg-white text-sm font-sans text-[#1E293B] placeholder:text-slate-400 focus:outline-none transition-all duration-200 resize-none"
+                      className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition-all duration-200 resize-none"
                     />
                   </div>
 

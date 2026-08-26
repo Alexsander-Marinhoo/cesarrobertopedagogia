@@ -28,6 +28,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
   }, [preselectedService])
 
   const [modality, setModality] = useState('')
+  const [patientAgeGroup, setPatientAgeGroup] = useState('')
   
   // Date and Time Slots configuration
   const getTodayLocalDate = () => {
@@ -242,7 +243,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
         modality: modality,
         date: selectedDate,
         timeSlot: selectedTimeSlot,
-        notes: formData.notes,
+        notes: patientAgeGroup ? `[Faixa Etária: ${patientAgeGroup}] ${formData.notes || ''}`.trim() : formData.notes,
         userId: user?.id
       })
       // Atualiza imediatamente a lista de ocupados
@@ -256,6 +257,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
       `Olá, Prof. Cesar Roberto Loureiro! Gostaria de agendar um atendimento.\n\n` +
       `🩺 *Especialidade/Serviço:* ${serviceName}\n` +
       `📍 *Modalidade:* ${modalityText}\n` +
+      (patientAgeGroup ? `👥 *Faixa Etária:* ${patientAgeGroup}\n` : '') +
       `📅 *Data Escolhida:* ${formattedDate} (${weekdayName})\n` +
       `⏰ *Horário:* ${selectedTimeSlot}\n\n` +
       `👤 *Nome:* ${formData.name}\n` +
@@ -279,28 +281,28 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-slate-300 bg-white/80 text-[#002B49] text-[11px] font-cta font-bold uppercase tracking-wider mb-4 shadow-2xs">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-300 bg-white/80 text-[#002B49] text-[11px] font-cta font-bold uppercase tracking-wider mb-4 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Consultório &amp; Teleatendimento</span>
+            <span>Atendimento para Crianças • Jovens • Adultos</span>
           </div>
 
           <CascadeRevealTitle className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#002B49] leading-[1.08] sm:leading-[1.05]">
             Agende sua Consulta ou Atendimento
           </CascadeRevealTitle>
           <FadeInParagraph className="mt-3 text-sm sm:text-base font-sans text-slate-600 max-w-2xl mx-auto">
-            Atendimento presencial em Recreio-MG e teleatendimento on-line em todo o Brasil. Atendimentos de segunda a sexta-feira, das 08h às 12h e 14h às 18h.
+            Atendimento especializado para <strong>crianças, jovens (adolescentes) e adultos</strong>. Presencial no consultório em Recreio-MG e teleatendimento on-line em todo o Brasil. De segunda a sexta-feira, das 08h às 12h e 14h às 18h.
           </FadeInParagraph>
         </div>
 
         <FadeInCardGroup cardSelector=".gsap-card" className="max-w-3xl mx-auto">
           {/* Booking Form Card */}
           <div className="w-full">
-            <div className="gsap-card bg-white rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border border-[#002B49]/10 shadow-xl shadow-[#002B49]/5 flex flex-col justify-between">
+            <div className="gsap-card bg-white rounded-[32px] sm:rounded-[40px] p-7 sm:p-10 lg:p-12 border-2 border-slate-300 shadow-2xl shadow-[#002B49]/8 flex flex-col justify-between">
               <div>
                 {submitted ? (
                   /* Success Card State (matching user attachment) */
                   <div className="text-center py-6 sm:py-8 space-y-6 animate-in fade-in duration-300">
-                    <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+                    <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-300 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
                       <CheckCircle2 className="w-9 h-9 stroke-[2.5]" />
                     </div>
 
@@ -308,7 +310,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                       <h4 className="text-2xl sm:text-3xl font-serif font-bold text-[#002B49]">
                         Agendamento Registrado!
                       </h4>
-                      <p className="text-xs sm:text-sm font-sans text-slate-600 leading-relaxed">
+                      <p className="text-sm font-sans text-slate-700 leading-relaxed">
                         Sua solicitação foi salva no sistema com sucesso. Para confirmar o atendimento com prioridade, clique no botão abaixo para enviar os detalhes pelo WhatsApp ao Prof. Cesar Roberto.
                       </p>
                     </div>
@@ -327,7 +329,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                       </div>
                     )}
 
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-center gap-4">
+                    <div className="pt-4 border-t border-slate-200 flex items-center justify-center gap-4">
                       <button
                         type="button"
                         onClick={() => setSubmitted(false)}
@@ -338,11 +340,11 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                     </div>
                   </div>
                 ) : (
-                  <form onSubmit={handleBookingSubmit} className="space-y-4 sm:space-y-5">
+                  <form onSubmit={handleBookingSubmit} className="space-y-5">
                     {/* Row 1: Name & Phone */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       <div>
-                        <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                           Seu Nome Completo *
                         </label>
                         <input
@@ -351,12 +353,12 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="Ex: João da Silva"
-                          className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 focus:border-[#002B49] text-sm font-sans text-[#1E293B] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                         />
                       </div>
 
                       <div>
-                        <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                           WhatsApp (Com DDD) *
                         </label>
                         <input
@@ -365,30 +367,55 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                           value={formData.phone}
                           onChange={handlePhoneChange}
                           placeholder="(32) 99847-0152"
-                          className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 focus:border-[#002B49] text-sm font-sans text-[#1E293B] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs"
                         />
+                      </div>
+                    </div>
+
+                    {/* Faixa Etária do Paciente */}
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
+                        Para quem é o Atendimento? (Faixa Etária)
+                      </label>
+                      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                        {[
+                          { id: 'crianca', label: 'Criança (Infantil)' },
+                          { id: 'jovem', label: 'Jovem / Adolescente' },
+                          { id: 'adulto', label: 'Adulto' },
+                        ].map((faixa) => (
+                          <button
+                            key={faixa.id}
+                            type="button"
+                            onClick={() => setPatientAgeGroup(patientAgeGroup === faixa.label ? '' : faixa.label)}
+                            className={`py-3 px-2 rounded-2xl border-2 text-xs sm:text-sm font-sans transition text-center cursor-pointer ${
+                              patientAgeGroup === faixa.label
+                                ? 'bg-[#002B49] text-white border-[#002B49] shadow-md font-bold ring-2 ring-[#D4AF37]/50'
+                                : 'bg-slate-100/90 hover:bg-slate-200 text-slate-800 border-slate-300 font-bold'
+                            }`}
+                          >
+                            {faixa.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
 
                     {/* Row 2: Service & Modality */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                       <div>
-                        <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                           Especialidade / Serviço *
                         </label>
                         <select
                           required
                           value={service}
                           onChange={(e) => setService(e.target.value)}
-                          className={`w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 focus:border-[#002B49] text-sm font-sans focus:outline-none transition shadow-2xs ${
-                            service ? 'font-semibold text-[#1E293B]' : 'text-slate-400 font-normal'
-                          }`}
+                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
                         >
                           <option value="" disabled>
-                            Selecionar
+                            Selecione a especialidade desejada...
                           </option>
                           {siteData.services.map((s) => (
-                            <option key={s.id} value={s.id} className="text-[#1E293B] font-semibold">
+                            <option key={s.id} value={s.id} className="text-[#002B49] font-semibold">
                               {s.title} ({s.category})
                             </option>
                           ))}
@@ -396,24 +423,22 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                       </div>
 
                       <div>
-                        <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                        <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                           Formato (Modalidade) *
                         </label>
                         <select
                           required
                           value={modality}
                           onChange={(e) => setModality(e.target.value)}
-                          className={`w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 focus:border-[#002B49] text-sm font-sans focus:outline-none transition shadow-2xs ${
-                            modality ? 'font-semibold text-[#1E293B]' : 'text-slate-400 font-normal'
-                          }`}
+                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
                         >
                           <option value="" disabled>
-                            Selecionar
+                            Selecione o formato de atendimento...
                           </option>
-                          <option value="presencial" className="text-[#1E293B] font-semibold">
+                          <option value="presencial" className="text-[#002B49] font-semibold">
                             Presencial (Consultório Residencial - Recreio/MG)
                           </option>
-                          <option value="online" className="text-[#1E293B] font-semibold">
+                          <option value="online" className="text-[#002B49] font-semibold">
                             Teleatendimento On-line
                           </option>
                         </select>
@@ -422,7 +447,7 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
 
                     {/* Row 3: Date Picker with Attendance Days Validation */}
                     <div>
-                      <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                         Dia de Atendimento * (Segunda a Sexta)
                       </label>
 
@@ -433,13 +458,13 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                           min={todayISO}
                           value={selectedDate}
                           onChange={handleDateChange}
-                          className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 focus:border-[#002B49] text-sm font-sans font-semibold text-[#1E293B] focus:outline-none transition shadow-2xs cursor-pointer"
+                          className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-bold text-[#002B49] focus:outline-none transition shadow-2xs cursor-pointer"
                         />
                       </div>
 
                       {dateError && (
-                        <p className="mt-1.5 text-xs text-rose-600 font-sans flex items-center gap-1">
-                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <p className="mt-2 text-xs sm:text-sm text-rose-700 font-sans font-bold flex items-center gap-1.5 p-2.5 rounded-xl bg-rose-50 border border-rose-200">
+                          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                           <span>{dateError}</span>
                         </p>
                       )}
@@ -447,13 +472,13 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
 
                     {/* Row 4: Interactive Time Slots Grid (Rendered only when valid weekday is selected) */}
                     {selectedDate && !isWeekend(selectedDate) ? (
-                      <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                        <div className="flex items-center justify-between mb-2.5">
-                          <label className="text-sm font-sans font-bold text-[#002B49] block">
-                            Horário de Preferência
+                      <div className="animate-in fade-in slide-in-from-top-2 duration-300 p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide block">
+                            Horário de Preferência *
                           </label>
                           {bookedSlots.length > 0 && (
-                            <span className="text-[11px] font-sans text-amber-700 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full font-medium">
+                            <span className="text-xs font-sans text-amber-900 bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-full font-bold">
                               {bookedSlots.length} horário(s) já reservado(s)
                             </span>
                           )}
@@ -481,10 +506,10 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                                 }
                                 className={`py-3 px-3 rounded-xl text-sm font-sans transition text-center ${
                                   isUnavailable
-                                    ? 'bg-slate-100/60 text-slate-400 border border-slate-200/70 cursor-not-allowed opacity-40 select-none line-through shadow-none'
+                                    ? 'bg-slate-200/50 text-slate-400 border border-slate-300 cursor-not-allowed opacity-50 select-none line-through shadow-none'
                                     : isSelected
-                                    ? 'bg-[#002B49] text-white font-bold border border-[#002B49] shadow-md ring-2 ring-[#D4AF37]/50 cursor-pointer'
-                                    : 'bg-[#F1F3F5] text-slate-700 font-semibold border border-slate-200/90 hover:bg-slate-200 hover:border-slate-300 cursor-pointer'
+                                    ? 'bg-[#002B49] text-white font-extrabold border-2 border-[#002B49] shadow-md ring-2 ring-[#D4AF37] cursor-pointer scale-[1.02]'
+                                    : 'bg-white text-[#002B49] font-bold border-2 border-slate-300 hover:bg-slate-100 hover:border-slate-400 cursor-pointer shadow-2xs'
                                 }`}
                               >
                                 {slot}
@@ -494,9 +519,9 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                         </div>
                       </div>
                     ) : (
-                      <div className="p-3.5 rounded-2xl bg-[#F8F9FA] border border-slate-200/80 text-center">
-                        <p className="text-xs font-sans text-slate-500 flex items-center justify-center gap-1.5">
-                          <CalendarDays className="w-4 h-4 text-[#002B49]/60 shrink-0" />
+                      <div className="p-4 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-300 text-center">
+                        <p className="text-xs sm:text-sm font-sans font-medium text-slate-600 flex items-center justify-center gap-2">
+                          <CalendarDays className="w-4 h-4 text-[#002B49] shrink-0" />
                           <span>Selecione um dia útil acima para visualizar os horários disponíveis.</span>
                         </p>
                       </div>
@@ -504,15 +529,15 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
 
                     {/* Row 5: Notes */}
                     <div>
-                      <label className="text-[11px] font-sans font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">
+                      <label className="text-xs sm:text-sm font-bold text-[#002B49] uppercase tracking-wide mb-2 block">
                         Observações ou Queixa Principal (Opcional)
                       </label>
                       <textarea
-                        rows={2}
+                        rows={3}
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                         placeholder="Descreva brevemente a dificuldade escolar, queixa ou objetivo do atendimento..."
-                        className="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 focus:border-[#002B49] text-sm font-sans text-[#1E293B] placeholder:text-slate-400 focus:outline-none transition shadow-2xs resize-none"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:bg-white focus:ring-3 focus:ring-[#002B49]/15 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-500 focus:outline-none transition shadow-2xs resize-none"
                       />
                     </div>
 

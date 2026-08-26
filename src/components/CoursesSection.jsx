@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Check, ChevronRight, ChevronLeft, BookOpen, Play, Clock, Sparkles } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Check, ChevronRight, ChevronLeft, BookOpen, Play, Clock, Sparkles, ArrowRight } from 'lucide-react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination, A11y } from 'swiper/modules'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
@@ -68,6 +69,7 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                   : 'Consulte Condições',
                 workload: c.carga_horaria || '40 horas',
                 certificate: c.certificado_info || 'Certificado Válido pelo MEC / Extensão',
+                startDate: c.data_inicio || 'Janeiro de 2027',
                 thumbnail_url: c.thumbnail_url || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop',
                 modules: moduleTitles.length > 0
                   ? moduleTitles
@@ -83,12 +85,12 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
             })
             setCourses(formatted)
           } else {
-            setCourses(siteData.courses || [])
+            setCourses((siteData.courses || []).map((c) => ({ ...c, startDate: c.startDate || 'Janeiro de 2027' })))
           }
         }
       } catch (err) {
         console.warn('Falha ao carregar cursos do Supabase, usando padrão:', err)
-        if (isMounted) setCourses(siteData.courses || [])
+        if (isMounted) setCourses((siteData.courses || []).map((c) => ({ ...c, startDate: c.startDate || 'Janeiro de 2027' })))
       } finally {
         if (isMounted) {
           setLoading(false)
@@ -113,9 +115,9 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
         <div className="w-full relative z-10">
           {/* Header (Constrained Width) */}
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-slate-300 bg-white/80 text-[#002B49] text-[11px] font-cta font-bold uppercase tracking-wider mb-4 shadow-2xs">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-300/80 bg-amber-50/90 text-[#002B49] text-[11px] font-cta font-bold uppercase tracking-wider mb-4 shadow-2xs">
               <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Capacitação &amp; AVA</span>
+              <span>Próximas Turmas: Início em Janeiro de 2027</span>
             </div>
 
             <CascadeRevealTitle className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#002B49] leading-[1.08] sm:leading-[1.05]">
@@ -132,9 +134,13 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
             <h3 className="text-xl font-serif font-bold text-[#002B49]">
               Formações Docentes &amp; Cursos Disponíveis
             </h3>
-            <span className="text-xs font-sans text-[#D4AF37] font-semibold hidden sm:inline">
-              {courses.length} curso(s) no catálogo
-            </span>
+            <Link
+              to="/cursos-ava"
+              className="text-xs font-cta font-bold text-[#002B49] hover:text-[#D4AF37] inline-flex items-center gap-1.5 transition underline sm:no-underline hover:underline"
+            >
+              <span>Ver Catálogo Completo &amp; AVA ({courses.length})</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           {/* Swiper Carousel Container (Bleeding off to the right screen edge, left aligned with centered container) */}
@@ -147,23 +153,11 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                     className="rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 bg-white border border-slate-200 shadow-sm flex flex-col justify-between space-y-5"
                   >
                     <div className="space-y-3">
-                      <Skeleton width={180} height={22} borderRadius={6} />
-                      <Skeleton count={2} height={13} borderRadius={4} />
-                      <div className="border-t border-slate-100 my-3" />
-                      <Skeleton width={120} height={30} borderRadius={6} />
-                      <Skeleton height={42} borderRadius={20} />
-                      <div className="space-y-2 pt-3">
-                        {[1, 2, 3, 4].map((m) => (
-                          <div key={m} className="flex items-center gap-2">
-                            <Skeleton circle width={18} height={18} />
-                            <Skeleton width={160} height={12} borderRadius={4} />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="border-t border-slate-100 pt-3 space-y-1">
-                      <Skeleton width={120} height={10} borderRadius={4} />
-                      <Skeleton width={160} height={12} borderRadius={4} />
+                      <Skeleton height={24} width="70%" />
+                      <Skeleton count={2} height={14} />
+                      <Skeleton height={1} />
+                      <Skeleton height={32} width="45%" />
+                      <Skeleton height={42} borderRadius={999} />
                     </div>
                   </div>
                 ))}
@@ -172,28 +166,28 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
               <Swiper
                 modules={[Navigation, Pagination, A11y]}
                 spaceBetween={20}
-                slidesPerView={1.2}
+                slidesPerView={1.15}
                 slidesOffsetAfter={20}
                 loop={false}
                 grabCursor={true}
                 breakpoints={{
-                  480: {
+                  500: {
                     slidesPerView: 1.5,
                     spaceBetween: 16,
                     slidesOffsetAfter: 24,
                   },
                   640: {
-                    slidesPerView: 2.1,
+                    slidesPerView: 2.2,
                     spaceBetween: 18,
                     slidesOffsetAfter: 28,
                   },
                   768: {
-                    slidesPerView: 2.6,
+                    slidesPerView: 2.5,
                     spaceBetween: 20,
                     slidesOffsetAfter: 32,
                   },
                   1024: {
-                    slidesPerView: 3.5,
+                    slidesPerView: 3.2,
                     spaceBetween: 20,
                     slidesOffsetAfter: 36,
                   },
@@ -216,8 +210,8 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 onSlideChange={handleSwiper}
                 className="pb-4 pt-1 !overflow-visible"
               >
-                {courses.map((course, idx) => {
-                  const isFeatured = course.isFeatured ?? (idx === courses.length - 1)
+                {courses.slice(0, 10).map((course, idx) => {
+                  const isFeatured = course.isFeatured ?? (idx === Math.min(2, courses.length - 1))
 
                   return (
                     <SwiperSlide key={course.id || idx} className="!h-auto flex">
@@ -229,6 +223,20 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                         }`}
                       >
                         <div>
+                          {/* Tag de Início / Turma */}
+                          <div className="mb-2.5">
+                            <span
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase tracking-wider ${
+                                isFeatured
+                                  ? 'bg-white/15 text-[#D4AF37] border border-[#D4AF37]/30'
+                                  : 'bg-[#002B49]/5 text-[#002B49] border border-[#002B49]/15'
+                              }`}
+                            >
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+                              Início: {course.startDate || 'Janeiro de 2027'}
+                            </span>
+                          </div>
+
                           {/* Top: Title & Description */}
                           <div>
                             <h3
@@ -263,7 +271,7 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                             {/* Primary Full-Width CTA Button */}
                             <a
                               href={`https://wa.me/5532998470152?text=${encodeURIComponent(
-                                `Olá, Professor Cesar Loureiro! Gostaria de informações para inscrição no curso: "${course.title}".`
+                                `Olá, Professor Cesar Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
                               )}`}
                               target="_blank"
                               rel="noreferrer"
@@ -274,7 +282,7 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                               }`}
                             >
                               <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
-                              <span>Matricular Agora</span>
+                              <span>Garantir Vaga • Jan/2027</span>
                             </a>
                           </div>
 
@@ -322,14 +330,14 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
 
                           <div>
                             <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-400">
-                              Certificação &amp; Carga Horária
+                              Turma &amp; Carga Horária
                             </div>
                             <div
                               className={`text-[11px] font-sans mt-0.5 ${
                                 isFeatured ? 'text-slate-300' : 'text-slate-600'
                               }`}
                             >
-                              {course.certificate} • {course.workload}
+                              Início: {course.startDate || 'Janeiro de 2027'} • {course.workload}
                             </div>
                           </div>
                         </div>
@@ -368,6 +376,21 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 <ChevronRight className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
+
+            {/* Botão abaixo do carrossel quando passar de 10 cards */}
+            {courses.length > 10 && (
+              <div className="mt-8 text-center pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
+                <Link
+                  to="/cursos-ava"
+                  className="inline-flex items-center gap-3 px-7 sm:px-9 py-3.5 sm:py-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white font-cta font-bold text-xs sm:text-sm shadow-md hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98] border border-[#D4AF37]/40 cursor-pointer"
+                >
+                  <span>Ver Todos os Cursos &amp; AVA ({courses.length} formações)</span>
+                  <div className="w-6 h-6 rounded-full bg-[#D4AF37] text-[#002B49] flex items-center justify-center">
+                    <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                </Link>
+              </div>
+            )}
           </FadeInCardGroup>
 
           {/* Access AVA Banner (Constrained Width) */}
@@ -378,20 +401,29 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                   Já é aluno matriculado em nossos treinamentos?
                 </div>
                 <p className="text-xs sm:text-sm font-sans text-slate-200 leading-relaxed max-w-lg mx-auto">
-                  Acesse suas videoaulas e emita seus certificados no Ambiente Virtual de Aprendizagem.
+                  Acesse suas videoaulas e emita seus certificados no Ambiente Virtual de Aprendizagem (AVA).
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => onOpenPortalWithTab('courses')}
-                className="w-full sm:w-auto pl-6 pr-2 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-xs sm:text-sm font-cta font-bold inline-flex items-center justify-center gap-3 transition shrink-0 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <span>Acessar Portal AVA</span>
-                <div className="w-7 h-7 rounded-full bg-[#002B49] text-[#D4AF37] flex items-center justify-center">
-                  <ChevronRight className="w-4 h-4 stroke-[3]" />
-                </div>
-              </button>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => onOpenPortalWithTab('courses')}
+                  className="w-full sm:w-auto pl-6 pr-2 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-xs sm:text-sm font-cta font-bold inline-flex items-center justify-center gap-3 transition shrink-0 cursor-pointer shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <span>Acessar Portal AVA</span>
+                  <div className="w-7 h-7 rounded-full bg-[#002B49] text-[#D4AF37] flex items-center justify-center">
+                    <ChevronRight className="w-4 h-4 stroke-[3]" />
+                  </div>
+                </button>
+
+                <Link
+                  to="/cursos-ava"
+                  className="w-full sm:w-auto px-6 py-3 rounded-full border border-white/30 hover:border-white text-white hover:bg-white/10 text-xs sm:text-sm font-cta font-bold inline-flex items-center justify-center gap-2 transition cursor-pointer"
+                >
+                  <span>Explorar Catálogo Completo</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -415,7 +447,7 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                     {selectedCourseModal.title}
                   </h3>
                   <p className="text-xs text-slate-500 font-sans">
-                    Carga Horária: {selectedCourseModal.workload} • {selectedCourseModal.certificate}
+                    Início: <strong className="text-[#002B49]">{selectedCourseModal.startDate || 'Janeiro de 2027'}</strong> • Carga Horária: {selectedCourseModal.workload} • {selectedCourseModal.certificate}
                   </p>
                 </div>
 
@@ -476,14 +508,14 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
 
                 <a
                   href={`https://wa.me/5532998470152?text=${encodeURIComponent(
-                    `Olá, Professor Cesar Loureiro! Gostaria de me matricular no curso: "${selectedCourseModal.title}".`
+                    `Olá, Professor Cesar Loureiro! Gostaria de informações para pré-inscrição na turma de Janeiro de 2027 do curso: "${selectedCourseModal.title}".`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
                   className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
                 >
                   <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
-                  <span>Garantir Matrícula no WhatsApp</span>
+                  <span>Garantir Vaga (Turma Jan/2027)</span>
                 </a>
               </div>
             </div>

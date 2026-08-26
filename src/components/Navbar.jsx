@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
-import { Menu, X, ChevronRight } from 'lucide-react'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { Menu, X, ChevronRight, ArrowLeft } from 'lucide-react'
 import { smoothScrollTo } from '../utils/lenis'
 import { useAuth } from '../context/AuthContext'
 import { getUserDisplayName } from '../utils/userDisplay'
 
-export default function Navbar({ onOpenPortal }) {
+export default function Navbar({ onOpenPortal, onOpenBooking }) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const isCursosAvaPage = location.pathname.startsWith('/cursos')
+
   const { user, profile } = useAuth()
   const { displayName, initial, avatarUrl } = getUserDisplayName(profile, user)
 
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [activeSection, setActiveSection] = useState('inicio')
+  const [activeSection, setActiveSection] = useState(isCursosAvaPage ? 'cursos' : 'inicio')
   const isClickScrollingRef = useRef(false)
   const clickTimeoutRef = useRef(null)
 
@@ -26,6 +31,16 @@ export default function Navbar({ onOpenPortal }) {
   ]
 
   useEffect(() => {
+    if (isCursosAvaPage) {
+      setActiveSection('cursos')
+      const handleScroll = () => {
+        setScrolled(window.scrollY > 25)
+      }
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      handleScroll()
+      return () => window.removeEventListener('scroll', handleScroll)
+    }
+
     const sectionIds = ['inicio', 'sobre', 'servicos', 'cursos', 'agendamento', 'depoimentos', 'materiais', 'contato']
 
     const handleScroll = () => {
@@ -64,13 +79,31 @@ export default function Navbar({ onOpenPortal }) {
       window.removeEventListener('scroll', handleScroll)
       if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current)
     }
-  }, [])
+  }, [isCursosAvaPage])
 
   const handleNavClick = (e, href) => {
-    e.preventDefault()
     setIsOpen(false)
-    const targetId = href.replace('#', '')
+    e.preventDefault()
 
+    if (isCursosAvaPage) {
+      if (href === '#cursos') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
+      if (href === '#inicio') {
+        navigate('/')
+        return
+      }
+      navigate(`/${href}`)
+      return
+    }
+
+    if (window.location.pathname !== '/') {
+      navigate(`/${href}`)
+      return
+    }
+
+    const targetId = href.replace('#', '')
     setActiveSection(targetId)
 
     isClickScrollingRef.current = true
@@ -94,9 +127,17 @@ export default function Navbar({ onOpenPortal }) {
         }`}
       >
         <a
-          href="#inicio"
-          onClick={(e) => handleNavClick(e, '#inicio')}
+          href="/"
+          onClick={(e) => {
+            if (isCursosAvaPage) {
+              e.preventDefault()
+              navigate('/')
+            } else {
+              handleNavClick(e, '#inicio')
+            }
+          }}
           className="flex items-center shrink-0 group cursor-pointer pl-0.5 py-0.5"
+          title="Ir para a Página Principal"
         >
           <img
             src="/logo.svg"
@@ -109,97 +150,145 @@ export default function Navbar({ onOpenPortal }) {
           />
         </a>
 
-        <div className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1 bg-[#002B49]/5 p-1 rounded-full border border-[#002B49]/10">
-          {navLinks.map((link) => {
-            const targetId = link.href.replace('#', '')
-            const isActive = activeSection === targetId
+        {/* Na página /cursos-ava, removemos os links de seções âncora da home */}
+        {isCursosAvaPage ? (
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <Link
+              to="/"
+              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#002B49]/20 hover:border-[#002B49]/40 text-[#002B49] hover:bg-slate-100/80 text-xs sm:text-sm font-cta font-bold inline-flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span className="hidden sm:inline">Página Principal</span>
+              <span className="sm:hidden">Início</span>
+            </Link>
 
-            return (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className={`px-2.5 xl:px-3.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? 'bg-[#002B49] text-white font-bold shadow-xs'
-                    : 'text-[#002B49] hover:bg-[#002B49]/10'
-                }`}
+            {user ? (
+              <button
+                onClick={() => onOpenPortal('courses')}
+                className="group pl-2.5 pr-3 py-1.5 sm:py-2 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white border border-[#D4AF37]/50 font-cta font-bold text-xs sm:text-sm inline-flex items-center gap-2 transition shadow-sm hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
+                title="Abrir meu Portal"
               >
-                {link.name}
-              </a>
-            )
-          })}
-        </div>
+                <div className="w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-full bg-[#D4AF37] text-[#002B49] text-xs font-black flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Foto" className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{initial}</span>
+                  )}
+                </div>
+                <span className="text-white font-bold">Abrir Portal</span>
+                <ChevronRight className="w-3.5 h-3.5 text-[#D4AF37] group-hover:translate-x-0.5 transition-transform shrink-0" />
+              </button>
+            ) : (
+              <button
+                onClick={() => onOpenPortal('courses')}
+                className="group pl-3 sm:pl-4 pr-1.5 sm:pr-2 py-1.5 sm:py-2 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] font-cta font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 sm:gap-2 transition shadow-sm hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
+              >
+                <span>Acessar Portal</span>
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#002B49] text-[#D4AF37] flex items-center justify-center group-hover:translate-x-0.5 transition-transform shrink-0">
+                  <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+                </div>
+              </button>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Links de navegação ancorada (Exclusivo da Página Principal) */}
+            <div className="hidden lg:flex items-center justify-center gap-0.5 xl:gap-1 bg-[#002B49]/5 p-1 rounded-full border border-[#002B49]/10">
+              {navLinks.map((link) => {
+                const targetId = link.href.replace('#', '')
+                const isActive = activeSection === targetId
 
-        <div className="hidden lg:flex items-center gap-2 xl:gap-2.5 shrink-0">
-          {user ? (
-            <button
-              onClick={() => onOpenPortal('courses')}
-              className="group pl-2.5 pr-3 py-1.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white border border-[#D4AF37]/50 font-cta font-bold text-xs xl:text-sm inline-flex items-center gap-2 transition shadow-sm hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
-              title="Abrir meu Portal"
-            >
-              <div className="w-6 h-6 rounded-full bg-[#D4AF37] text-[#002B49] text-xs font-black flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Foto" className="w-full h-full object-cover" />
-                ) : (
-                  <span>{initial}</span>
-                )}
-              </div>
-              <span className="text-white font-bold">Abrir Portal</span>
-              <ChevronRight className="w-3.5 h-3.5 text-[#D4AF37] group-hover:translate-x-0.5 transition-transform shrink-0" />
-            </button>
-          ) : (
-            <button
-              onClick={() => onOpenPortal('courses')}
-              className="group pl-3.5 xl:pl-4 pr-1.5 py-1.5 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] font-cta font-bold text-xs xl:text-sm inline-flex items-center gap-2 transition shadow-sm hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
-            >
-              <span>Acessar Portal</span>
-              <div className="w-6 h-6 rounded-full bg-[#002B49] text-[#D4AF37] flex items-center justify-center group-hover:translate-x-0.5 transition-transform shrink-0">
-                <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
-              </div>
-            </button>
-          )}
-        </div>
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => handleNavClick(e, link.href)}
+                    className={`px-2.5 xl:px-3.5 py-1.5 rounded-full text-[11px] xl:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                      isActive
+                        ? 'bg-[#002B49] text-white font-bold shadow-xs'
+                        : 'text-[#002B49] hover:bg-[#002B49]/10'
+                    }`}
+                  >
+                    {link.name}
+                  </a>
+                )
+              })}
+            </div>
 
-        <div className="lg:hidden flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {user ? (
-            <button
-              onClick={() => onOpenPortal('courses')}
-              className="pl-2.5 pr-2.5 sm:pr-3 py-1.5 sm:py-2 rounded-full bg-[#002B49] text-white border border-[#D4AF37]/50 font-cta font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-sm whitespace-nowrap cursor-pointer shrink-0"
-              title="Abrir Portal"
-            >
-              <div className="w-5.5 h-5.5 rounded-full bg-[#D4AF37] text-[#002B49] text-[11px] font-black flex items-center justify-center shrink-0 overflow-hidden">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Foto" className="w-full h-full object-cover" />
-                ) : (
-                  <span>{initial}</span>
-                )}
-              </div>
-              <span>Acessar Portal</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => onOpenPortal('courses')}
-              className="pl-3 sm:pl-4 pr-1.5 sm:pr-2 py-1.5 sm:py-2 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#00182A] font-cta font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 sm:gap-2 transition shadow-sm active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
-            >
-              <span>Acessar Portal</span>
-              <div className="w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full bg-[#002B49] text-[#D4AF37] flex items-center justify-center">
-                <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
-              </div>
-            </button>
-          )}
+            {/* Desktop CTA (Página Principal) */}
+            <div className="hidden lg:flex items-center gap-2 xl:gap-2.5 shrink-0">
+              {user ? (
+                <button
+                  onClick={() => onOpenPortal('courses')}
+                  className="group pl-2.5 pr-3 py-1.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white border border-[#D4AF37]/50 font-cta font-bold text-xs xl:text-sm inline-flex items-center gap-2 transition shadow-sm hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
+                  title="Abrir meu Portal"
+                >
+                  <div className="w-6 h-6 rounded-full bg-[#D4AF37] text-[#002B49] text-xs font-black flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="Foto" className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{initial}</span>
+                    )}
+                  </div>
+                  <span className="text-white font-bold">Abrir Portal</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-[#D4AF37] group-hover:translate-x-0.5 transition-transform shrink-0" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => onOpenPortal('courses')}
+                  className="group pl-3.5 xl:pl-4 pr-1.5 py-1.5 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] font-cta font-bold text-xs xl:text-sm inline-flex items-center gap-2 transition shadow-sm hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
+                >
+                  <span>Acessar Portal</span>
+                  <div className="w-6 h-6 rounded-full bg-[#002B49] text-[#D4AF37] flex items-center justify-center group-hover:translate-x-0.5 transition-transform shrink-0">
+                    <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                </button>
+              )}
+            </div>
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-1.5 min-[380px]:p-2 rounded-xl text-slate-700 hover:bg-slate-100 focus:outline-none cursor-pointer shrink-0"
-            aria-label="Menu"
-          >
-            {isOpen ? <X className="w-7 h-7 text-[#002B49]" /> : <Menu className="w-7 h-7 text-[#002B49]" />}
-          </button>
-        </div>
+            {/* Mobile Actions with Hamburger (Página Principal) */}
+            <div className="lg:hidden flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {user ? (
+                <button
+                  onClick={() => onOpenPortal('courses')}
+                  className="pl-2.5 pr-2.5 sm:pr-3 py-1.5 sm:py-2 rounded-full bg-[#002B49] text-white border border-[#D4AF37]/50 font-cta font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-sm whitespace-nowrap cursor-pointer shrink-0"
+                  title="Abrir Portal"
+                >
+                  <div className="w-5.5 h-5.5 rounded-full bg-[#D4AF37] text-[#002B49] text-[11px] font-black flex items-center justify-center shrink-0 overflow-hidden">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="Foto" className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{initial}</span>
+                    )}
+                  </div>
+                  <span>Acessar Portal</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => onOpenPortal('courses')}
+                  className="pl-3 sm:pl-4 pr-1.5 sm:pr-2 py-1.5 sm:py-2 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#00182A] font-cta font-bold text-xs sm:text-sm inline-flex items-center gap-1.5 sm:gap-2 transition shadow-sm active:scale-[0.98] whitespace-nowrap cursor-pointer shrink-0"
+                >
+                  <span>Acessar Portal</span>
+                  <div className="w-5 h-5 sm:w-5.5 sm:h-5.5 rounded-full bg-[#002B49] text-[#D4AF37] flex items-center justify-center">
+                    <ChevronRight className="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                </button>
+              )}
+
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-1.5 min-[380px]:p-2 rounded-xl text-slate-700 hover:bg-slate-100 focus:outline-none cursor-pointer shrink-0"
+                aria-label="Menu"
+              >
+                {isOpen ? <X className="w-7 h-7 text-[#002B49]" /> : <Menu className="w-7 h-7 text-[#002B49]" />}
+              </button>
+            </div>
+          </>
+        )}
       </nav>
 
-      {isOpen && (
+      {/* Menu Dropdown Mobile (Apenas na Página Principal) */}
+      {!isCursosAvaPage && isOpen && (
         <div className="pointer-events-auto lg:hidden mt-0 w-full bg-white/98 backdrop-blur-md border-b sm:border border-[#002B49]/20 rounded-b-2xl sm:rounded-3xl p-4 space-y-2 shadow-2xl animate-in fade-in slide-in-from-top-1 duration-200">
           {navLinks.map((link) => {
             const targetId = link.href.replace('#', '')

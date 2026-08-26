@@ -51,11 +51,14 @@ export default function ServicesSection({ onSelectService, onOpenBookingWithServ
       {/* Header Container (Constrained Width) */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mb-12 relative z-10">
         <div className="text-center max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-slate-300 bg-[#F4F6F8] text-[#002B49] text-[11px] font-cta font-bold uppercase tracking-wider mb-3 shadow-2xs">
+            <span>Crianças • Jovens (Adolescentes) • Adultos</span>
+          </div>
           <CascadeRevealTitle className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#002B49] leading-[1.08] sm:leading-[1.05]">
             Atuação Clínica e Educacional Completa
           </CascadeRevealTitle>
           <FadeInParagraph className="mt-3 text-sm sm:text-base font-sans text-slate-600">
-            Metodologias individualizadas para diagnosticar, estimular e apoiar alunos, famílias e escolas.
+            Metodologias individualizadas para todas as idades (crianças, jovens e adultos), acolhimento familiar e assessoria para escolas.
           </FadeInParagraph>
 
           {/* Filter Pills */}
@@ -158,12 +161,17 @@ export default function ServicesSection({ onSelectService, onOpenBookingWithServ
                     </p>
                   </div>
 
-                  {/* Modality Tag Pill */}
-                  <div className="pt-1 flex items-center gap-2">
+                  {/* Modality & Target Audience Tag Pills */}
+                  <div className="pt-1 flex flex-wrap items-center gap-1.5">
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-sans font-medium text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-200">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
                       {service.modality}
                     </span>
+                    {service.target && (
+                      <span className="inline-flex items-center text-[10.5px] font-sans font-semibold text-[#002B49] bg-[#002B49]/5 px-2.5 py-0.5 rounded-full border border-[#002B49]/10">
+                        {service.target}
+                      </span>
+                    )}
                   </div>
                 </div>
 
