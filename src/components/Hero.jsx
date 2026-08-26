@@ -166,11 +166,10 @@ export default function Hero({ onOpenBooking }) {
             {/* ===================================================================== */}
             <div className="lg:col-span-7 space-y-4 sm:space-y-6 md:space-y-8 xl:space-y-10 text-center lg:text-left z-10 lg:pr-6">
 
-              {/* Badge de Atendimento a Todas as Idades */}
-              <div className="gsap-hero-fade inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/20 bg-white/10 text-slate-200 text-xs font-cta font-bold tracking-wide backdrop-blur-md shadow-xs mb-1 sm:mb-2">
-                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse shrink-0" />
-                <span>Atendimento a Todas as Idades: Crianças • Jovens • Adultos</span>
-              </div>
+              {/* Atendimento a Todas as Idades */}
+              <p className="gsap-hero-fade text-xs sm:text-sm font-cta font-bold tracking-wide text-[#D4AF37] mb-1 sm:mb-2">
+                Atendimento a Todas as Idades: Crianças • Jovens • Adultos
+              </p>
 
               {/* 3-Line Headline com efeito cascata 3D */}
               <h1
