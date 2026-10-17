@@ -59,11 +59,18 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                   return lessonCount > 0 ? `${m.titulo} (${lessonCount} ${lessonCount === 1 ? 'aula' : 'aulas'})` : m.titulo
                 })
 
+              const dynamicHighlights = [
+                'Videoaulas gravadas com acesso no AVA',
+                'Material didático e apostilas complementares',
+                c.certificado_info || 'Certificado com verificação autêntica',
+                c.carga_horaria ? `Carga horária: ${c.carga_horaria}` : 'Formação intensiva e prática'
+              ]
+
               return {
                 id: c.id,
                 slug: c.slug,
                 title: c.titulo,
-                description: c.descricao || 'Formação continuada em neuroeducação, práticas inclusivas e diretrizes curriculares.',
+                description: c.descricao || 'Formação continuada em neuroeducação, práticas inclusivas e capacitação profissional.',
                 price: c.preco && parseFloat(c.preco) > 0
                   ? `R$ ${parseFloat(c.preco).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
                   : 'Consulte Condições',
@@ -71,16 +78,9 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 certificate: c.certificado_info || 'Certificado Válido pelo MEC / Extensão',
                 startDate: c.data_inicio || 'Janeiro de 2027',
                 thumbnail_url: c.thumbnail_url || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop',
-                modules: moduleTitles.length > 0
-                  ? moduleTitles
-                  : [
-                      'Módulo 1: Fundamentos e Diretrizes da BNCC',
-                      'Módulo 2: Metodologias Práticas e Intervenções',
-                      'Módulo 3: Estudos de Caso e Avaliação Cognitiva',
-                      'Módulo 4: Materiais Didáticos e Certificação'
-                    ],
+                modules: moduleTitles.length > 0 ? moduleTitles : dynamicHighlights,
                 rawModulos: c.modulos || [],
-                isFeatured: idx === Math.min(2, dbCourses.length - 1)
+                isFeatured: idx === 0
               }
             })
             setCourses(formatted)

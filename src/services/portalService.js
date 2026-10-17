@@ -250,7 +250,9 @@ export async function fetchPublicCourses() {
         carga_horaria,
         certificado_info,
         thumbnail_url,
+        miniatura_url,
         ativo,
+        data_inicio,
         criado_em,
         modulos:modulos_curso (
           id,
@@ -264,13 +266,13 @@ export async function fetchPublicCourses() {
           )
         )
       `)
-      .eq('ativo', true)
       .order('criado_em', { ascending: true })
 
     if (error) throw error
 
     return (cursos || []).map((c) => ({
       ...c,
+      thumbnail_url: c.thumbnail_url || c.miniatura_url,
       modulos: (c.modulos || []).sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
     }))
   } catch (err) {
