@@ -266,6 +266,7 @@ export async function fetchPublicCourses() {
           )
         )
       `)
+      .eq('ativo', true)
       .order('criado_em', { ascending: true })
 
     if (error) throw error

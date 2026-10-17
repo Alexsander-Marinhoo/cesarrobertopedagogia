@@ -156,62 +156,24 @@ export const siteData = {
 
   courses: [
     {
-      id: "curso-neuroeducacao",
-      title: "Neurociência Aplicada à Sala de Aula e Funções Executivas",
+      id: "curso-cuidador-idosos",
+      title: "CUIDADOR DE IDOSOS",
       instructor: "Prof. Cesar Roberto Loureiro",
-      workload: "40 horas",
+      workload: "120 horas",
       startDate: "Janeiro de 2027",
-      modality: "100% On-line (com aulas ao vivo gravadas)",
-      certificate: "Certificado Válido pelo MEC / Extensão",
-      target: "Professores, Coordenadores Pedagógicos e Psicopedagogos",
-      price: "R$ xxx,xx",
-      rating: 4.9,
-      studentsCount: "340+ educadores",
-      description: "Aprenda como o cérebro do estudante processa a informação e aplique estratégias práticas de atenção, memória e regulação emocional nas aulas.",
-      modules: [
-        "Módulo 1: Anatomia Funcional do Cérebro Aprendente",
-        "Módulo 2: O Triângulo das Funções Executivas",
-        "Módulo 3: Estratégias Didáticas para TDAH e Desatenção",
-        "Módulo 4: Avaliação Processual com Base Neurocognitiva"
-      ]
-    },
-    {
-      id: "curso-adaptacoes-bncc",
-      title: "Adaptações Curriculares e PDI/PEI na Prática Escolar (BNCC)",
-      instructor: "Prof. Cesar Roberto Loureiro",
-      workload: "30 horas",
-      startDate: "Janeiro de 2027",
-      modality: "100% On-line",
-      certificate: "Certificado Digital com Verificação Autêntica",
-      target: "Docentes de Educação Infantil, Fundamental e Médio",
-      price: "R$ xxx,xx",
+      modality: "100% On-line (com videoaulas no AVA)",
+      certificate: "Certificado Válido em todo Território Nacional",
+      target: "Profissionais de saúde, cuidadores e interessados na área",
+      price: "R$ 180,00",
       rating: 5.0,
-      studentsCount: "420+ educadores",
-      description: "Passo a passo definitivo para elaborar Planos de Desenvolvimento Individual (PDI) com segurança jurídica e eficácia pedagógica real.",
+      studentsCount: "Turmas abertas",
+      description: "O cuidador de idosos tem um papel fundamental para garantir a qualidade de vida, a segurança e a preservação da autonomia da pessoa idosa.",
+      thumbnail_url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop",
       modules: [
-        "Módulo 1: Marcos Legais da Inclusão (LDB, LBI e BNCC)",
-        "Módulo 2: Instrumentos de Avaliação Diagnóstica Escolar",
-        "Módulo 3: Flexibilização de Objetivos e Conteúdos Curriculares",
-        "Módulo 4: Modelos Editáveis de PDI e Registro de Evolução"
-      ]
-    },
-    {
-      id: "curso-dificuldades-aprendizagem",
-      title: "Identificação Precoce de Dislexia, Discalculia e Bloqueios de Aprendizagem",
-      instructor: "Prof. Cesar Roberto Loureiro",
-      workload: "20 horas",
-      startDate: "Janeiro de 2027",
-      modality: "On-line com material prático para download",
-      certificate: "Certificado de Capacitação Profissional",
-      target: "Professores de Anos Iniciais e Alfabetizadores",
-      price: "R$ xxx,xx",
-      rating: 4.8,
-      studentsCount: "280+ educadores",
-      description: "Como diferenciar uma dificuldade pedagógica passageira de um transtorno específico de aprendizagem e agir precocemente.",
-      modules: [
-        "Módulo 1: Rota Fonológica vs Rota Visual na Leitura",
-        "Módulo 2: Senso Numérico e Discalculia do Desenvolvimento",
-        "Módulo 3: Encaminhamento Clínico Ético e Diálogo com a Família"
+        "Módulo 1: Princípios do Cuidado e Estatuto da Pessoa Idosa",
+        "Módulo 2: Rotinas Diárias, Higiene e Administração de Medicamentos",
+        "Módulo 3: Nutrição, Mobilidade e Prevenção de Quedas",
+        "Módulo 4: Primeiros Socorros, Comunicação e Saúde Emocional"
       ]
     }
   ],
