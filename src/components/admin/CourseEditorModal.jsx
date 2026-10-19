@@ -42,6 +42,7 @@ const DEFAULT_COVER =
   'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop'
 
 const HORAS_PREDEFINIDAS = ['20 horas', '40 horas', '60 horas', '80 horas', '120 horas', '180 horas']
+const HORAS_PREDEFINIDOS = HORAS_PREDEFINIDAS
 const PRECOS_PREDEFINIDOS = [
   { label: 'Gratuito', val: '0' },
   { label: 'R$ 97', val: '97.00' },
@@ -586,7 +587,7 @@ export default function CourseEditorModal({
                       className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-base font-bold text-[#002B49] focus:outline-none shadow-xs"
                     />
                     <div className="flex flex-wrap gap-1.5 pt-1">
-                      {HORAS_PREDEFINIDOS.map((h) => (
+                      {HORAS_PREDEFINIDAS.map((h) => (
                         <button
                           key={h}
                           type="button"
