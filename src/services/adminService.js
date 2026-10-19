@@ -540,6 +540,20 @@ export async function deleteAdminCurso(id) {
   if (!isSupabaseConfigured || !id) return false
 
   try {
+    // 1. Busca dados do curso antes da exclusão para obter o link da capa
+    let cursoParaExcluir = null
+    try {
+      const { data } = await supabase
+        .from('cursos')
+        .select('id, thumbnail_url')
+        .eq('id', id)
+        .maybeSingle()
+      cursoParaExcluir = data
+    } catch (e) {
+      console.warn('Não foi possível obter dados prévios do curso:', e)
+    }
+
+    // 2. Remove o curso do banco de dados (modulos e aulas têm CASCADE)
     const { error } = await supabase
       .from('cursos')
       .delete()
@@ -547,7 +561,28 @@ export async function deleteAdminCurso(id) {
 
     if (error) throw error
 
-    // Libera espaço do plano gratuito: remove as apostilas do curso no Storage
+    // 3. Limpeza inteligente da imagem de capa no bucket 'cursos'
+    try {
+      const { data: capaFiles } = await supabase.storage.from(CAPAS_BUCKET).list(id, { limit: 100 })
+      if (capaFiles?.length) {
+        await supabase.storage.from(CAPAS_BUCKET).remove(capaFiles.map((f) => `${id}/${f.name}`))
+      }
+      const { data: legacyCapaFiles } = await supabase.storage.from(CAPAS_BUCKET).list(`capas/${id}`, { limit: 100 })
+      if (legacyCapaFiles?.length) {
+        await supabase.storage.from(CAPAS_BUCKET).remove(legacyCapaFiles.map((f) => `capas/${id}/${f.name}`))
+      }
+      if (cursoParaExcluir?.thumbnail_url && cursoParaExcluir.thumbnail_url.includes(`/${CAPAS_BUCKET}/`)) {
+        const parts = cursoParaExcluir.thumbnail_url.split(`/${CAPAS_BUCKET}/`)
+        if (parts[1]) {
+          const relativePath = decodeURIComponent(parts[1].split('?')[0])
+          await supabase.storage.from(CAPAS_BUCKET).remove([relativePath])
+        }
+      }
+    } catch (capaErr) {
+      console.warn('Curso removido, mas não foi possível limpar a capa no Storage:', capaErr)
+    }
+
+    // 4. Limpeza inteligente das apostilas no bucket 'materiais-cursos'
     try {
       const { data: files } = await supabase.storage.from(MATERIAIS_BUCKET).list(id, { limit: 1000 })
       if (files?.length) {
@@ -649,16 +684,38 @@ export async function uploadCursoPdf(cursoId, file) {
   return { path, nome: file.name }
 }
 
-/** Envia a imagem de capa para o bucket público e devolve a URL pública. */
+/** Remove as imagens de capa associadas ao curso no bucket público 'cursos'. */
+export async function deleteCursoCapa(cursoId) {
+  if (!isSupabaseConfigured || !cursoId) return false
+  try {
+    const { data: files } = await supabase.storage.from(CAPAS_BUCKET).list(cursoId, { limit: 100 })
+    if (files?.length) {
+      await supabase.storage.from(CAPAS_BUCKET).remove(files.map((f) => `${cursoId}/${f.name}`))
+    }
+    const { data: legacyFiles } = await supabase.storage.from(CAPAS_BUCKET).list(`capas/${cursoId}`, { limit: 100 })
+    if (legacyFiles?.length) {
+      await supabase.storage.from(CAPAS_BUCKET).remove(legacyFiles.map((f) => `capas/${cursoId}/${f.name}`))
+    }
+    return true
+  } catch (err) {
+    console.warn('Aviso ao remover capa anterior no bucket cursos:', err)
+    return false
+  }
+}
+
+/** Envia a imagem de capa para o bucket público 'cursos' e devolve a URL pública. */
 export async function uploadCursoCapa(cursoId, file) {
   if (!isSupabaseConfigured) throw new Error('Supabase não configurado.')
   if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error('Envie uma imagem JPG, PNG ou WEBP.')
   if (file.size > 3 * 1024 * 1024) throw new Error('A imagem é maior que 3 MB. Escolha uma imagem menor.')
 
-  const path = `capas/${cursoId}/${safeFileName(file.name)}`
+  // Remove capa anterior para não deixar arquivo órfão no bucket
+  await deleteCursoCapa(cursoId)
+
+  const path = `${cursoId}/${safeFileName(file.name)}`
   const { error } = await supabase.storage
     .from(CAPAS_BUCKET)
-    .upload(path, file, { contentType: file.type, upsert: false })
+    .upload(path, file, { contentType: file.type, upsert: true })
 
   if (error) throw error
   const { data } = supabase.storage.from(CAPAS_BUCKET).getPublicUrl(path)

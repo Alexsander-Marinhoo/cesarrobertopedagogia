@@ -34,6 +34,7 @@ import {
   saveAdminCursoMaterias,
   uploadCursoPdf,
   uploadCursoCapa,
+  deleteCursoCapa,
   generateSlug
 } from '../../services/adminService'
 import { parseVideoUrl, formatFileSize } from '../../utils/courseMedia'
@@ -141,7 +142,7 @@ export default function CourseEditorModal({
     } else {
       // Novo Curso
       setCursoData({
-        id: null,
+        id: crypto.randomUUID(),
         titulo: '',
         slug: '',
         descricao: '',
@@ -618,18 +619,11 @@ export default function CourseEditorModal({
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => updateCursoField('thumbnail_url', DEFAULT_COVER)}
-                      className="text-xs text-[#002B49] hover:underline font-bold"
-                    >
-                      Usar foto padrão
-                    </button>
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center gap-5">
                     {/* Visualizador da Capa */}
-                    <div className="w-full sm:w-56 h-36 rounded-2xl overflow-hidden bg-slate-200 border-2 border-slate-300 shrink-0 relative group">
+                    <div className="w-full sm:w-56 h-36 rounded-2xl overflow-hidden bg-slate-200 border-2 border-slate-300 shrink-0 relative group shadow-inner">
                       <img
                         src={cursoData.thumbnail_url || DEFAULT_COVER}
                         alt="Capa do curso"
@@ -638,7 +632,7 @@ export default function CourseEditorModal({
                       {uploadingCapa && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-xs font-bold gap-2">
                           <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
-                          <span>Enviando...</span>
+                          <span>Enviando ao bucket cursos...</span>
                         </div>
                       )}
                     </div>
@@ -656,25 +650,43 @@ export default function CourseEditorModal({
                         }}
                       />
 
-                      <button
-                        type="button"
-                        onClick={() => fileCapaRef.current?.click()}
-                        disabled={uploadingCapa}
-                        className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#002B49] hover:bg-[#073B63] text-white font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-                      >
-                        <Upload className="w-4 h-4 text-[#D4AF37]" />
-                        <span>{uploadingCapa ? 'Enviando foto...' : 'Escolher Foto do Computador'}</span>
-                      </button>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => fileCapaRef.current?.click()}
+                          disabled={uploadingCapa}
+                          className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#002B49] hover:bg-[#073B63] text-white font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-60"
+                        >
+                          <Upload className="w-4 h-4 text-[#D4AF37]" />
+                          <span>{uploadingCapa ? 'Enviando ao bucket...' : 'Escolher Foto do Computador'}</span>
+                        </button>
 
-                      <div className="space-y-1">
-                        <label className="text-xs font-medium text-slate-500">Ou cole o link da foto na internet:</label>
-                        <input
-                          type="url"
-                          value={cursoData.thumbnail_url}
-                          onChange={(e) => updateCursoField('thumbnail_url', e.target.value)}
-                          placeholder="https://..."
-                          className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-700 focus:outline-none"
-                        />
+                        {cursoData.thumbnail_url && cursoData.thumbnail_url !== DEFAULT_COVER && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (cursoData.id) {
+                                await deleteCursoCapa(cursoData.id)
+                              }
+                              updateCursoField('thumbnail_url', DEFAULT_COVER)
+                            }}
+                            className="px-3.5 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+                            title="Excluir imagem do bucket cursos e restaurar capa padrão"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                            <span>Remover foto personalizada</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 space-y-1">
+                        <p className="flex items-center gap-1.5 font-bold text-[#002B49]">
+                          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Armazenada diretamente no bucket <strong>cursos</strong></span>
+                        </p>
+                        <p className="text-[11px] text-slate-500">
+                          Formatos aceitos: JPG, PNG ou WEBP (máx. 3 MB). Ao excluir este curso, sua imagem no bucket será apagada automaticamente.
+                        </p>
                       </div>
                     </div>
                   </div>
