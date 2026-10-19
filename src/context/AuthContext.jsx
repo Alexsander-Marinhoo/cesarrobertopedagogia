@@ -262,7 +262,7 @@ export function AuthProvider({ children }) {
         id: 'demo-admin-id',
         nome_completo: 'Prof. Cesar Roberto de Sousa Loureiro',
         email: 'cesar@cesarloureiro.com.br',
-        telefone: '(32) 99847-0152',
+        telefone: '(32) 98725-2421',
         tipo_usuario: 'ADMIN',
         instituicao_nome: 'Consultório Neuropsicopedagógico'
       }

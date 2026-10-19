@@ -338,7 +338,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
                     name="telefone"
                     value={formData.telefone}
                     onChange={handleInputChange}
-                    placeholder="(32) 99847-0152"
+                    placeholder="(32) 98725-2421"
                     className="w-full pl-10 pr-4 py-3 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:bg-white focus:border-[#D4AF37] focus:ring-3 focus:ring-[#D4AF37]/25 text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
                   />
                 </div>

@@ -149,7 +149,7 @@ export default function TermsPrivacyPage() {
             <p>
               <strong>Prof. Cesar Roberto de Sousa Loureiro</strong> – Psicopedagogo &amp; Neuropsicopedagogo Clínico<br />
               <strong>Correio Eletrônico:</strong> cesar.psicopedagogia@gmail.com<br />
-              <strong>Atendimento Telefônico / WhatsApp:</strong> (32) 99847-0152<br />
+              <strong>Atendimento Telefônico / WhatsApp:</strong> (32) 98725-2421<br />
               <strong>Endereço de Atendimento:</strong> Rua Soldado Darcy Ferreira, 135 – Alto do Asilo, Recreio – MG, CEP 36.740-000
             </p>
           </section>

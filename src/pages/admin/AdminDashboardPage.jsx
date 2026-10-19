@@ -49,8 +49,11 @@ import {
   createAdminCurso,
   updateAdminCurso,
   deleteAdminCurso,
+  fetchAdminCursoMaterias,
   generateSlug
 } from '../../services/adminService'
+import CourseEditorModal from '../../components/admin/CourseEditorModal'
+import CoursePreview from '../../components/admin/CoursePreview'
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate()
@@ -97,6 +100,8 @@ export default function AdminDashboardPage() {
   const [showNewMatriculaModal, setShowNewMatriculaModal] = useState(false)
   const [showNewCursoModal, setShowNewCursoModal] = useState(false)
   const [editingCurso, setEditingCurso] = useState(null)
+  const [previewCurso, setPreviewCurso] = useState(null)
+  const [previewMaterias, setPreviewMaterias] = useState([])
   const [selectedProntuarioPreview, setSelectedProntuarioPreview] = useState(null)
   const [selectedRelatorioPreview, setSelectedRelatorioPreview] = useState(null)
   const [notification, setNotification] = useState('')
@@ -148,6 +153,7 @@ export default function AdminDashboardPage() {
     certificado_info: 'Certificado Válido pelo MEC / Extensão',
     thumbnail_url: '',
     ativo: true,
+    data_inicio: 'Janeiro de 2027',
     modulo_titulo: 'Módulo 1: Fundamentos e Metodologias Práticas',
     aula_titulo: 'Aula 1: Introdução e Diretrizes',
     aula_video_url: '',
@@ -407,7 +413,8 @@ export default function AdminDashboardPage() {
           carga_horaria: cursoForm.carga_horaria,
           certificado_info: cursoForm.certificado_info,
           thumbnail_url: cursoForm.thumbnail_url,
-          ativo: cursoForm.ativo
+          ativo: cursoForm.ativo,
+          data_inicio: cursoForm.data_inicio || 'Janeiro de 2027'
         })
         setNotification('Curso atualizado com sucesso no catálogo!')
       } else {
@@ -420,6 +427,7 @@ export default function AdminDashboardPage() {
           certificado_info: cursoForm.certificado_info,
           thumbnail_url: cursoForm.thumbnail_url,
           ativo: cursoForm.ativo,
+          data_inicio: cursoForm.data_inicio || 'Janeiro de 2027',
           modulos: cursoForm.modulo_titulo ? [
             {
               titulo: cursoForm.modulo_titulo,
@@ -449,6 +457,7 @@ export default function AdminDashboardPage() {
         certificado_info: 'Certificado Válido pelo MEC / Extensão',
         thumbnail_url: '',
         ativo: true,
+        data_inicio: 'Janeiro de 2027',
         modulo_titulo: 'Módulo 1: Fundamentos e Metodologias Práticas',
         aula_titulo: 'Aula 1: Introdução e Diretrizes',
         aula_video_url: '',
@@ -462,21 +471,19 @@ export default function AdminDashboardPage() {
 
   const handleEditCurso = (curso) => {
     setEditingCurso(curso)
-    setCursoForm({
-      titulo: curso.titulo || '',
-      slug: curso.slug || '',
-      descricao: curso.descricao || '',
-      preco: curso.preco !== undefined ? String(curso.preco) : '',
-      carga_horaria: curso.carga_horaria || '40 horas',
-      certificado_info: curso.certificado_info || 'Certificado Válido pelo MEC / Extensão',
-      thumbnail_url: curso.thumbnail_url || '',
-      ativo: curso.ativo ?? true,
-      modulo_titulo: '',
-      aula_titulo: '',
-      aula_video_url: '',
-      aula_pdf_url: ''
-    })
     setShowNewCursoModal(true)
+  }
+
+  const handleOpenPreviewFromCard = async (curso) => {
+    try {
+      const mats = await fetchAdminCursoMaterias(curso.id)
+      setPreviewCurso(curso)
+      setPreviewMaterias(mats || [])
+    } catch (err) {
+      console.warn('Erro ao carregar pré-visualização:', err)
+      setPreviewCurso(curso)
+      setPreviewMaterias([])
+    }
   }
 
   const handleDeleteCurso = async (id) => {
@@ -2333,20 +2340,6 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={() => {
                   setEditingCurso(null)
-                  setCursoForm({
-                    titulo: '',
-                    slug: '',
-                    descricao: '',
-                    preco: '',
-                    carga_horaria: '40 horas',
-                    certificado_info: 'Certificado Válido pelo MEC / Extensão',
-                    thumbnail_url: '',
-                    ativo: true,
-                    modulo_titulo: 'Módulo 1: Fundamentos e Metodologias Práticas',
-                    aula_titulo: 'Aula 1: Introdução e Diretrizes',
-                    aula_video_url: '',
-                    aula_pdf_url: ''
-                  })
                   setShowNewCursoModal(true)
                 }}
                 className="px-4 sm:px-5 py-2.5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-cta font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 cursor-pointer shadow-xs w-full sm:w-auto shrink-0"
@@ -2461,6 +2454,16 @@ export default function AdminDashboardPage() {
                         <div className="flex items-center gap-1 sm:gap-1.5">
                           <button
                             type="button"
+                            onClick={() => handleOpenPreviewFromCard(curso)}
+                            className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
+                            title="Pré-visualizar como o aluno vê"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-[#D4AF37]" />
+                            <span>Prévia</span>
+                          </button>
+
+                          <button
+                            type="button"
                             onClick={() => handleEditCurso(curso)}
                             className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#002B49] border border-[#EAE6DF] text-xs font-cta font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs"
                             title="Editar informações do curso"
@@ -2526,7 +2529,10 @@ export default function AdminDashboardPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowNewCursoModal(true)}
+                  onClick={() => {
+                    setEditingCurso(null)
+                    setShowNewCursoModal(true)
+                  }}
                   className="px-6 py-2.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider transition inline-flex items-center gap-2 cursor-pointer shadow-md"
                 >
                   <Plus className="w-4 h-4 text-[#D4AF37]" />
@@ -3213,262 +3219,33 @@ export default function AdminDashboardPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL: CRIAR / EDITAR CURSO NO CATÁLOGO (SUPABASE) */}
+      {/* NOVO MODAL: CRIAR / EDITAR CURSO NO CATÁLOGO (COM MATÉRIAS E PREVIEW) */}
       {/* ========================================================================= */}
       {showNewCursoModal && (
-        <div className="fixed inset-0 z-50 bg-[#00182A]/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 md:p-6">
-          <div className="w-full max-w-2xl bg-[#002B49] rounded-2xl sm:rounded-3xl border-2 border-[#002B49] text-white shadow-2xl p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
-            
-            <div className="flex items-center justify-between border-b border-white/15 pb-3 sm:pb-4">
-              <div className="space-y-0.5">
-                <span className="text-xs font-cta font-bold uppercase tracking-wider text-[#D4AF37]">
-                  Ambiente Virtual de Aprendizagem (AVA)
-                </span>
-                <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">
-                  {editingCurso ? 'Editar Informações do Curso' : 'Criar Novo Curso no AVA'}
-                </h3>
-                <p className="text-xs sm:text-sm font-sans text-slate-200">
-                  Os dados são sincronizados em tempo real com o catálogo do consultório.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  setShowNewCursoModal(false)
-                  setEditingCurso(null)
-                }}
-                className="p-2 rounded-full hover:bg-white/10 text-slate-300 hover:text-white transition cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+        <CourseEditorModal
+          isOpen={showNewCursoModal}
+          curso={editingCurso}
+          onClose={() => {
+            setShowNewCursoModal(false)
+            setEditingCurso(null)
+          }}
+          onSaved={async () => {
+            setNotification(editingCurso ? 'Curso atualizado com sucesso!' : 'Novo curso cadastrado com sucesso!')
+            await loadAllData()
+          }}
+        />
+      )}
 
-            <form onSubmit={handleSaveCurso} className="space-y-4">
-              
-              {/* Título do Curso */}
-              <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                  Título do Curso *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={cursoForm.titulo}
-                  onChange={(e) => {
-                    const title = e.target.value
-                    setCursoForm((prev) => ({
-                      ...prev,
-                      titulo: title,
-                      slug: prev.slug || generateSlug(title)
-                    }))
-                  }}
-                  placeholder="Ex: Neurociência Aplicada à Sala de Aula"
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
-                />
-              </div>
-
-              {/* Slug e Preço */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                      Identificador / Slug URL
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setCursoForm((prev) => ({ ...prev, slug: generateSlug(prev.titulo || 'curso') }))}
-                      className="text-xs text-[#D4AF37] hover:underline font-cta font-bold cursor-pointer"
-                    >
-                      Gerar do título
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    value={cursoForm.slug}
-                    onChange={(e) => setCursoForm((prev) => ({ ...prev, slug: e.target.value }))}
-                    placeholder="curso-neuroeducacao"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] focus:outline-none transition font-mono"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                    Preço de Investimento (R$) *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={cursoForm.preco}
-                    onChange={(e) => setCursoForm((prev) => ({ ...prev, preco: e.target.value }))}
-                    placeholder="297.00"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
-                  />
-                </div>
-              </div>
-
-              {/* Carga Horária e Certificado */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                    Carga Horária *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={cursoForm.carga_horaria}
-                    onChange={(e) => setCursoForm((prev) => ({ ...prev, carga_horaria: e.target.value }))}
-                    placeholder="Ex: 40 horas"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                    Informações do Certificado
-                  </label>
-                  <input
-                    type="text"
-                    value={cursoForm.certificado_info}
-                    onChange={(e) => setCursoForm((prev) => ({ ...prev, certificado_info: e.target.value }))}
-                    placeholder="Ex: Certificado Válido pelo MEC / Extensão"
-                    className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
-                  />
-                </div>
-              </div>
-
-              {/* URL da Miniatura */}
-              <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                  URL da Miniatura / Capa do Curso
-                </label>
-                <input
-                  type="url"
-                  value={cursoForm.thumbnail_url}
-                  onChange={(e) => setCursoForm((prev) => ({ ...prev, thumbnail_url: e.target.value }))}
-                  placeholder="https://images.unsplash.com/... (ou deixe em branco)"
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition"
-                />
-              </div>
-
-              {/* Descrição do Curso */}
-              <div className="space-y-1.5">
-                <label className="block text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                  Descrição do Curso
-                </label>
-                <textarea
-                  rows={3}
-                  value={cursoForm.descricao}
-                  onChange={(e) => setCursoForm((prev) => ({ ...prev, descricao: e.target.value }))}
-                  placeholder="Apresentação dos objetivos, público-alvo e benefícios..."
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-xs sm:text-sm font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition resize-none"
-                />
-              </div>
-
-              {/* Estrutura Inicial de Módulos e Videoaulas (Ao Criar) */}
-              {!editingCurso && (
-                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#001F35] border-2 border-white/20 space-y-3 text-white">
-                  <div className="flex items-center gap-2 text-xs font-cta font-bold text-[#D4AF37] uppercase tracking-wider">
-                    <Layers className="w-4 h-4 text-[#D4AF37]" />
-                    <span>Módulo e Aula Inicial (Opcional)</span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-white">
-                        Título do 1º Módulo
-                      </label>
-                      <input
-                        type="text"
-                        value={cursoForm.modulo_titulo}
-                        onChange={(e) => setCursoForm((prev) => ({ ...prev, modulo_titulo: e.target.value }))}
-                        placeholder="Módulo 1: Fundamentos"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-white">
-                        Título da 1ª Videoaula
-                      </label>
-                      <input
-                        type="text"
-                        value={cursoForm.aula_titulo}
-                        onChange={(e) => setCursoForm((prev) => ({ ...prev, aula_titulo: e.target.value }))}
-                        placeholder="Aula 1: Introdução"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-white">
-                        Link do Vídeo (YouTube/Vimeo/MP4)
-                      </label>
-                      <input
-                        type="url"
-                        value={cursoForm.aula_video_url}
-                        onChange={(e) => setCursoForm((prev) => ({ ...prev, aula_video_url: e.target.value }))}
-                        placeholder="https://www.youtube.com/watch?v=..."
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-sans font-bold text-white">
-                        Link do PDF de Apoio
-                      </label>
-                      <input
-                        type="text"
-                        value={cursoForm.aula_pdf_url}
-                        onChange={(e) => setCursoForm((prev) => ({ ...prev, aula_pdf_url: e.target.value }))}
-                        placeholder="materiais/apostila-modulo1.pdf"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border-2 border-slate-300 focus:border-[#D4AF37] text-xs font-sans font-semibold text-[#002B49] focus:outline-none placeholder:text-slate-400"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Status de Publicação */}
-              <div className="flex items-center gap-2.5 pt-1">
-                <input
-                  type="checkbox"
-                  id="curso_ativo"
-                  checked={cursoForm.ativo}
-                  onChange={(e) => setCursoForm((prev) => ({ ...prev, ativo: e.target.checked }))}
-                  className="w-5 h-5 rounded text-[#D4AF37] focus:ring-[#D4AF37] border-2 border-slate-300 cursor-pointer accent-[#D4AF37]"
-                />
-                <label htmlFor="curso_ativo" className="text-xs sm:text-sm font-sans text-slate-200 font-bold cursor-pointer">
-                  Publicar curso imediatamente no site institucional e no AVA
-                </label>
-              </div>
-
-              {/* Actions Footer */}
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-white/15">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowNewCursoModal(false)
-                    setEditingCurso(null)
-                  }}
-                  className="px-5 py-2.5 rounded-xl sm:rounded-full bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-cta font-bold cursor-pointer text-center transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl sm:rounded-full bg-[#D4AF37] hover:bg-[#c49f2b] text-[#002B49] text-xs font-cta font-extrabold uppercase tracking-wider transition cursor-pointer shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-center"
-                >
-                  <Check className="w-4 h-4 text-[#002B49] stroke-[3]" />
-                  <span>{editingCurso ? 'Salvar Alterações' : 'Criar Curso'}</span>
-                </button>
-              </div>
-
-            </form>
-
-          </div>
-        </div>
+      {/* MODAL DE PRÉ-VISUALIZAÇÃO DIRETO DO CARD */}
+      {previewCurso && (
+        <CoursePreview
+          curso={previewCurso}
+          materias={previewMaterias}
+          onClose={() => {
+            setPreviewCurso(null)
+            setPreviewMaterias([])
+          }}
+        />
       )}
 
       {/* ========================================================================= */}

@@ -142,12 +142,12 @@ export default function Footer({ onOpenPrivacy: _onOpenPrivacy }) {
               </div>
               <div>
                 <a
-                  href="https://wa.me/5532998470152"
+                  href="https://wa.me/5532987252421"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors duration-200 block font-medium"
                 >
-                  +55 (32) 99847-0152 (WhatsApp)
+                  +55 (32) 98725-2421 (WhatsApp)
                 </a>
               </div>
               <div className="text-slate-400 pt-0.5 text-xs sm:text-sm">

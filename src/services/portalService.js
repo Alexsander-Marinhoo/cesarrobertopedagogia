@@ -262,7 +262,12 @@ export async function fetchPublicCourses() {
             id,
             titulo,
             duracao,
-            ordem
+            ordem,
+            tipo,
+            video_url,
+            pdf_apoio_url,
+            arquivo_nome,
+            conteudo_texto
           )
         )
       `)

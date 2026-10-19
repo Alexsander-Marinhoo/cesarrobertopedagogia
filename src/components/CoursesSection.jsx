@@ -172,32 +172,32 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 grabCursor={true}
                 breakpoints={{
                   500: {
-                    slidesPerView: 1.5,
+                    slidesPerView: courses.length < 2 ? 1 : 1.5,
                     spaceBetween: 16,
                     slidesOffsetAfter: 24,
                   },
                   640: {
-                    slidesPerView: 2.2,
+                    slidesPerView: courses.length < 2 ? 1 : 2.2,
                     spaceBetween: 18,
                     slidesOffsetAfter: 28,
                   },
                   768: {
-                    slidesPerView: 2.5,
+                    slidesPerView: courses.length < 3 ? Math.min(courses.length, 2) : 2.5,
                     spaceBetween: 20,
                     slidesOffsetAfter: 32,
                   },
                   1024: {
-                    slidesPerView: 3.2,
+                    slidesPerView: courses.length < 3 ? Math.min(courses.length, 2.5) : 3.2,
                     spaceBetween: 20,
                     slidesOffsetAfter: 36,
                   },
                   1280: {
-                    slidesPerView: 3.5,
+                    slidesPerView: courses.length < 4 ? Math.min(courses.length, 3) : 3.5,
                     spaceBetween: 22,
                     slidesOffsetAfter: 48,
                   },
                   1536: {
-                    slidesPerView: 3.5,
+                    slidesPerView: courses.length < 4 ? Math.min(courses.length, 3.2) : 3.5,
                     spaceBetween: 24,
                     slidesOffsetAfter: 64,
                   },
@@ -210,134 +210,151 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 onSlideChange={handleSwiper}
                 className="pb-4 pt-1 !overflow-visible"
               >
-                {courses.slice(0, 10).map((course, idx) => {
-                  const isFeatured = course.isFeatured ?? (idx === Math.min(2, courses.length - 1))
+                {courses.map((course, idx) => {
+                  const isFeatured = course.isFeatured ?? (idx === 0)
 
                   return (
                     <SwiperSlide key={course.id || idx} className="!h-auto flex">
                       <div
-                        className={`gsap-card rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between w-full h-full group ${
+                        className={`gsap-card rounded-[24px] sm:rounded-[28px] transition-all duration-300 flex flex-col w-full h-full group overflow-hidden ${
                           isFeatured
                             ? 'bg-[#002B49] text-white border border-[#073B63] shadow-2xl shadow-[#002B49]/20 hover:border-[#D4AF37]/50'
                             : 'bg-white border border-slate-200/90 shadow-lg shadow-slate-200/40 hover:shadow-xl hover:border-slate-300'
                         }`}
                       >
-                        <div>
-                          {/* Tag de Início / Turma */}
-                          <div className="mb-2.5">
-                            <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase tracking-wider ${
-                                isFeatured
-                                  ? 'bg-white/15 text-[#D4AF37] border border-[#D4AF37]/30'
-                                  : 'bg-[#002B49]/5 text-[#002B49] border border-[#002B49]/15'
-                              }`}
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
-                              Início: {course.startDate || 'Janeiro de 2027'}
-                            </span>
+                        {/* Cover Image — topo sem padding, igual ao card de materiais */}
+                        {course.thumbnail_url && (
+                          <div className="relative w-full aspect-[16/9] overflow-hidden shrink-0">
+                            <img
+                              src={course.thumbnail_url}
+                              alt={course.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
+                            />
+                            {/* Gradient sutil no rodapé da imagem para transição suave */}
+                            <div className={`absolute inset-x-0 bottom-0 h-8 ${isFeatured ? 'bg-gradient-to-t from-[#002B49] to-transparent' : 'bg-gradient-to-t from-white/30 to-transparent'}`} />
                           </div>
+                        )}
 
-                          {/* Top: Title & Description */}
+                        {/* Conteúdo com padding */}
+                        <div className="flex flex-col flex-1 justify-between p-5 sm:p-6">
                           <div>
-                            <h3
-                              className={`text-lg sm:text-xl font-serif font-bold leading-snug tracking-tight ${
-                                isFeatured ? 'text-white' : 'text-[#002B49]'
-                              }`}
-                            >
-                              {course.title}
-                            </h3>
-                            <p
-                              className={`text-xs font-sans mt-1.5 leading-relaxed line-clamp-2 min-h-[32px] ${
-                                isFeatured ? 'text-slate-300' : 'text-slate-500'
-                              }`}
-                            >
-                              {course.description}
-                            </p>
-                          </div>
-
-                          {/* Divider 1 */}
-                          <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
-
-                          {/* Price / Investment Header */}
-                          <div>
-                            <div
-                              className={`text-2xl sm:text-3xl font-serif font-bold tracking-tight ${
-                                isFeatured ? 'text-white' : 'text-[#002B49]'
-                              }`}
-                            >
-                              {course.price}
-                            </div>
-
-                            {/* Primary Full-Width CTA Button */}
-                            <a
-                              href={`https://wa.me/5532998470152?text=${encodeURIComponent(
-                                `Olá, Professor Cesar Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
-                              )}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className={`mt-3.5 w-full py-3 px-4 rounded-full text-xs font-cta font-bold inline-flex items-center justify-center gap-2 transition shadow-sm hover:scale-[1.01] active:scale-[0.99] cursor-pointer ${
-                                isFeatured
-                                  ? 'bg-white hover:bg-[#D4AF37] text-[#002B49] shadow-md'
-                                  : 'bg-[#002B49] hover:bg-[#073B63] text-white'
-                              }`}
-                            >
-                              <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
-                              <span>Garantir Vaga • Jan/2027</span>
-                            </a>
-                          </div>
-
-                          {/* Checkpoints / Modules List */}
-                          <div className="space-y-2.5 mt-5">
-                            {(course.modules || []).slice(0, 4).map((mod, modIdx) => (
-                              <div
-                                key={modIdx}
-                                className={`flex items-center gap-2.5 text-xs font-sans ${
-                                  isFeatured ? 'text-slate-200' : 'text-slate-700'
+                            {/* Tag de Início / Turma */}
+                            <div className="mb-2.5">
+                              <span
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase tracking-wider ${
+                                  isFeatured
+                                    ? 'bg-white/15 text-[#D4AF37] border border-[#D4AF37]/30'
+                                    : 'bg-[#002B49]/5 text-[#002B49] border border-[#002B49]/15'
                                 }`}
                               >
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+                                Início: {course.startDate || 'Janeiro de 2027'}
+                              </span>
+                            </div>
+
+                            {/* Top: Title & Description */}
+                            <div>
+                              <h3
+                                className={`text-lg sm:text-xl font-serif font-bold leading-snug tracking-tight ${
+                                  isFeatured ? 'text-white' : 'text-[#002B49]'
+                                }`}
+                              >
+                                {course.title}
+                              </h3>
+                              <p
+                                className={`text-xs font-sans mt-1.5 leading-relaxed line-clamp-2 min-h-[32px] ${
+                                  isFeatured ? 'text-slate-300' : 'text-slate-500'
+                                }`}
+                              >
+                                {course.description}
+                              </p>
+                            </div>
+
+                            {/* Divider 1 */}
+                            <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
+
+                            {/* Price / Investment Header */}
+                            <div>
+                              <div
+                                className={`text-2xl sm:text-3xl font-serif font-bold tracking-tight ${
+                                  isFeatured ? 'text-white' : 'text-[#002B49]'
+                                }`}
+                              >
+                                {course.price}
+                              </div>
+
+                              {/* Primary Full-Width CTA Button */}
+                              <a
+                                href={`https://wa.me/5532987252421?text=${encodeURIComponent(
+                                  `Olá, Professor Cesar Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
+                                )}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={`mt-3.5 w-full py-3 px-4 rounded-full text-xs font-cta font-bold inline-flex items-center justify-center gap-2 transition shadow-sm hover:scale-[1.01] active:scale-[0.99] cursor-pointer ${
+                                  isFeatured
+                                    ? 'bg-white hover:bg-[#D4AF37] text-[#002B49] shadow-md'
+                                    : 'bg-[#002B49] hover:bg-[#073B63] text-white'
+                                }`}
+                              >
+                                <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
+                                <span>Garantir Vaga • {course.startDate || 'Inscrições Abertas'}</span>
+                              </a>
+                            </div>
+
+                            {/* Checkpoints / Modules List */}
+                            <div className="space-y-2.5 mt-5">
+                              {(course.modules || []).slice(0, 4).map((mod, modIdx) => (
                                 <div
-                                  className={`w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0 ${
-                                    isFeatured
-                                      ? 'bg-white/20 text-white'
-                                      : 'bg-slate-200/90 text-slate-700'
+                                  key={modIdx}
+                                  className={`flex items-center gap-2.5 text-xs font-sans ${
+                                    isFeatured ? 'text-slate-200' : 'text-slate-700'
                                   }`}
                                 >
-                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                  <div
+                                    className={`w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0 ${
+                                      isFeatured
+                                        ? 'bg-white/20 text-white'
+                                        : 'bg-slate-200/90 text-slate-700'
+                                    }`}
+                                  >
+                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                  </div>
+                                  <span className="truncate">{mod}</span>
                                 </div>
-                                <span className="truncate">{mod}</span>
-                              </div>
-                            ))}
+                              ))}
 
-                            {course.rawModulos && course.rawModulos.length > 0 && (
-                              <button
-                                type="button"
-                                onClick={() => setSelectedCourseModal(course)}
-                                className={`text-[11px] font-cta font-bold underline transition cursor-pointer pt-0.5 inline-flex items-center gap-1 ${
-                                  isFeatured ? 'text-[#D4AF37] hover:text-white' : 'text-[#002B49] hover:text-[#D4AF37]'
+                              {course.rawModulos && course.rawModulos.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedCourseModal(course)}
+                                  className={`text-[11px] font-cta font-bold underline transition cursor-pointer pt-0.5 inline-flex items-center gap-1 ${
+                                    isFeatured ? 'text-[#D4AF37] hover:text-white' : 'text-[#002B49] hover:text-[#D4AF37]'
+                                  }`}
+                                >
+                                  <BookOpen className="w-3 h-3" />
+                                  <span>Ver matriz curricular</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Bottom Partition & Metadata */}
+                          <div>
+                            {/* Divider 2 */}
+                            <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
+
+                            <div>
+                              <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-400">
+                                Turma &amp; Carga Horária
+                              </div>
+                              <div
+                                className={`text-[11px] font-sans mt-0.5 ${
+                                  isFeatured ? 'text-slate-300' : 'text-slate-600'
                                 }`}
                               >
-                                <BookOpen className="w-3 h-3" />
-                                <span>Ver matriz curricular</span>
-                              </button>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Bottom Partition & Metadata */}
-                        <div>
-                          {/* Divider 2 */}
-                          <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
-
-                          <div>
-                            <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-400">
-                              Turma &amp; Carga Horária
-                            </div>
-                            <div
-                              className={`text-[11px] font-sans mt-0.5 ${
-                                isFeatured ? 'text-slate-300' : 'text-slate-600'
-                              }`}
-                            >
-                              Início: {course.startDate || 'Janeiro de 2027'} • {course.workload}
+                                Início: {course.startDate || 'Janeiro de 2027'} • {course.workload}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -393,7 +410,65 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
             )}
           </FadeInCardGroup>
 
+          {/* Banner Cursos EAD — UniATENEU */}
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+            <div className="relative overflow-hidden rounded-3xl border border-blue-800/40 shadow-xl bg-[#003580]">
+              {/* Glow decorativo */}
+              <div className="absolute -top-16 -right-16 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-0">
+                {/* Imagem (QR Code) */}
+                <div className="shrink-0 w-full md:w-56 lg:w-64 self-stretch">
+                  <img
+                    src="/cursos/curso-ead.jpeg"
+                    alt="Cursos EAD UniATENEU — Aponte o QR Code para acessar"
+                    className="w-full h-56 md:h-full object-cover object-top"
+                  />
+                </div>
+
+                {/* Conteúdo */}
+                <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center justify-between gap-6 flex-1 p-6 sm:p-8 lg:p-10">
+                  <div className="space-y-2 text-center sm:text-left">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-cta font-bold uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      Nota máxima 5 no MEC
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-white leading-snug">
+                      Cursos EAD — UniATENEU
+                    </h3>
+                    <p className="text-sm font-sans text-blue-200 leading-relaxed max-w-md">
+                      Graduação, Pós-graduação, Profissionalizantes e Preparatório para Concurso.
+                      Qualidade e diploma igual ao presencial, com cursos reconhecidos pelo MEC.
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
+                      {['Graduação', 'Pós-Graduação', 'Técnico', 'Concurso'].map((tag) => (
+                        <span key={tag} className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-sans font-semibold text-white/80">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 flex flex-col items-center gap-3">
+                    <div className="bg-white rounded-2xl p-3 shadow-lg">
+                      <img
+                        src="/cursos/curso-ead.jpeg"
+                        alt="QR Code UniATENEU"
+                        className="w-24 h-24 object-cover object-bottom rounded-lg"
+                      />
+                    </div>
+                    <p className="text-[11px] font-sans text-blue-200 text-center">
+                      Aponte a câmera para<br />acessar a plataforma
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Access AVA Banner (Constrained Width) */}
+
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
             <div className="p-7 sm:p-10 rounded-3xl bg-[#002B49] text-white shadow-lg flex flex-col items-center justify-center text-center gap-5 sm:gap-6 border border-[#073B63] max-w-4xl mx-auto">
               <div className="space-y-2 max-w-2xl mx-auto">
@@ -507,15 +582,15 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 </div>
 
                 <a
-                  href={`https://wa.me/5532998470152?text=${encodeURIComponent(
-                    `Olá, Professor Cesar Loureiro! Gostaria de informações para pré-inscrição na turma de Janeiro de 2027 do curso: "${selectedCourseModal.title}".`
+                  href={`https://wa.me/5532987252421?text=${encodeURIComponent(
+                    `Olá, Professor Cesar Loureiro! Gostaria de informações para pré-inscrição na turma de ${selectedCourseModal.startDate || 'Janeiro de 2027'} do curso: "${selectedCourseModal.title}".`
                   )}`}
                   target="_blank"
                   rel="noreferrer"
                   className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
                 >
                   <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
-                  <span>Garantir Vaga (Turma Jan/2027)</span>
+                  <span>Garantir Vaga • {selectedCourseModal.startDate || 'Jan/2027'}</span>
                 </a>
               </div>
             </div>

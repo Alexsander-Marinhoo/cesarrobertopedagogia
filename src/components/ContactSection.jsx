@@ -24,7 +24,7 @@ export default function ContactSection() {
   })
   const [sent, setSent] = useState(false)
 
-  // Phone input formatting mask: (32) 99847-0152
+  // Phone input formatting mask: (32) 98725-2421
   const handlePhoneChange = (e) => {
     setFormData((prev) => ({ ...prev, phone: formatPhoneNumber(e.target.value) }))
   }
@@ -46,7 +46,7 @@ export default function ContactSection() {
       `💬 *Mensagem:* ${formData.message}`
     )
 
-    window.open(`https://wa.me/5532998470152?text=${msg}`, '_blank')
+    window.open(`https://wa.me/5532987252421?text=${msg}`, '_blank')
     setSent(true)
   }
 
@@ -205,7 +205,7 @@ export default function ContactSection() {
                         required
                         value={formData.phone}
                         onChange={handlePhoneChange}
-                        placeholder="(32) 99847-0152"
+                        placeholder="(32) 98725-2421"
                         className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition-all duration-200 shadow-2xs"
                       />
                     </div>

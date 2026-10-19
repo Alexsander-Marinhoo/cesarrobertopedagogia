@@ -269,7 +269,7 @@ export default function CoursesAvaPage() {
 
                       {/* WhatsApp CTA Button */}
                       <a
-                        href={`https://wa.me/5532998470152?text=${encodeURIComponent(
+                        href={`https://wa.me/5532987252421?text=${encodeURIComponent(
                           `Olá, Professor Cesar Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
                         )}`}
                         target="_blank"
@@ -277,7 +277,7 @@ export default function CoursesAvaPage() {
                         className="mt-3 w-full py-3 px-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold inline-flex items-center justify-center gap-2 transition shadow-sm hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                       >
                         <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
-                        <span>Garantir Vaga • Jan/2027</span>
+                        <span>Garantir Vaga • {course.startDate || 'Inscrições Abertas'}</span>
                       </a>
                     </div>
 

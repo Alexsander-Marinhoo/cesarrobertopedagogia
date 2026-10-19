@@ -11,9 +11,9 @@ export const siteData = {
     state: "Minas Gerais",
     cep: "36.740-000",
     crp_or_reg: "Registro Profissional Ativo",
-    phone: "(32) 99847-0152",
-    phoneFormatted: "+5532998470152",
-    whatsappLink: "https://wa.me/5532998470152",
+    phone: "(32) 98725-2421",
+    phoneFormatted: "+5532987252421",
+    whatsappLink: "https://wa.me/5532987252421",
     email: "consultoriaacademicacr@gmail.com",
     address: "Rua Soldado Darcy Ferreira, 135 - Alto do Asilo, Recreio - MG, CEP 36.740-000",
     openingHours: "Segunda a Sexta: 08h às 12h e 14h às 18h",
@@ -174,6 +174,64 @@ export const siteData = {
         "Módulo 2: Rotinas Diárias, Higiene e Administração de Medicamentos",
         "Módulo 3: Nutrição, Mobilidade e Prevenção de Quedas",
         "Módulo 4: Primeiros Socorros, Comunicação e Saúde Emocional"
+      ]
+    },
+    {
+      id: "curso-neuroeducacao-bncc",
+      title: "FORMAÇÃO EM NEUROEDUCAÇÃO & BNCC",
+      instructor: "Prof. Cesar Roberto Loureiro",
+      workload: "80 horas",
+      startDate: "Janeiro de 2027",
+      modality: "100% On-line (com videoaulas no AVA)",
+      certificate: "Certificado Válido pelo MEC / Extensão",
+      target: "Professores, coordenadores pedagógicos e educadores",
+      price: "R$ 195,00",
+      rating: 5.0,
+      studentsCount: "Turmas abertas",
+      description: "Capacitação docente com fundamentos neurocientíficos da aprendizagem, desenvolvimento cognitivo e aplicação das competências da BNCC em sala de aula.",
+      thumbnail_url: "https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=800&auto=format&fit=crop",
+      modules: [
+        "Módulo 1: Neuroanatomia e Processos de Aprendizagem",
+        "Módulo 2: Alinhamento das Práticas com a BNCC",
+        "Módulo 3: Metodologias Ativas e Avaliação Formativa"
+      ]
+    },
+    {
+      id: "curso-praticas-inclusivas-pdi-pei",
+      title: "PRÁTICAS INCLUSIVAS E ELABORAÇÃO DE PDI/PEI",
+      instructor: "Prof. Cesar Roberto Loureiro",
+      workload: "60 horas",
+      startDate: "Janeiro de 2027",
+      modality: "100% On-line (com videoaulas no AVA)",
+      certificate: "Certificado Válido em todo Território Nacional",
+      target: "Educadores especiais, pedagogos e equipes de AEE",
+      price: "R$ 180,00",
+      rating: 5.0,
+      studentsCount: "Turmas abertas",
+      description: "Guia prático para adaptações curriculares, avaliação pedagógica inclusiva e elaboração legal do Plano de Desenvolvimento Individual (PDI/PEI).",
+      thumbnail_url: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop",
+      modules: [
+        "Módulo 1: Marco Legal e Conceitos de Inclusão",
+        "Módulo 2: Construção Passo a Passo do PDI/PEI"
+      ]
+    },
+    {
+      id: "curso-manejo-comportamental-tdah-tea",
+      title: "MANEJO COMPORTAMENTAL DO TDAH E TEA NA ESCOLA",
+      instructor: "Prof. Cesar Roberto Loureiro",
+      workload: "75 horas",
+      startDate: "Janeiro de 2027",
+      modality: "100% On-line (com videoaulas no AVA)",
+      certificate: "Certificado Válido em todo Território Nacional",
+      target: "Docentes, psicopedagogos e monitores escolares",
+      price: "R$ 210,00",
+      rating: 5.0,
+      studentsCount: "Turmas abertas",
+      description: "Estratégias assertivas para lidar com desafios atencionais, autorregulação sensorial e estimulação de funções executivas no ambiente escolar.",
+      thumbnail_url: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=800&auto=format&fit=crop",
+      modules: [
+        "Módulo 1: Características do TDAH e do TEA em Ambiente Escolar",
+        "Módulo 2: Intervenções Práticas e Rotinas Estruturadas"
       ]
     }
   ],

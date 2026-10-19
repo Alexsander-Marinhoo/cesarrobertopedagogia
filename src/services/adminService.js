@@ -454,65 +454,48 @@ export async function fetchAdminCursos() {
   }
 }
 
+const DEFAULT_CURSO_THUMB = 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop'
+const MATERIAIS_BUCKET = 'materiais-cursos' // privado: apostilas em PDF (pasta = id do curso)
+const CAPAS_BUCKET = 'cursos' // público: imagens de capa
+
+/**
+ * Cria um curso. Aceita `id` gerado no navegador (crypto.randomUUID) para que
+ * apostilas possam ser enviadas ao Storage antes do curso ser salvo.
+ * Se o endereço (slug) já existir, adiciona um sufixo automaticamente.
+ */
 export async function createAdminCurso(cursoData) {
   if (!isSupabaseConfigured) return null
 
-  try {
-    const slugBase = cursoData.slug?.trim() || generateSlug(cursoData.titulo || 'curso')
-    const finalSlug = slugBase + (cursoData.slug ? '' : '-' + Math.floor(100 + Math.random() * 900))
+  const slugBase = generateSlug(cursoData.slug?.trim() || cursoData.titulo || 'curso') || 'curso'
+  const basePayload = {
+    titulo: cursoData.titulo,
+    descricao: cursoData.descricao || '',
+    preco: parseFloat(cursoData.preco) || 0.0,
+    carga_horaria: cursoData.carga_horaria || '40 horas',
+    certificado_info: cursoData.certificado_info || 'Certificado Válido pelo MEC / Extensão',
+    thumbnail_url: cursoData.thumbnail_url || DEFAULT_CURSO_THUMB,
+    ativo: cursoData.ativo ?? false,
+    data_inicio: cursoData.data_inicio || 'Janeiro de 2027'
+  }
+  if (cursoData.id) basePayload.id = cursoData.id
 
+  for (let tentativa = 0; tentativa < 4; tentativa++) {
+    const slug = tentativa === 0 ? slugBase : `${slugBase}-${Math.floor(100 + Math.random() * 900)}`
     const { data, error } = await supabase
       .from('cursos')
-      .insert([
-        {
-          slug: finalSlug,
-          titulo: cursoData.titulo,
-          descricao: cursoData.descricao || '',
-          preco: parseFloat(cursoData.preco) || 0.0,
-          carga_horaria: cursoData.carga_horaria || '40 horas',
-          certificado_info: cursoData.certificado_info || 'Certificado Válido pelo MEC / Extensão',
-          thumbnail_url: cursoData.thumbnail_url || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop',
-          ativo: cursoData.ativo ?? true
-        }
-      ])
+      .insert([{ ...basePayload, slug }])
       .select()
 
-    if (error) throw error
+    if (!error) return data?.[0] || null
 
-    // Se módulos foram fornecidos, cria os módulos e aulas iniciais
-    if (cursoData.modulos && Array.isArray(cursoData.modulos) && data?.[0]?.id) {
-      const cursoId = data[0].id
-      for (let i = 0; i < cursoData.modulos.length; i++) {
-        const mod = cursoData.modulos[i]
-        const { data: modData } = await supabase
-          .from('modulos_curso')
-          .insert([{ curso_id: cursoId, titulo: mod.titulo || `Módulo ${i + 1}`, ordem: i + 1 }])
-          .select()
-
-        if (modData?.[0]?.id && mod.aulas && Array.isArray(mod.aulas)) {
-          const modId = modData[0].id
-          for (let j = 0; j < mod.aulas.length; j++) {
-            const aula = mod.aulas[j]
-            await supabase.from('aulas_curso').insert([
-              {
-                modulo_id: modId,
-                titulo: aula.titulo || `Aula ${j + 1}`,
-                duracao: aula.duracao || '15 min',
-                video_url: aula.video_url || '',
-                pdf_apoio_url: aula.pdf_apoio_url || '',
-                ordem: j + 1
-              }
-            ])
-          }
-        }
-      }
+    // 23505 = violação de unicidade (slug já usado) -> tenta outro sufixo
+    const slugDuplicado = error.code === '23505' && String(error.message || '').includes('slug')
+    if (!slugDuplicado) {
+      console.error('Erro ao criar curso no Supabase:', error)
+      throw error
     }
-
-    return data?.[0] || null
-  } catch (err) {
-    console.error('Erro ao criar curso no Supabase:', err)
-    throw err
   }
+  throw new Error('Não foi possível gerar um endereço único para o curso. Altere o título e tente novamente.')
 }
 
 export async function updateAdminCurso(id, cursoData) {
@@ -525,12 +508,13 @@ export async function updateAdminCurso(id, cursoData) {
       preco: parseFloat(cursoData.preco) || 0.0,
       carga_horaria: cursoData.carga_horaria,
       certificado_info: cursoData.certificado_info,
-      thumbnail_url: cursoData.thumbnail_url,
-      ativo: cursoData.ativo ?? true
+      thumbnail_url: cursoData.thumbnail_url || DEFAULT_CURSO_THUMB,
+      ativo: cursoData.ativo ?? true,
+      data_inicio: cursoData.data_inicio || 'Janeiro de 2027'
     }
 
     if (cursoData.slug) {
-      updatePayload.slug = cursoData.slug
+      updatePayload.slug = generateSlug(cursoData.slug)
     }
 
     const { data, error } = await supabase
@@ -539,7 +523,12 @@ export async function updateAdminCurso(id, cursoData) {
       .eq('id', id)
       .select()
 
-    if (error) throw error
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error('Já existe outro curso com este endereço (link). Escolha outro nome no campo "Endereço do curso".')
+      }
+      throw error
+    }
     return data?.[0] || null
   } catch (err) {
     console.error('Erro ao atualizar curso:', err)
@@ -557,9 +546,132 @@ export async function deleteAdminCurso(id) {
       .eq('id', id)
 
     if (error) throw error
+
+    // Libera espaço do plano gratuito: remove as apostilas do curso no Storage
+    try {
+      const { data: files } = await supabase.storage.from(MATERIAIS_BUCKET).list(id, { limit: 1000 })
+      if (files?.length) {
+        await supabase.storage.from(MATERIAIS_BUCKET).remove(files.map((f) => `${id}/${f.name}`))
+      }
+    } catch (storageErr) {
+      console.warn('Curso removido, mas não foi possível limpar as apostilas:', storageErr)
+    }
+
     return true
   } catch (err) {
     console.error('Erro ao remover curso:', err)
     throw err
   }
+}
+
+// ----------------------------------------------------------------------------
+// 7. MATÉRIAS DO CURSO (vídeo / apostila PDF / texto — todos opcionais)
+//    Tabelas: modulos_curso (matéria) -> aulas_curso (conteúdo)
+// ----------------------------------------------------------------------------
+export async function fetchAdminCursoMaterias(cursoId) {
+  if (!isSupabaseConfigured || !cursoId) return []
+
+  const { data, error } = await supabase
+    .from('modulos_curso')
+    .select(`
+      id, titulo, descricao, ordem,
+      conteudos:aulas_curso ( id, titulo, tipo, video_url, pdf_apoio_url, arquivo_nome, conteudo_texto, duracao, ordem )
+    `)
+    .eq('curso_id', cursoId)
+    .order('ordem', { ascending: true })
+
+  if (error) {
+    console.error('Erro ao buscar matérias do curso:', error)
+    throw error
+  }
+
+  return (data || []).map((m) => ({
+    ...m,
+    conteudos: (m.conteudos || [])
+      .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+      .map((c) => ({
+        ...c,
+        // Compatibilidade com aulas antigas (antes do campo "tipo")
+        tipo: c.tipo || (c.video_url ? 'VIDEO' : c.pdf_apoio_url ? 'PDF' : 'TEXTO')
+      }))
+  }))
+}
+
+/** Substitui todas as matérias do curso em uma única transação no banco. */
+export async function saveAdminCursoMaterias(cursoId, materias = []) {
+  if (!isSupabaseConfigured || !cursoId) return null
+
+  const payload = materias.map((m) => ({
+    titulo: m.titulo || '',
+    descricao: m.descricao || '',
+    conteudos: (m.conteudos || []).map((c) => ({
+      tipo: c.tipo,
+      titulo: c.titulo || '',
+      video_url: c.tipo === 'VIDEO' ? c.video_url || '' : '',
+      pdf_apoio_url: c.tipo === 'PDF' ? c.pdf_apoio_url || '' : '',
+      arquivo_nome: c.tipo === 'PDF' ? c.arquivo_nome || '' : '',
+      conteudo_texto: c.tipo === 'TEXTO' ? c.conteudo_texto || '' : ''
+    }))
+  }))
+
+  const { error } = await supabase.rpc('salvar_materias_curso', {
+    p_curso_id: cursoId,
+    p_materias: payload
+  })
+
+  if (error) {
+    console.error('Erro ao salvar matérias do curso:', error)
+    throw error
+  }
+  return true
+}
+
+function safeFileName(name = 'arquivo') {
+  const dot = name.lastIndexOf('.')
+  const ext = dot > -1 ? name.slice(dot).toLowerCase() : ''
+  const base = generateSlug(dot > -1 ? name.slice(0, dot) : name) || 'arquivo'
+  return `${Date.now()}-${base.slice(0, 60)}${ext}`
+}
+
+/** Envia uma apostila (PDF) para o bucket privado, na pasta do curso. */
+export async function uploadCursoPdf(cursoId, file) {
+  if (!isSupabaseConfigured) throw new Error('Supabase não configurado.')
+  if (!cursoId || !file) throw new Error('Arquivo inválido.')
+  if (file.type !== 'application/pdf') throw new Error('Envie apenas arquivos em PDF.')
+  if (file.size > 20 * 1024 * 1024) throw new Error('O PDF é maior que 20 MB. Reduza o arquivo ou use um link do Google Drive.')
+
+  const path = `${cursoId}/${safeFileName(file.name)}`
+  const { error } = await supabase.storage
+    .from(MATERIAIS_BUCKET)
+    .upload(path, file, { contentType: 'application/pdf', upsert: false })
+
+  if (error) throw error
+  return { path, nome: file.name }
+}
+
+/** Envia a imagem de capa para o bucket público e devolve a URL pública. */
+export async function uploadCursoCapa(cursoId, file) {
+  if (!isSupabaseConfigured) throw new Error('Supabase não configurado.')
+  if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error('Envie uma imagem JPG, PNG ou WEBP.')
+  if (file.size > 3 * 1024 * 1024) throw new Error('A imagem é maior que 3 MB. Escolha uma imagem menor.')
+
+  const path = `capas/${cursoId}/${safeFileName(file.name)}`
+  const { error } = await supabase.storage
+    .from(CAPAS_BUCKET)
+    .upload(path, file, { contentType: file.type, upsert: false })
+
+  if (error) throw error
+  const { data } = supabase.storage.from(CAPAS_BUCKET).getPublicUrl(path)
+  return data?.publicUrl || ''
+}
+
+/** Gera link temporário (1h) para abrir uma apostila do bucket privado. */
+export async function getCursoPdfSignedUrl(path) {
+  if (!isSupabaseConfigured || !path) return null
+  const { data, error } = await supabase.storage.from(MATERIAIS_BUCKET).createSignedUrl(path, 3600)
+  if (error) {
+    console.warn('Erro ao gerar link da apostila:', error)
+    return null
+  }
+  return data?.signedUrl || null
 }

@@ -22,7 +22,7 @@ export default function FloatingWhatsAppButton() {
   const defaultMessage = encodeURIComponent(
     'Olá, Prof. Cesar Roberto! Gostaria de informações sobre atendimentos e consultoria.'
   )
-  const whatsappUrl = `https://wa.me/5532998470152?text=${defaultMessage}`
+  const whatsappUrl = `https://wa.me/5532987252421?text=${defaultMessage}`
 
   return (
     <aside
