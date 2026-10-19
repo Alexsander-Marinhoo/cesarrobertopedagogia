@@ -462,7 +462,7 @@ export default function CourseEditorModal({
                 }`}>
                   1
                 </span>
-                <span>Passo 1: Dados do Curso</span>
+                <span>Dados do Curso</span>
               </button>
 
               <ChevronRight className="w-4 h-4 text-slate-400 hidden sm:block" />
@@ -481,7 +481,7 @@ export default function CourseEditorModal({
                 }`}>
                   2
                 </span>
-                <span>Passo 2: Matérias e Conteúdos ({materias.length})</span>
+                <span>Matérias e Conteúdos ({materias.length})</span>
               </button>
             </div>
 
@@ -526,7 +526,7 @@ export default function CourseEditorModal({
                 {/* Nome do Curso */}
                 <div className="space-y-2">
                   <label className="block text-base sm:text-lg font-bold text-[#002B49]">
-                    1. Nome do Curso <span className="text-rose-600">*</span>
+                    Nome do Curso <span className="text-rose-600">*</span>
                   </label>
                   <p className="text-xs sm:text-sm text-slate-500">
                     Digite o título principal que os alunos verão na página do site e no portal.
@@ -1106,7 +1106,7 @@ export default function CourseEditorModal({
                   className="px-4 py-2.5 rounded-xl text-slate-700 hover:text-[#002B49] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" />
-                  <span>Voltar ao Passo 1</span>
+                  <span>Voltar aos dados</span>
                 </button>
               )}
             </div>
