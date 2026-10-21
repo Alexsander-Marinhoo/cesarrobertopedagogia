@@ -85,12 +85,12 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
             })
             setCourses(formatted)
           } else {
-            setCourses((siteData.courses || []).map((c) => ({ ...c, startDate: c.startDate || 'Janeiro de 2027' })))
+            setCourses([])
           }
         }
       } catch (err) {
-        console.warn('Falha ao carregar cursos do Supabase, usando padrão:', err)
-        if (isMounted) setCourses((siteData.courses || []).map((c) => ({ ...c, startDate: c.startDate || 'Janeiro de 2027' })))
+        console.warn('Falha ao carregar cursos do Supabase:', err)
+        if (isMounted) setCourses([])
       } finally {
         if (isMounted) {
           setLoading(false)
@@ -161,6 +161,18 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                     </div>
                   </div>
                 ))}
+              </div>
+            ) : courses.length === 0 ? (
+              <div className="py-8 pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
+                <div className="max-w-lg mx-auto bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm text-center">
+                  <div className="w-12 h-12 rounded-full bg-[#002B49]/5 text-[#002B49] flex items-center justify-center mx-auto mb-3">
+                    <BookOpen className="w-6 h-6 stroke-[2]" />
+                  </div>
+                  <h4 className="text-base sm:text-lg font-serif font-bold text-[#002B49]">Novas Turmas em Breve</h4>
+                  <p className="text-xs sm:text-sm font-sans text-slate-500 mt-1.5 leading-relaxed">
+                    O catálogo de formações e treinamentos está sendo atualizado pelo Prof. Cesar Roberto Loureiro. Novas turmas estarão disponíveis em breve.
+                  </p>
+                </div>
               </div>
             ) : (
               <Swiper
@@ -353,33 +365,35 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
             )}
 
             {/* Bottom Controls */}
-            <div className="mt-6 flex items-center justify-center gap-3 pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
-              <button
-                type="button"
-                onClick={() => swiperInstance?.slidePrev()}
-                disabled={isBeginning}
-                aria-label="Voltar curso"
-                className={`w-9 h-9 rounded-full flex items-center justify-center border border-slate-300 bg-white text-[#002B49] hover:bg-[#002B49] hover:text-[#D4AF37] hover:border-[#002B49] shadow-xs transition ${
-                  isBeginning ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-              >
-                <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
-              </button>
+            {courses.length > 0 && (
+              <div className="mt-6 flex items-center justify-center gap-3 pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
+                <button
+                  type="button"
+                  onClick={() => swiperInstance?.slidePrev()}
+                  disabled={isBeginning}
+                  aria-label="Voltar curso"
+                  className={`w-9 h-9 rounded-full flex items-center justify-center border border-slate-300 bg-white text-[#002B49] hover:bg-[#002B49] hover:text-[#D4AF37] hover:border-[#002B49] shadow-xs transition ${
+                    isBeginning ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+                </button>
 
-              <div className="courses-swiper-pagination !w-auto flex items-center gap-1.5 px-2" />
+                <div className="courses-swiper-pagination !w-auto flex items-center gap-1.5 px-2" />
 
-              <button
-                type="button"
-                onClick={() => swiperInstance?.slideNext()}
-                disabled={isEnd}
-                aria-label="Avançar curso"
-                className={`w-9 h-9 rounded-full flex items-center justify-center border border-slate-300 bg-white text-[#002B49] hover:bg-[#002B49] hover:text-[#D4AF37] hover:border-[#002B49] shadow-xs transition ${
-                  isEnd ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-              >
-                <ChevronRight className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => swiperInstance?.slideNext()}
+                  disabled={isEnd}
+                  aria-label="Avançar curso"
+                  className={`w-9 h-9 rounded-full flex items-center justify-center border border-slate-300 bg-white text-[#002B49] hover:bg-[#002B49] hover:text-[#D4AF37] hover:border-[#002B49] shadow-xs transition ${
+                    isEnd ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
+                  }`}
+                >
+                  <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              </div>
+            )}
 
             {/* Botão abaixo do carrossel quando passar de 10 cards */}
             {courses.length > 10 && (

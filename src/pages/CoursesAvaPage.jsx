@@ -82,12 +82,12 @@ export default function CoursesAvaPage() {
             })
             setCourses(formatted)
           } else {
-            setCourses((siteData.courses || []).map((c) => ({ ...c, startDate: c.startDate || 'Janeiro de 2027' })))
+            setCourses([])
           }
         }
       } catch (err) {
-        console.warn('Falha ao carregar cursos, usando catálogo padrão:', err)
-        if (isMounted) setCourses((siteData.courses || []).map((c) => ({ ...c, startDate: c.startDate || 'Janeiro de 2027' })))
+        console.warn('Falha ao carregar cursos:', err)
+        if (isMounted) setCourses([])
       } finally {
         if (isMounted) setLoading(false)
       }
@@ -217,19 +217,25 @@ export default function CoursesAvaPage() {
               ))}
             </div>
           ) : filteredCourses.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8">
+            <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 max-w-lg mx-auto">
               <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <h3 className="text-lg font-serif font-bold text-[#002B49]">Nenhum curso encontrado</h3>
+              <h3 className="text-lg font-serif font-bold text-[#002B49]">
+                {searchQuery ? 'Nenhum curso encontrado' : 'Nenhum curso cadastrado no momento'}
+              </h3>
               <p className="text-xs sm:text-sm font-sans text-slate-500 mt-1 max-w-md mx-auto">
-                Não encontramos nenhuma formação com os termos pesquisados. Tente limpar o filtro de busca.
+                {searchQuery
+                  ? 'Não encontramos nenhuma formação com os termos pesquisados. Tente limpar o filtro de busca.'
+                  : 'O catálogo de formações e treinamentos está sendo atualizado. Novas turmas serão disponibilizadas em breve.'}
               </p>
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="mt-4 px-5 py-2 rounded-full bg-[#002B49] text-white text-xs font-cta font-bold hover:bg-[#073B63] transition"
-              >
-                Limpar Busca
-              </button>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="mt-4 px-5 py-2 rounded-full bg-[#002B49] text-white text-xs font-cta font-bold hover:bg-[#073B63] transition"
+                >
+                  Limpar Busca
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
