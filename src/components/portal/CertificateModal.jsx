@@ -40,25 +40,55 @@ export default function CertificateModal({ certificate, onClose }) {
           ${styleTags}
           <style>
             @page {
-              size: A4 landscape;
-              margin: 10mm;
+              size: 297mm 210mm landscape;
+              margin: 0 !important;
+            }
+            *, *::before, *::after {
+              box-sizing: border-box !important;
             }
             html, body {
               margin: 0 !important;
               padding: 0 !important;
+              width: 297mm !important;
+              height: 210mm !important;
+              max-width: 297mm !important;
+              max-height: 210mm !important;
+              overflow: hidden !important;
               background: #FCFBF7 !important;
-              width: 100% !important;
-              height: 100% !important;
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
             }
             .cert-print-wrapper {
-              width: 100%;
-              height: 100%;
-              box-sizing: border-box;
-              display: flex;
-              align-items: center;
-              justify-content: center;
+              width: 297mm !important;
+              height: 210mm !important;
+              padding: 8mm !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+            #printable-certificate {
+              width: 100% !important;
+              height: 100% !important;
+              max-height: 194mm !important;
+              padding: 5mm 7mm !important;
+              margin: 0 !important;
+              box-sizing: border-box !important;
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: space-between !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+            .cert-inner-frame {
+              width: 100% !important;
+              height: 100% !important;
+              padding: 4mm 6mm !important;
+              box-sizing: border-box !important;
+              display: flex !important;
+              flex-direction: column !important;
+              justify-content: space-between !important;
             }
           </style>
         </head>
@@ -138,10 +168,10 @@ export default function CertificateModal({ certificate, onClose }) {
           <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-[#D4AF37]" />
 
           {/* Moldura interna fina em dourado */}
-          <div className="relative border border-[#D4AF37]/50 p-6 sm:p-8 md:p-10 rounded-xl space-y-6 sm:space-y-8">
+          <div className="cert-inner-frame relative border border-[#D4AF37]/50 p-5 sm:p-7 md:p-8 rounded-xl space-y-4 sm:space-y-5">
             
             {/* Cabeçalho do Certificado */}
-            <header className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#D4AF37]/30 pb-6 text-center sm:text-left">
+            <header className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-[#D4AF37]/30 pb-4 text-center sm:text-left">
               <div className="flex items-center gap-3">
                 <img
                   src="/logo.svg"
@@ -178,38 +208,38 @@ export default function CertificateModal({ certificate, onClose }) {
             </header>
 
             {/* Título Principal */}
-            <div className="text-center space-y-2 pt-1 sm:pt-2">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading font-black tracking-wider text-[#002B49] uppercase">
+            <div className="text-center space-y-1 pt-0">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-heading font-black tracking-wider text-[#002B49] uppercase">
                 Certificado de Conclusão &amp; Extensão
               </h1>
-              <p className="text-xs sm:text-sm font-cta uppercase tracking-widest text-[#A88319] font-bold">
+              <p className="text-[11px] sm:text-xs font-cta uppercase tracking-widest text-[#A88319] font-bold">
                 Reconhecimento de Mérito e Capacitação Profissional
               </p>
             </div>
 
             {/* Corpo do Certificado */}
-            <div className="text-center max-w-3xl mx-auto space-y-4 sm:space-y-6">
-              <p className="text-sm sm:text-base font-sans text-slate-700 italic">
+            <div className="text-center max-w-3xl mx-auto space-y-3 sm:space-y-4">
+              <p className="text-xs sm:text-sm font-sans text-slate-700 italic">
                 Certificamos para os devidos fins de direito e comprovação que
               </p>
 
               {/* Nome do Aluno Destacado */}
               <div className="inline-block relative">
-                <div className="text-2xl sm:text-3xl md:text-4xl font-heading font-black text-[#002B49] tracking-tight px-6 sm:px-12 pb-2 border-b-2 border-[#D4AF37]">
+                <div className="text-2xl sm:text-3xl font-heading font-black text-[#002B49] tracking-tight px-6 sm:px-12 pb-1.5 border-b-2 border-[#D4AF37]">
                   {certificate.aluno}
                 </div>
               </div>
 
               {/* Texto de Conclusão com Carga Horária e Título do Curso */}
-              <p className="text-sm sm:text-base md:text-lg font-sans text-slate-800 leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base font-sans text-slate-800 leading-relaxed">
                 concluiu com pleno aproveitamento e frequência integral o curso de formação continuada em{' '}
-                <strong className="text-[#002B49] font-heading font-extrabold text-base sm:text-lg md:text-xl">
+                <strong className="text-[#002B49] font-heading font-extrabold text-sm sm:text-base md:text-lg">
                   "{certificate.curso}"
                 </strong>
                 , ministrado pelo docente e especialista{' '}
                 <strong className="text-[#002B49] font-bold">Prof. Cesar Roberto de Sousa Loureiro</strong>,
                 cumprindo satisfatoriamente a carga horária total de{' '}
-                <strong className="inline-block px-2.5 py-0.5 rounded-md bg-[#FAF2D8] border border-[#D4AF37]/50 text-[#002B49] font-bold">
+                <strong className="inline-block px-2 py-0.5 rounded-md bg-[#FAF2D8] border border-[#D4AF37]/50 text-[#002B49] font-bold">
                   {certificate.carga}
                 </strong>
                 .
@@ -217,7 +247,7 @@ export default function CertificateModal({ certificate, onClose }) {
             </div>
 
             {/* Rodapé: Assinatura e Registro de Autenticidade */}
-            <footer className="grid grid-cols-1 sm:grid-cols-12 gap-6 pt-6 border-t border-[#D4AF37]/30 items-end">
+            <footer className="grid grid-cols-1 sm:grid-cols-12 gap-4 pt-4 border-t border-[#D4AF37]/30 items-end">
               {/* Box de Autenticidade e Hash */}
               <div className="sm:col-span-7 bg-white/80 backdrop-blur-xs p-3.5 sm:p-4 rounded-xl border border-[#D4AF37]/40 space-y-1.5 text-left">
                 <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-cta font-bold uppercase tracking-wider text-[#A88319]">
