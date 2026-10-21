@@ -398,58 +398,15 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
           </FadeInCardGroup>
 
           {/* Banner Cursos EAD — UniATENEU */}
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-            <div className="relative overflow-hidden rounded-3xl border border-blue-800/40 shadow-xl bg-[#003580]">
-              {/* Glow decorativo */}
-              <div className="absolute -top-16 -right-16 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
-
-              <div className="relative z-10 flex flex-col md:flex-row items-center gap-0">
-                {/* Imagem (QR Code) */}
-                <div className="shrink-0 w-full md:w-56 lg:w-64 self-stretch">
-                  <img
-                    src="/cursos/curso-ead.jpeg"
-                    alt="Cursos EAD UniATENEU — Aponte o QR Code para acessar"
-                    className="w-full h-56 md:h-full object-cover object-top"
-                  />
-                </div>
-
-                {/* Conteúdo */}
-                <div className="flex flex-col sm:flex-row items-center sm:items-start md:items-center justify-between gap-6 flex-1 p-6 sm:p-8 lg:p-10">
-                  <div className="space-y-2 text-center sm:text-left">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-[10px] font-cta font-bold uppercase tracking-wider">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      Nota máxima 5 no MEC
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-white leading-snug">
-                      Cursos EAD — UniATENEU
-                    </h3>
-                    <p className="text-sm font-sans text-blue-200 leading-relaxed max-w-md">
-                      Graduação, Pós-graduação, Profissionalizantes e Preparatório para Concurso.
-                      Qualidade e diploma igual ao presencial, com cursos reconhecidos pelo MEC.
-                    </p>
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1">
-                      {['Graduação', 'Pós-Graduação', 'Técnico', 'Concurso'].map((tag) => (
-                        <span key={tag} className="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-sans font-semibold text-white/80">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="shrink-0 flex flex-col items-center gap-3">
-                    <div className="bg-white rounded-2xl p-3 shadow-lg">
-                      <img
-                        src="/cursos/curso-ead.jpeg"
-                        alt="QR Code UniATENEU"
-                        className="w-24 h-24 object-cover object-bottom rounded-lg"
-                      />
-                    </div>
-                    <p className="text-[11px] font-sans text-blue-200 text-center">
-                      Aponte a câmera para<br />acessar a plataforma
-                    </p>
-                  </div>
-                </div>
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 flex justify-center">
+            <div className="w-full max-w-md sm:max-w-lg md:max-w-xl">
+              <div className="overflow-hidden rounded-3xl border border-blue-800/30 shadow-xl transition-all duration-300 hover:shadow-2xl">
+                <img
+                  src="/cursos/curso-ead.jpeg"
+                  alt="Cursos EAD — UniATENEU"
+                  className="w-full h-auto block rounded-3xl"
+                  loading="lazy"
+                />
               </div>
             </div>
           </div>
