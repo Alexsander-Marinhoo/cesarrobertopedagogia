@@ -29,7 +29,7 @@ export const TIPO_META = {
 
 function conteudoVazio(c) {
   if (c.tipo === 'VIDEO') return !c.video_url?.trim()
-  if (c.tipo === 'PDF') return !c.pdf_apoio_url?.trim()
+  if (c.tipo === 'PDF') return !c.pdf_apoio_url?.trim() && !c._pendingFile && !c._localPreviewUrl
   return !c.conteudo_texto?.trim()
 }
 
@@ -60,7 +60,7 @@ function VideoView({ url }) {
   )
 }
 
-function PdfView({ value, nome }) {
+function PdfView({ value, nome, localUrl }) {
   const [url, setUrl] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -68,7 +68,9 @@ function PdfView({ value, nome }) {
     let active = true
     async function resolve() {
       setLoading(true)
-      if (!value) {
+      if (localUrl) {
+        setUrl(localUrl)
+      } else if (!value) {
         setUrl(null)
       } else if (isExternalUrl(value)) {
         setUrl(getPdfEmbedUrl(value))
@@ -82,7 +84,7 @@ function PdfView({ value, nome }) {
     return () => {
       active = false
     }
-  }, [value])
+  }, [value, localUrl])
 
   if (loading) {
     return (
@@ -94,7 +96,7 @@ function PdfView({ value, nome }) {
   }
 
   if (!url) {
-    return <EmptyBox title="Apostila não encontrada" text="Envie o PDF ou cole o link do Google Drive." />
+    return <EmptyBox title="Apostila não encontrada" text="Envie o arquivo PDF da apostila para visualizar." />
   }
 
   return (
@@ -170,8 +172,6 @@ export default function CoursePreview({ curso, materias = [], onClose }) {
     setSelected(flat[idx])
     setOpenMaterias((prev) => new Set(prev).add(flat[idx].m))
   }
-
-  const preco = parseFloat(curso?.preco || 0)
 
   return (
     <div className="fixed inset-0 z-[70] bg-[#F4F6F8] flex flex-col" data-lenis-prevent>
@@ -289,23 +289,15 @@ export default function CoursePreview({ curso, materias = [], onClose }) {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#00182A] via-[#00182A]/40 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8 space-y-2">
-                    <span className="inline-block px-3 py-1 rounded-full bg-[#D4AF37] text-[#002B49] text-xs font-bold uppercase tracking-wider">
-                      Curso
-                    </span>
                     <h1 className="text-2xl sm:text-4xl font-heading font-extrabold text-white leading-tight">
                       {curso?.titulo || 'Curso sem título'}
                     </h1>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <InfoPill Icon={Clock} label="Carga horária" value={curso?.carga_horaria || '—'} />
                   <InfoPill Icon={BookOpen} label="Matérias" value={String(materias.length)} />
-                  <InfoPill
-                    Icon={Award}
-                    label="Investimento"
-                    value={preco > 0 ? `R$ ${preco.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'Gratuito'}
-                  />
                 </div>
 
                 {curso?.descricao ? (
@@ -348,7 +340,13 @@ export default function CoursePreview({ curso, materias = [], onClose }) {
                 </div>
 
                 {conteudo?.tipo === 'VIDEO' && <VideoView url={conteudo.video_url} />}
-                {conteudo?.tipo === 'PDF' && <PdfView value={conteudo.pdf_apoio_url} nome={conteudo.arquivo_nome} />}
+                {conteudo?.tipo === 'PDF' && (
+                  <PdfView
+                    value={conteudo.pdf_apoio_url}
+                    nome={conteudo.arquivo_nome}
+                    localUrl={conteudo._localPreviewUrl}
+                  />
+                )}
                 {conteudo?.tipo === 'TEXTO' &&
                   (conteudo.conteudo_texto?.trim() ? (
                     <article className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-8">

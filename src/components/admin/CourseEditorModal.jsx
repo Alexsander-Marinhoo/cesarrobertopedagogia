@@ -37,20 +37,10 @@ import {
   deleteCursoCapa,
   generateSlug
 } from '../../services/adminService'
-import { parseVideoUrl, formatFileSize } from '../../utils/courseMedia'
+import { parseVideoUrl, formatFileSize, compressImage } from '../../utils/courseMedia'
 
 const DEFAULT_COVER =
   'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop'
-
-const HORAS_PREDEFINIDAS = ['20 horas', '40 horas', '60 horas', '80 horas', '120 horas', '180 horas']
-const HORAS_PREDEFINIDOS = HORAS_PREDEFINIDAS
-const PRECOS_PREDEFINIDOS = [
-  { label: 'Gratuito', val: '0' },
-  { label: 'R$ 97', val: '97.00' },
-  { label: 'R$ 197', val: '197.00' },
-  { label: 'R$ 297', val: '297.00' },
-  { label: 'R$ 497', val: '497.00' }
-]
 
 export default function CourseEditorModal({
   isOpen,
@@ -71,8 +61,8 @@ export default function CourseEditorModal({
     titulo: '',
     slug: '',
     descricao: '',
-    preco: '297.00',
-    carga_horaria: '40 horas',
+    preco: '',
+    carga_horaria: '',
     certificado_info: 'Certificado Válido pelo MEC / Extensão',
     thumbnail_url: DEFAULT_COVER,
     data_inicio: 'Janeiro de 2027',
@@ -83,9 +73,11 @@ export default function CourseEditorModal({
   // Cada matéria: { id, titulo, descricao, conteudos: [ { tipo: 'VIDEO'|'PDF'|'TEXTO', titulo, video_url, pdf_apoio_url, arquivo_nome, conteudo_texto } ] }
   const [materias, setMaterias] = useState([])
 
-  // Upload helpers
+  // Upload helpers e mídias pendentes (arquivos locais só vão para o Supabase ao clicar em Salvar/Publicar)
   const [uploadingCapa, setUploadingCapa] = useState(false)
-  const [uploadingPdfKey, setUploadingPdfKey] = useState(null) // `${mIndex}-${cIndex}`
+  const [capaPendingFile, setCapaPendingFile] = useState(null)
+  const [capaPreviewUrl, setCapaPreviewUrl] = useState('')
+  const [capaRemovida, setCapaRemovida] = useState(false)
   const fileCapaRef = useRef(null)
 
   // Ao abrir o modal, carregar dados se estiver editando ou resetar se for novo
@@ -96,6 +88,9 @@ export default function CourseEditorModal({
     setIsPreviewOpen(false)
     setErrorMsg('')
     setSaveProgressMsg('')
+    setCapaPendingFile(null)
+    setCapaPreviewUrl('')
+    setCapaRemovida(false)
 
     if (curso && curso.id) {
       setCursoData({
@@ -103,8 +98,8 @@ export default function CourseEditorModal({
         titulo: curso.titulo || '',
         slug: curso.slug || '',
         descricao: curso.descricao || '',
-        preco: curso.preco !== undefined ? String(curso.preco) : '0',
-        carga_horaria: curso.carga_horaria || '40 horas',
+        preco: curso.preco !== undefined && curso.preco !== null ? Number(curso.preco).toFixed(2).replace('.', ',') : '',
+        carga_horaria: curso.carga_horaria || '',
         certificado_info: curso.certificado_info || 'Certificado Válido pelo MEC / Extensão',
         thumbnail_url: curso.thumbnail_url || DEFAULT_COVER,
         data_inicio: curso.data_inicio || 'Janeiro de 2027',
@@ -146,8 +141,8 @@ export default function CourseEditorModal({
         titulo: '',
         slug: '',
         descricao: '',
-        preco: '297.00',
-        carga_horaria: '40 horas',
+        preco: '',
+        carga_horaria: '',
         certificado_info: 'Certificado Válido pelo MEC / Extensão',
         thumbnail_url: DEFAULT_COVER,
         data_inicio: 'Janeiro de 2027',
@@ -185,22 +180,77 @@ export default function CourseEditorModal({
     })
   }
 
-  // Upload da imagem de capa
-  const handleUploadCapa = async (file) => {
+  // Formatação inteligente de Preço (bloqueia letras, ponto vira vírgula, max 2 decimais)
+  const handlePrecoChange = (e) => {
+    let val = e.target.value
+    // Remove qualquer caractere que não seja número, vírgula ou ponto
+    val = val.replace(/[^0-9,\.]/g, '')
+    // Converte ponto para vírgula
+    val = val.replace(/\./g, ',')
+    // Permite apenas uma vírgula
+    const parts = val.split(',')
+    if (parts.length > 2) {
+      val = parts[0] + ',' + parts.slice(1).join('')
+    }
+    // No máximo 2 casas decimais
+    if (parts[1] !== undefined && parts[1].length > 2) {
+      val = parts[0] + ',' + parts[1].slice(0, 2)
+    }
+    updateCursoField('preco', val)
+  }
+
+  const handlePrecoBlur = () => {
+    let val = String(cursoData.preco || '').trim()
+    if (!val) {
+      return
+    }
+    if (!val.includes(',')) {
+      val = `${val},00`
+    } else {
+      const [inteiro, decimal] = val.split(',')
+      val = `${inteiro || '0'},${(decimal || '').padEnd(2, '0').slice(0, 2)}`
+    }
+    updateCursoField('preco', val)
+  }
+
+  // Formatação inteligente de Carga Horária (apenas números, recebe "horas" no final)
+  const handleCargaHorariaChange = (e) => {
+    const apenasDigitos = e.target.value.replace(/\D/g, '')
+    updateCursoField('carga_horaria', apenasDigitos ? `${apenasDigitos} horas` : '')
+  }
+
+  // Preparação da imagem de capa (otimiza no navegador e gera preview local sem enviar ao Supabase)
+  const handleSelectCapa = async (file) => {
     if (!file) return
     try {
       setUploadingCapa(true)
       setErrorMsg('')
-      const tempId = cursoData.id || 'novo-curso'
-      const url = await uploadCursoCapa(tempId, file)
-      if (url) {
-        updateCursoField('thumbnail_url', url)
+
+      // Comprime e converte para WebP no próprio navegador (zero consumo de rede)
+      const compressedFile = await compressImage(file)
+      setCapaPendingFile(compressedFile)
+
+      if (capaPreviewUrl) {
+        URL.revokeObjectURL(capaPreviewUrl)
       }
+      const preview = URL.createObjectURL(compressedFile)
+      setCapaPreviewUrl(preview)
+      setCapaRemovida(false)
     } catch (err) {
-      setErrorMsg('Erro no envio da capa: ' + err.message)
+      setErrorMsg('Erro ao preparar imagem: ' + err.message)
     } finally {
       setUploadingCapa(false)
     }
+  }
+
+  const handleRemoveCapa = () => {
+    if (capaPreviewUrl) {
+      URL.revokeObjectURL(capaPreviewUrl)
+    }
+    setCapaPendingFile(null)
+    setCapaPreviewUrl('')
+    setCapaRemovida(true)
+    updateCursoField('thumbnail_url', DEFAULT_COVER)
   }
 
   // =========================================================================
@@ -299,30 +349,65 @@ export default function CourseEditorModal({
     )
   }
 
-  const handleUploadPdfConteudo = async (mIndex, cIndex, file) => {
+  // Seleção de PDF local (mantém em memória no navegador sem enviar ao Supabase até o clique em Salvar/Publicar)
+  const handleSelectPdfConteudo = (mIndex, cIndex, file) => {
     if (!file) return
-    const key = `${mIndex}-${cIndex}`
-    try {
-      setUploadingPdfKey(key)
-      setErrorMsg('')
-      const tempId = cursoData.id || 'arquivos-cursos'
-      const { path, nome } = await uploadCursoPdf(tempId, file)
-      updateConteudo(mIndex, cIndex, 'pdf_apoio_url', path)
-      updateConteudo(mIndex, cIndex, 'arquivo_nome', nome)
-      // Se o título do conteúdo ainda for genérico, use o nome do arquivo
-      const cAtual = materias[mIndex]?.conteudos?.[cIndex]
-      if (cAtual && (!cAtual.titulo || cAtual.titulo === 'Apostila em PDF')) {
-        updateConteudo(mIndex, cIndex, 'titulo', nome.replace(/\.pdf$/i, ''))
+    setErrorMsg('')
+    const localUrl = URL.createObjectURL(file)
+
+    setMaterias((prev) => {
+      const next = [...prev]
+      const mat = { ...next[mIndex] }
+      const nextConteudos = [...(mat.conteudos || [])]
+      const cAtual = nextConteudos[cIndex] || {}
+
+      if (cAtual._localPreviewUrl) {
+        URL.revokeObjectURL(cAtual._localPreviewUrl)
       }
-    } catch (err) {
-      setErrorMsg('Erro ao enviar PDF: ' + err.message)
-    } finally {
-      setUploadingPdfKey(null)
-    }
+
+      nextConteudos[cIndex] = {
+        ...cAtual,
+        arquivo_nome: file.name,
+        _pendingFile: file,
+        _localPreviewUrl: localUrl,
+        titulo: (!cAtual.titulo || cAtual.titulo === 'Apostila em PDF')
+          ? file.name.replace(/\.pdf$/i, '')
+          : cAtual.titulo
+      }
+
+      mat.conteudos = nextConteudos
+      next[mIndex] = mat
+      return next
+    })
+  }
+
+  const handleRemovePdfConteudo = (mIndex, cIndex) => {
+    setMaterias((prev) => {
+      const next = [...prev]
+      const mat = { ...next[mIndex] }
+      const nextConteudos = [...(mat.conteudos || [])]
+      const cAtual = nextConteudos[cIndex] || {}
+
+      if (cAtual._localPreviewUrl) {
+        URL.revokeObjectURL(cAtual._localPreviewUrl)
+      }
+
+      nextConteudos[cIndex] = {
+        ...cAtual,
+        pdf_apoio_url: '',
+        arquivo_nome: '',
+        _pendingFile: null,
+        _localPreviewUrl: null
+      }
+
+      mat.conteudos = nextConteudos
+      next[mIndex] = mat
+      return next
+    })
   }
 
   // =========================================================================
-  // SALVAR NO SUPABASE
+  // SALVAR NO SUPABASE (SOMENTE AQUI OS ARQUIVOS SÃO ENVIADOS AO STORAGE)
   // =========================================================================
   const handleSave = async (e) => {
     if (e) e.preventDefault()
@@ -336,23 +421,38 @@ export default function CourseEditorModal({
     try {
       setSaving(true)
       setErrorMsg('')
-      setSaveProgressMsg('Gravando dados do curso...')
 
-      let cursoSalvo = null
-      const precoNumerico = parseFloat(String(cursoData.preco).replace(',', '.')) || 0
+      // 1. Garante ou define o ID definitivo do curso
+      const courseId = cursoData.id || crypto.randomUUID()
+      let finalThumbnailUrl = (!capaRemovida && cursoData.thumbnail_url) || DEFAULT_COVER
+
+      // Se há imagem de capa pendente selecionada, envia para o bucket 'cursos' agora
+      if (capaPendingFile) {
+        setSaveProgressMsg('Enviando imagem de capa...')
+        finalThumbnailUrl = await uploadCursoCapa(courseId, capaPendingFile)
+      } else if (capaRemovida && cursoData.id) {
+        // Se removeu a capa personalizada pré-existente
+        await deleteCursoCapa(cursoData.id)
+        finalThumbnailUrl = DEFAULT_COVER
+      }
+
+      setSaveProgressMsg('Gravando dados do curso...')
+      const precoNumerico = parseFloat(String(cursoData.preco || '0').replace(/\./g, '').replace(',', '.')) || 0
 
       const payloadCurso = {
+        id: courseId,
         titulo: cursoData.titulo.trim(),
         slug: cursoData.slug ? generateSlug(cursoData.slug) : generateSlug(cursoData.titulo),
         descricao: cursoData.descricao || '',
         preco: precoNumerico,
         carga_horaria: cursoData.carga_horaria || '40 horas',
         certificado_info: cursoData.certificado_info || 'Certificado Válido pelo MEC / Extensão',
-        thumbnail_url: cursoData.thumbnail_url || DEFAULT_COVER,
+        thumbnail_url: finalThumbnailUrl,
         data_inicio: cursoData.data_inicio || 'Janeiro de 2027',
         ativo: cursoData.ativo ?? true
       }
 
+      let cursoSalvo = null
       if (cursoData.id) {
         // Atualiza curso existente
         cursoSalvo = await updateAdminCurso(cursoData.id, payloadCurso)
@@ -365,9 +465,38 @@ export default function CourseEditorModal({
         throw new Error('Não foi possível obter a confirmação do curso salvo.')
       }
 
-      // Salva as matérias e conteúdos
+      // 2. Se houver apostilas em PDF pendentes, faz o upload para o Supabase agora
+      const materiasFinais = []
+      for (let mi = 0; mi < materias.length; mi++) {
+        const mat = materias[mi]
+        const conteudosFinais = []
+
+        for (let ci = 0; ci < (mat.conteudos || []).length; ci++) {
+          const c = { ...mat.conteudos[ci] }
+
+          if (c._pendingFile) {
+            setSaveProgressMsg(`Enviando apostila: ${c.arquivo_nome || 'PDF'}...`)
+            const { path, nome } = await uploadCursoPdf(cursoSalvo.id, c._pendingFile)
+            c.pdf_apoio_url = path
+            c.arquivo_nome = nome
+          }
+
+          // Limpa referências locais de memória antes de gravar no banco
+          delete c._pendingFile
+          delete c._localPreviewUrl
+
+          conteudosFinais.push(c)
+        }
+
+        materiasFinais.push({
+          ...mat,
+          conteudos: conteudosFinais
+        })
+      }
+
+      // 3. Salva as matérias e conteúdos
       setSaveProgressMsg('Sincronizando matérias, apostilas e vídeos...')
-      await saveAdminCursoMaterias(cursoSalvo.id, materias)
+      await saveAdminCursoMaterias(cursoSalvo.id, materiasFinais)
 
       setSaveProgressMsg('Tudo pronto!')
       if (onSaved) {
@@ -383,10 +512,18 @@ export default function CourseEditorModal({
     }
   }
 
-  // Fechar com aviso de confirmação
+  // Fechar com aviso de confirmação e limpeza de URLs locais
   const handleRequestClose = () => {
     if (saving) return
     if (window.confirm('Deseja fechar a janela? Dados não salvos serão descartados.')) {
+      if (capaPreviewUrl) {
+        URL.revokeObjectURL(capaPreviewUrl)
+      }
+      materias.forEach((m) =>
+        (m.conteudos || []).forEach((c) => {
+          if (c._localPreviewUrl) URL.revokeObjectURL(c._localPreviewUrl)
+        })
+      )
       onClose()
     }
   }
@@ -536,7 +673,7 @@ export default function CourseEditorModal({
                     required
                     value={cursoData.titulo}
                     onChange={(e) => updateCursoField('titulo', e.target.value)}
-                    placeholder="Ex: Alfabetização e Letramento nos Anos Iniciais"
+                    placeholder="Nome do curso aqui"
                     className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#002B49] focus:ring-4 focus:ring-[#002B49]/10 text-base sm:text-lg font-bold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-xs"
                   />
                 </div>
@@ -549,28 +686,19 @@ export default function CourseEditorModal({
                       <DollarSign className="w-4 h-4 text-[#D4AF37]" />
                       Preço de Investimento (R$)
                     </label>
-                    <input
-                      type="text"
-                      value={cursoData.preco}
-                      onChange={(e) => updateCursoField('preco', e.target.value)}
-                      placeholder="Ex: 297,00 (ou 0 para gratuito)"
-                      className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-base font-bold text-[#002B49] focus:outline-none shadow-xs"
-                    />
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {PRECOS_PREDEFINIDOS.map((p) => (
-                        <button
-                          key={p.val}
-                          type="button"
-                          onClick={() => updateCursoField('preco', p.val)}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                            cursoData.preco === p.val
-                              ? 'bg-[#002B49] text-white'
-                              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                          }`}
-                        >
-                          {p.label}
-                        </button>
-                      ))}
+                    <div className="relative flex items-center">
+                      <span className="absolute left-4 text-base font-bold text-slate-400 select-none">
+                        R$
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={cursoData.preco}
+                        onChange={handlePrecoChange}
+                        onBlur={handlePrecoBlur}
+                        placeholder="Valor aqui"
+                        className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-base font-bold text-[#002B49] placeholder:text-slate-400 placeholder:font-normal focus:outline-none shadow-xs"
+                      />
                     </div>
                   </div>
 
@@ -580,28 +708,22 @@ export default function CourseEditorModal({
                       <Clock className="w-4 h-4 text-[#D4AF37]" />
                       Carga Horária
                     </label>
-                    <input
-                      type="text"
-                      value={cursoData.carga_horaria}
-                      onChange={(e) => updateCursoField('carga_horaria', e.target.value)}
-                      placeholder="Ex: 40 horas"
-                      className="w-full px-4 py-3 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-base font-bold text-[#002B49] focus:outline-none shadow-xs"
-                    />
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {HORAS_PREDEFINIDAS.map((h) => (
-                        <button
-                          key={h}
-                          type="button"
-                          onClick={() => updateCursoField('carga_horaria', h)}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
-                            cursoData.carga_horaria === h
-                              ? 'bg-[#002B49] text-white'
-                              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
-                          }`}
-                        >
-                          {h}
-                        </button>
-                      ))}
+                    <div className="relative flex items-center">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={String(cursoData.carga_horaria || '').replace(/\D/g, '')}
+                        onChange={handleCargaHorariaChange}
+                        placeholder="Carga horária aqui"
+                        className={`w-full pl-4 ${
+                          String(cursoData.carga_horaria || '').replace(/\D/g, '') ? 'pr-16' : 'pr-4'
+                        } py-3 rounded-xl bg-white border-2 border-slate-300 focus:border-[#002B49] text-base font-bold text-[#002B49] placeholder:text-slate-400 placeholder:font-normal focus:outline-none shadow-xs`}
+                      />
+                      {Boolean(String(cursoData.carga_horaria || '').replace(/\D/g, '')) && (
+                        <span className="absolute right-4 text-sm font-bold text-slate-400 select-none pointer-events-none">
+                          horas
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -625,14 +747,14 @@ export default function CourseEditorModal({
                     {/* Visualizador da Capa */}
                     <div className="w-full sm:w-56 h-36 rounded-2xl overflow-hidden bg-slate-200 border-2 border-slate-300 shrink-0 relative group shadow-inner">
                       <img
-                        src={cursoData.thumbnail_url || DEFAULT_COVER}
+                        src={capaPreviewUrl || (!capaRemovida && cursoData.thumbnail_url) || DEFAULT_COVER}
                         alt="Capa do curso"
                         className="w-full h-full object-cover"
                       />
                       {uploadingCapa && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-xs font-bold gap-2">
                           <Loader2 className="w-4 h-4 animate-spin text-[#D4AF37]" />
-                          <span>Enviando ao bucket cursos...</span>
+                          <span>Otimizando foto...</span>
                         </div>
                       )}
                     </div>
@@ -646,7 +768,7 @@ export default function CourseEditorModal({
                         className="hidden"
                         onChange={(e) => {
                           const file = e.target.files?.[0]
-                          if (file) handleUploadCapa(file)
+                          if (file) handleSelectCapa(file)
                         }}
                       />
 
@@ -658,36 +780,32 @@ export default function CourseEditorModal({
                           className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#002B49] hover:bg-[#073B63] text-white font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-60"
                         >
                           <Upload className="w-4 h-4 text-[#D4AF37]" />
-                          <span>{uploadingCapa ? 'Enviando ao bucket...' : 'Escolher Foto do Computador'}</span>
+                          <span>
+                            {capaPendingFile || (!capaRemovida && cursoData.thumbnail_url && cursoData.thumbnail_url !== DEFAULT_COVER)
+                              ? 'Trocar Foto'
+                              : 'Escolher Foto do Computador'}
+                          </span>
                         </button>
 
-                        {cursoData.thumbnail_url && cursoData.thumbnail_url !== DEFAULT_COVER && (
+                        {(capaPendingFile || (!capaRemovida && cursoData.thumbnail_url && cursoData.thumbnail_url !== DEFAULT_COVER)) && (
                           <button
                             type="button"
-                            onClick={async () => {
-                              if (cursoData.id) {
-                                await deleteCursoCapa(cursoData.id)
-                              }
-                              updateCursoField('thumbnail_url', DEFAULT_COVER)
-                            }}
+                            onClick={handleRemoveCapa}
                             className="px-3.5 py-2.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
-                            title="Excluir imagem do bucket cursos e restaurar capa padrão"
+                            title="Restaurar capa padrão"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-                            <span>Remover foto personalizada</span>
+                            <span>Remover foto</span>
                           </button>
                         )}
                       </div>
 
-                      <div className="p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 space-y-1">
-                        <p className="flex items-center gap-1.5 font-bold text-[#002B49]">
-                          <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                          <span>Armazenada diretamente no bucket <strong>cursos</strong></span>
+                      {capaPendingFile && (
+                        <p className="text-xs font-semibold text-amber-700 flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg w-fit">
+                          <Check className="w-3.5 h-3.5 text-amber-600" />
+                          Foto selecionada (será enviada somente ao publicar o curso)
                         </p>
-                        <p className="text-[11px] text-slate-500">
-                          Formatos aceitos: JPG, PNG ou WEBP (máx. 3 MB). Ao excluir este curso, sua imagem no bucket será apagada automaticamente.
-                        </p>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -885,8 +1003,6 @@ export default function CourseEditorModal({
                                 const isVideo = conteudo.tipo === 'VIDEO'
                                 const isPdf = conteudo.tipo === 'PDF'
                                 const isTexto = conteudo.tipo === 'TEXTO'
-                                const uploadKey = `${mIndex}-${cIndex}`
-                                const isUploadingThis = uploadingPdfKey === uploadKey
 
                                 return (
                                   <div
@@ -977,41 +1093,79 @@ export default function CourseEditorModal({
                                             Arquivo da Apostila em PDF
                                           </label>
                                           <p className="text-[11px] text-slate-500">
-                                            Envie o arquivo PDF do computador ou cole um link do Google Drive compartilhado.
+                                            Envie o arquivo PDF da apostila do seu computador (será enviado com segurança ao salvar o curso).
                                           </p>
                                         </div>
 
-                                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                                          <label className="px-4 py-2.5 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition shadow-xs">
-                                            <Upload className="w-4 h-4" />
-                                            <span>{isUploadingThis ? 'Enviando PDF...' : 'Enviar PDF do Computador'}</span>
-                                            <input
-                                              type="file"
-                                              accept="application/pdf"
-                                              className="hidden"
-                                              disabled={isUploadingThis}
-                                              onChange={(e) => {
-                                                const file = e.target.files?.[0]
-                                                if (file) handleUploadPdfConteudo(mIndex, cIndex, file)
-                                              }}
-                                            />
-                                          </label>
-
-                                          <div className="flex-1">
-                                            <input
-                                              type="text"
-                                              value={conteudo.pdf_apoio_url || ''}
-                                              onChange={(e) => updateConteudo(mIndex, cIndex, 'pdf_apoio_url', e.target.value)}
-                                              placeholder="Ou cole o link do Google Drive / link do PDF..."
-                                              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs text-slate-800 focus:outline-none focus:border-sky-700"
-                                            />
+                                        {conteudo._pendingFile || conteudo.pdf_apoio_url || conteudo.arquivo_nome ? (
+                                          <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border ${
+                                            conteudo._pendingFile
+                                              ? 'bg-amber-50/70 border-amber-200'
+                                              : 'bg-sky-50/70 border-sky-200'
+                                          }`}>
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                                                conteudo._pendingFile
+                                                  ? 'bg-amber-100 text-amber-700'
+                                                  : 'bg-emerald-100 text-emerald-700'
+                                              }`}>
+                                                {conteudo._pendingFile ? (
+                                                  <FileText className="w-4 h-4" />
+                                                ) : (
+                                                  <Check className="w-4 h-4" />
+                                                )}
+                                              </div>
+                                              <div className="min-w-0">
+                                                <p className="text-xs font-bold text-slate-800 truncate">
+                                                  {conteudo.arquivo_nome || 'Arquivo PDF anexado'}
+                                                </p>
+                                                <p className={`text-[11px] font-semibold ${
+                                                  conteudo._pendingFile ? 'text-amber-700' : 'text-emerald-700'
+                                                }`}>
+                                                  {conteudo._pendingFile
+                                                    ? 'Arquivo selecionado (será enviado ao publicar)'
+                                                    : 'Salvo com segurança no sistema'}
+                                                </p>
+                                              </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                              <label className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs cursor-pointer transition shadow-2xs">
+                                                <span>Trocar PDF</span>
+                                                <input
+                                                  type="file"
+                                                  accept="application/pdf"
+                                                  className="hidden"
+                                                  onChange={(e) => {
+                                                    const file = e.target.files?.[0]
+                                                    if (file) handleSelectPdfConteudo(mIndex, cIndex, file)
+                                                  }}
+                                                />
+                                              </label>
+                                              <button
+                                                type="button"
+                                                onClick={() => handleRemovePdfConteudo(mIndex, cIndex)}
+                                                className="px-2.5 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 text-xs font-semibold transition cursor-pointer"
+                                                title="Remover arquivo"
+                                              >
+                                                Remover
+                                              </button>
+                                            </div>
                                           </div>
-                                        </div>
-
-                                        {conteudo.arquivo_nome && (
-                                          <div className="text-xs font-bold text-sky-800 flex items-center gap-1.5 bg-white p-2.5 rounded-xl border border-sky-200">
-                                            <Check className="w-4 h-4 text-emerald-600" />
-                                            <span>Arquivo enviado: {conteudo.arquivo_nome}</span>
+                                        ) : (
+                                          <div>
+                                            <label className="inline-flex px-4 py-2.5 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs uppercase tracking-wider items-center justify-center gap-2 cursor-pointer transition shadow-xs">
+                                              <Upload className="w-4 h-4" />
+                                              <span>Selecionar PDF do Computador</span>
+                                              <input
+                                                type="file"
+                                                accept="application/pdf"
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                  const file = e.target.files?.[0]
+                                                  if (file) handleSelectPdfConteudo(mIndex, cIndex, file)
+                                                }}
+                                              />
+                                            </label>
                                           </div>
                                         )}
                                       </div>
@@ -1170,7 +1324,10 @@ export default function CourseEditorModal({
       {/* ========================================================================= */}
       {isPreviewOpen && (
         <CoursePreview
-          curso={cursoData}
+          curso={{
+            ...cursoData,
+            thumbnail_url: capaPreviewUrl || (!capaRemovida && cursoData.thumbnail_url) || DEFAULT_COVER
+          }}
           materias={materias}
           onClose={() => setIsPreviewOpen(false)}
         />

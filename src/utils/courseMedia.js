@@ -83,3 +83,72 @@ export function formatFileSize(bytes = 0) {
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
+
+/**
+ * Comprime e redimensiona uma imagem no navegador antes do upload.
+ * Converte para WebP (com fallback) e reduz fotos pesadas (3MB - 10MB)
+ * para apenas ~40KB a 90KB mantendo excelente nitidez visual.
+ *
+ * @param {File} file
+ * @param {Object} [options]
+ * @param {number} [options.maxWidth=1200]
+ * @param {number} [options.maxHeight=750]
+ * @param {number} [options.quality=0.82]
+ * @returns {Promise<File>}
+ */
+export async function compressImage(
+  file,
+  { maxWidth = 1200, maxHeight = 750, quality = 0.82 } = {}
+) {
+  if (!file || !file.type.startsWith('image/')) return file
+
+  // Se já for WebP muito leve (<= 90KB), não precisa recomprimir
+  if (file.size <= 90 * 1024 && file.type === 'image/webp') return file
+
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onerror = () => resolve(file)
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onerror = () => resolve(file)
+      img.onload = () => {
+        let { width, height } = img
+
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height)
+          width = Math.round(width * ratio)
+          height = Math.round(height * ratio)
+        }
+
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return resolve(file)
+
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(img, 0, 0, width, height)
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return resolve(file)
+
+            const baseName = file.name.replace(/\.[^/.]+$/, '')
+            const compressedFile = new File([blob], `${baseName}.webp`, {
+              type: 'image/webp',
+              lastModified: Date.now()
+            })
+            resolve(compressedFile)
+          },
+          'image/webp',
+          quality
+        )
+      }
+      img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
+

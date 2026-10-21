@@ -60,6 +60,13 @@ export async function fetchAdminUsers() {
   if (!isSupabaseConfigured) return []
 
   try {
+    // 1. Busca via RPC administrativa segura (sincroniza auth.users e contorna limitações de RLS)
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_admin_usuarios')
+    if (!rpcError && Array.isArray(rpcData)) {
+      return rpcData
+    }
+
+    // 2. Fallback para consulta direta na tabela usuarios
     const { data, error } = await supabase
       .from('usuarios')
       .select('*')
@@ -707,7 +714,7 @@ export async function deleteCursoCapa(cursoId) {
 export async function uploadCursoCapa(cursoId, file) {
   if (!isSupabaseConfigured) throw new Error('Supabase não configurado.')
   if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error('Envie uma imagem JPG, PNG ou WEBP.')
-  if (file.size > 3 * 1024 * 1024) throw new Error('A imagem é maior que 3 MB. Escolha uma imagem menor.')
+  if (file.size > 15 * 1024 * 1024) throw new Error('A imagem é maior que 15 MB. Escolha uma imagem menor.')
 
   // Remove capa anterior para não deixar arquivo órfão no bucket
   await deleteCursoCapa(cursoId)
