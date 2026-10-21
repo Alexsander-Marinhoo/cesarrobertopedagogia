@@ -1835,10 +1835,6 @@ export default function PatientPortalPage() {
         <CertificateModal
           certificate={selectedCertificate}
           onClose={() => setSelectedCertificate(null)}
-          onDownload={(cert) => {
-            setNotification(`Download do Certificado "${cert.codigo}" iniciado com sucesso!`)
-            window.print()
-          }}
         />
       )}
 

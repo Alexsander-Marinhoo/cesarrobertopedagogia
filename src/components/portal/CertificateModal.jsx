@@ -1,12 +1,90 @@
-import { Award, CheckCircle2, Download, ShieldCheck, X } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Award, CheckCircle2, Download, Loader2, ShieldCheck, X } from 'lucide-react'
 
-export default function CertificateModal({ certificate, onClose, onDownload }) {
+export default function CertificateModal({ certificate, onClose }) {
   const certRef = useRef(null)
+  const [downloading, setDownloading] = useState(false)
 
   if (!certificate) return null
 
-  const handlePrint = () => {
-    window.print()
+  const handlePrintCertificateOnly = () => {
+    const certEl = certRef.current || document.getElementById('printable-certificate')
+    if (!certEl) return
+
+    setDownloading(true)
+
+    // Cria um iframe oculto temporário para renderizar SOMENTE o certificado
+    const printFrame = document.createElement('iframe')
+    printFrame.style.position = 'fixed'
+    printFrame.style.right = '0'
+    printFrame.style.bottom = '0'
+    printFrame.style.width = '0'
+    printFrame.style.height = '0'
+    printFrame.style.border = '0'
+    document.body.appendChild(printFrame)
+
+    const frameDoc = printFrame.contentWindow.document
+
+    // Clona todos os estilos e fontes da página atual
+    const styleTags = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map((el) => el.outerHTML)
+      .join('\n')
+
+    frameDoc.open()
+    frameDoc.write(`
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+        <head>
+          <meta charset="utf-8" />
+          <title>Certificado - ${certificate.aluno} - ${certificate.codigo}</title>
+          ${styleTags}
+          <style>
+            @page {
+              size: A4 landscape;
+              margin: 10mm;
+            }
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #FCFBF7 !important;
+              width: 100% !important;
+              height: 100% !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .cert-print-wrapper {
+              width: 100%;
+              height: 100%;
+              box-sizing: border-box;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="cert-print-wrapper">
+            ${certEl.outerHTML}
+          </div>
+        </body>
+      </html>
+    `)
+    frameDoc.close()
+
+    // Aguarda carregamento de fontes e estilos antes de chamar a caixa de diálogo de impressão / salvar PDF
+    setTimeout(() => {
+      setDownloading(false)
+      try {
+        printFrame.contentWindow.focus()
+        printFrame.contentWindow.print()
+      } catch (err) {
+        console.warn('Erro ao acionar impressão:', err)
+      } finally {
+        setTimeout(() => {
+          document.body.removeChild(printFrame)
+        }, 3000)
+      }
+    }, 500)
   }
 
   return (
@@ -190,17 +268,21 @@ export default function CertificateModal({ certificate, onClose, onDownload }) {
 
           <button
             type="button"
-            onClick={() => {
-              if (onDownload) {
-                onDownload(certificate)
-              } else {
-                handlePrint()
-              }
-            }}
-            className="px-6 py-2.5 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-xs font-cta font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg transition text-center"
+            disabled={downloading}
+            onClick={handlePrintCertificateOnly}
+            className="px-6 py-2.5 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] disabled:opacity-50 text-[#002B49] text-xs font-cta font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-lg transition text-center"
           >
-            <Download className="w-4 h-4 text-[#002B49]" />
-            <span>Salvar / Baixar em PDF</span>
+            {downloading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-[#002B49]" />
+                <span>Preparando PDF...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4 text-[#002B49]" />
+                <span>Salvar / Baixar em PDF</span>
+              </>
+            )}
           </button>
         </div>
 
