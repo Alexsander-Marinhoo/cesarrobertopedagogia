@@ -739,3 +739,80 @@ export async function getCursoPdfSignedUrl(path) {
   }
   return data?.signedUrl || null
 }
+
+// ----------------------------------------------------------------------------
+// 8. STORAGE: BUCKET 'laudos' (Laudos Clínicos & Avaliações Neuropsicopedagógicas)
+// ----------------------------------------------------------------------------
+const LAUDOS_BUCKET = 'laudos'
+
+/**
+ * Envia arquivo de laudo/registro clínico do computador para o bucket 'laudos'.
+ * Aceita PDF, Word (.doc, .docx) ou imagens escaneadas (até 50 MB).
+ */
+export async function uploadAdminLaudo(pacienteId, file) {
+  if (!isSupabaseConfigured) throw new Error('Supabase não configurado.')
+  if (!pacienteId) throw new Error('Selecione o paciente antes de anexar o arquivo.')
+  if (!file) throw new Error('Selecione um arquivo para upload.')
+
+  if (file.size > 50 * 1024 * 1024) {
+    throw new Error('O arquivo excede o limite máximo permitido de 50 MB.')
+  }
+
+  const cleanName = safeFileName(file.name)
+  const path = `${pacienteId}/${cleanName}`
+
+  const { data: _data, error } = await supabase.storage
+    .from(LAUDOS_BUCKET)
+    .upload(path, file, {
+      contentType: file.type || 'application/pdf',
+      upsert: true
+    })
+
+  if (error) {
+    console.error(`Erro ao fazer upload para o bucket '${LAUDOS_BUCKET}':`, error)
+    throw new Error(`Falha no upload do laudo para o bucket 'laudos': ${error.message || 'Erro no storage'}`)
+  }
+
+  // Obtém URL pública se o bucket for público
+  const { data: pubData } = supabase.storage.from(LAUDOS_BUCKET).getPublicUrl(path)
+
+  return {
+    path,
+    publicUrl: pubData?.publicUrl || '',
+    nome: file.name,
+    tamanho: file.size
+  }
+}
+
+/**
+ * Gera URL segura ou pública para abrir/baixar um laudo do bucket 'laudos'.
+ */
+export async function getAdminLaudoUrl(path) {
+  if (!isSupabaseConfigured || !path) return null
+  if (path.startsWith('http://') || path.startsWith('https://')) return path
+
+  try {
+    // 1. Tenta signed URL no bucket 'laudos'
+    const { data: signedData } = await supabase.storage
+      .from(LAUDOS_BUCKET)
+      .createSignedUrl(path, 3600)
+
+    if (signedData?.signedUrl) return signedData.signedUrl
+
+    // 2. Tenta public URL no bucket 'laudos'
+    const { data: pubData } = supabase.storage.from(LAUDOS_BUCKET).getPublicUrl(path)
+    if (pubData?.publicUrl) return pubData.publicUrl
+
+    // 3. Fallback no bucket antigo 'laudos-privados'
+    const { data: oldSigned } = await supabase.storage
+      .from('laudos-privados')
+      .createSignedUrl(path, 3600)
+    if (oldSigned?.signedUrl) return oldSigned.signedUrl
+
+    return null
+  } catch (err) {
+    console.warn('Erro ao obter link seguro do laudo:', err)
+    return null
+  }
+}
+

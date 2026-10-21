@@ -362,7 +362,7 @@ export default function PatientPortalPage() {
   const handleDownloadLaudo = async (doc) => {
     setDownloadingId(doc.id)
     try {
-      const bucketName = isSchool ? 'relatorios-escolas' : 'laudos-privados'
+      const bucketName = isSchool ? 'relatorios-escolas' : 'laudos'
       const signedUrl = await getSecureDownloadUrl(bucketName, doc.arquivo_url)
 
       if (signedUrl) {

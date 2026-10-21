@@ -270,16 +270,33 @@ export async function createAppointmentRequest(userId, { modalidade, servico, da
 // ----------------------------------------------------------------------------
 export async function getSecureDownloadUrl(bucketName, filePath) {
   if (!isSupabaseConfigured || !bucketName || !filePath) return null
+  if (filePath.startsWith('http://') || filePath.startsWith('https://')) return filePath
 
   try {
+    // 1. Tenta gerar URL assinada no bucket especificado
     const { data, error } = await supabase.storage
       .from(bucketName)
       .createSignedUrl(filePath, 3600) // Válido por 1 hora
 
-    if (error) throw error
-    return data?.signedUrl || null
+    if (!error && data?.signedUrl) return data.signedUrl
+
+    // 2. Fallback de interoperabilidade entre 'laudos' e 'laudos-privados'
+    const fallbackBucket = bucketName === 'laudos-privados' ? 'laudos' : bucketName === 'laudos' ? 'laudos-privados' : null
+    if (fallbackBucket) {
+      const { data: fbData, error: fbError } = await supabase.storage
+        .from(fallbackBucket)
+        .createSignedUrl(filePath, 3600)
+
+      if (!fbError && fbData?.signedUrl) return fbData.signedUrl
+    }
+
+    // 3. Fallback para URL pública caso o bucket seja público
+    const { data: pubData } = supabase.storage.from(bucketName).getPublicUrl(filePath)
+    if (pubData?.publicUrl) return pubData.publicUrl
+
+    return null
   } catch (err) {
-    console.warn('Erro ao gerar URL assinada:', err)
+    console.warn('Erro ao gerar URL do arquivo no storage:', err)
     return null
   }
 }
