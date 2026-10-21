@@ -323,19 +323,6 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                                   <span className="truncate">{mod}</span>
                                 </div>
                               ))}
-
-                              {course.rawModulos && course.rawModulos.length > 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedCourseModal(course)}
-                                  className={`text-[11px] font-cta font-bold underline transition cursor-pointer pt-0.5 inline-flex items-center gap-1 ${
-                                    isFeatured ? 'text-[#D4AF37] hover:text-white' : 'text-[#002B49] hover:text-[#D4AF37]'
-                                  }`}
-                                >
-                                  <BookOpen className="w-3 h-3" />
-                                  <span>Ver matriz curricular</span>
-                                </button>
-                              )}
                             </div>
                           </div>
 
