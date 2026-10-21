@@ -55,6 +55,7 @@ import {
   fetchBookedSlotsForDate
 } from '../../services/portalService'
 import CoursePreview from '../../components/admin/CoursePreview'
+import CertificateModal from '../../components/portal/CertificateModal'
 
 export default function PatientPortalPage() {
   const navigate = useNavigate()
@@ -1331,14 +1332,15 @@ export default function PatientPortalPage() {
                 {enrolledCourses.map((curso) => (
                   <div
                     key={curso.id}
-                    className="rounded-2xl sm:rounded-3xl bg-white border border-[#EAE6DF] overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between"
+                    onClick={() => handleOpenCourseModal(curso)}
+                    className="group rounded-2xl sm:rounded-3xl bg-white border border-[#EAE6DF] hover:border-[#D4AF37]/60 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer hover:-translate-y-1"
                   >
                     <div className="h-44 overflow-hidden relative">
                       <img
                         src={curso.imagem}
                         alt={curso.titulo}
                         onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop' }}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[10px] font-cta font-bold text-[#002B49] uppercase">
                         {curso.categoria}
@@ -1351,7 +1353,7 @@ export default function PatientPortalPage() {
                           Carga Horária: {curso.cargaHoraria}
                         </div>
 
-                        <h3 className="text-base font-heading font-extrabold text-[#002B49] leading-snug">
+                        <h3 className="text-base font-heading font-extrabold text-[#002B49] group-hover:text-[#073B63] transition-colors leading-snug">
                           {curso.titulo}
                         </h3>
 
@@ -1376,7 +1378,10 @@ export default function PatientPortalPage() {
                       <div className="pt-3 border-t border-[#EAE6DF] flex flex-col min-[380px]:flex-row items-stretch min-[380px]:items-center justify-between gap-2">
                         <button
                           type="button"
-                          onClick={() => handleOpenCourseModal(curso)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleOpenCourseModal(curso)
+                          }}
                           className="text-xs font-cta font-bold text-[#002B49] hover:text-[#D4AF37] transition inline-flex items-center justify-center gap-1 cursor-pointer py-1"
                         >
                           <BookOpen className="w-3.5 h-3.5" />
@@ -1386,7 +1391,10 @@ export default function PatientPortalPage() {
                         {curso.certificado ? (
                           <button
                             type="button"
-                            onClick={() => setSelectedCertificate(curso.certificado)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSelectedCertificate(curso.certificado)
+                            }}
                             className="px-4 py-2 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] font-cta font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-xs text-center"
                           >
                             Ver Certificado
@@ -1394,7 +1402,10 @@ export default function PatientPortalPage() {
                         ) : (
                           <button
                             type="button"
-                            onClick={() => handleOpenCourseModal(curso)}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleOpenCourseModal(curso)
+                            }}
                             className="px-4 py-2 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white font-cta font-bold text-xs uppercase tracking-wider transition cursor-pointer shadow-xs text-center"
                           >
                             Assistir Aulas
@@ -1818,93 +1829,17 @@ export default function PatientPortalPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 2: CERTIFICADO DIGITAL */}
+      {/* MODAL 2: CERTIFICADO DIGITAL OFICIAL */}
       {/* ========================================================================= */}
       {selectedCertificate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
-          <div className="w-full max-w-3xl bg-white rounded-3xl p-6 sm:p-10 shadow-2xl border-4 border-[#D4AF37] space-y-6 relative max-h-[95vh] overflow-y-auto">
-            
-            <button
-              onClick={() => setSelectedCertificate(null)}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-500 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="text-center space-y-2 pt-2 border-b border-[#D4AF37]/30 pb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#002B49] text-[#D4AF37] shadow-lg mb-1">
-                <Award className="w-8 h-8" />
-              </div>
-              <div className="text-xs font-cta font-bold tracking-widest text-[#D4AF37] uppercase">
-                CONSULTÓRIO &amp; PLATAFORMA DE FORMAÇÃO DOCENTE
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#002B49] uppercase tracking-wider">
-                Certificado de Conclusão &amp; Extensão
-              </h2>
-            </div>
-
-            <div className="text-center space-y-5 py-4 max-w-2xl mx-auto">
-              <p className="text-xs sm:text-sm font-sans text-slate-600">
-                Certificamos para os devidos fins que
-              </p>
-              
-              <div className="text-2xl sm:text-3xl font-heading font-extrabold text-[#002B49] border-b-2 border-[#D4AF37] pb-2 inline-block px-8">
-                {selectedCertificate.aluno}
-              </div>
-
-              <p className="text-xs sm:text-sm font-sans text-slate-700 leading-relaxed">
-                concluiu com aproveitamento integral o curso de formação continuada em <strong className="text-[#002B49]">"{selectedCertificate.curso}"</strong>, ministrado pelo <strong>Prof. Cesar Roberto de Sousa Loureiro</strong>, totalizando a carga horária de <strong className="text-[#002B49]">{selectedCertificate.carga}</strong>.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-200 text-xs font-sans">
-              <div className="space-y-1 bg-[#F8F6F0] p-4 rounded-2xl border border-[#EAE6DF]">
-                <div className="text-[10px] font-cta font-bold uppercase tracking-wider text-[#64748B]">REGISTRO DE AUTENTICIDADE:</div>
-                <div className="font-mono font-bold text-[#002B49] text-sm">{selectedCertificate.codigo}</div>
-                <div className="text-slate-500 text-[11px]">{selectedCertificate.livro}</div>
-                <div className="text-slate-500 text-[11px]">Emitido em: {selectedCertificate.dataEmissao}</div>
-              </div>
-
-              <div className="text-center space-y-1 flex flex-col justify-center items-center">
-                <div className="w-48 border-b-2 border-[#002B49] pb-1 font-heading italic font-bold text-[#002B49] text-sm">
-                  Prof. Cesar Roberto Loureiro
-                </div>
-                <div className="text-[10px] font-cta font-bold text-slate-500 uppercase tracking-wider">
-                  Pedagogo • Psicopedagogo • Neuropsicopedagogo
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-4">
-              <button
-                onClick={() => setSelectedCertificate(null)}
-                className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-cta font-bold cursor-pointer text-center"
-              >
-                Fechar
-              </button>
-
-              <button
-                onClick={() => window.print()}
-                className="px-5 py-2.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-xs text-center"
-              >
-                <Printer className="w-4 h-4 text-[#D4AF37]" />
-                <span>Imprimir</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setNotification(`Download do Certificado "${selectedCertificate.codigo}" iniciado com sucesso!`)
-                  setSelectedCertificate(null)
-                }}
-                className="px-6 py-2.5 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-xs font-cta font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-md text-center"
-              >
-                <Download className="w-4 h-4" />
-                <span>Baixar Certificado PDF</span>
-              </button>
-            </div>
-
-          </div>
-        </div>
+        <CertificateModal
+          certificate={selectedCertificate}
+          onClose={() => setSelectedCertificate(null)}
+          onDownload={(cert) => {
+            setNotification(`Download do Certificado "${cert.codigo}" iniciado com sucesso!`)
+            window.print()
+          }}
+        />
       )}
 
       {/* ========================================================================= */}
@@ -1938,6 +1873,23 @@ export default function PatientPortalPage() {
             materias={courseMaterias}
             initialProgress={selectedCourseLesson.progresso || 0}
             onProgress={handleCourseProgress}
+            onCompleteCourse={async () => {
+              await handleCourseProgress(100)
+              handleCloseCourse()
+              // Se já temos os dados do certificado montados para este curso, abre o modal de certificado
+              if (selectedCourseLesson.certificado) {
+                setSelectedCertificate(selectedCourseLesson.certificado)
+              } else {
+                setSelectedCertificate({
+                  codigo: `CERT-${new Date().getFullYear()}-CR-${Math.floor(1000 + Math.random() * 9000)}`,
+                  dataEmissao: new Date().toLocaleDateString('pt-BR'),
+                  carga: selectedCourseLesson.cargaHoraria || '120 horas',
+                  livro: 'Livro de Extensão Vol. 04 / Registro Oficial',
+                  aluno: displayName,
+                  curso: selectedCourseLesson.titulo
+                })
+              }
+            }}
             onClose={handleCloseCourse}
           />
         </>

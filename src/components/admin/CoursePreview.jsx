@@ -13,7 +13,8 @@ import {
   Eye,
   ExternalLink,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react'
 import { parseVideoUrl, isExternalUrl, getPdfEmbedUrl } from '../../utils/courseMedia'
 import { getCursoPdfSignedUrl } from '../../services/adminService'
@@ -150,7 +151,8 @@ export default function CoursePreview({
   onClose,
   modo = 'preview',
   initialProgress = 0,
-  onProgress
+  onProgress,
+  onCompleteCourse
 }) {
   const isAluno = modo === 'aluno'
   // selected: null = página de apresentação | { m, c } = conteúdo
@@ -177,6 +179,7 @@ export default function CoursePreview({
 
   const totalConteudos = flat.length
   const currentIndex = selected ? flat.findIndex((f) => f.m === selected.m && f.c === selected.c) : -1
+  const isLastContent = totalConteudos > 0 && currentIndex === totalConteudos - 1
   const materia = selected ? materias[selected.m] : null
   const conteudo = selected ? materia?.conteudos?.[selected.c] : null
 
@@ -434,16 +437,37 @@ export default function CoursePreview({
                   <span className="hidden sm:block text-sm text-slate-500 font-semibold">
                     {currentIndex + 1} de {totalConteudos}
                   </span>
-                  <button
-                    type="button"
-                    disabled={currentIndex >= totalConteudos - 1 || proximoBloqueado}
-                    title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para continuar' : undefined}
-                    onClick={() => goTo(currentIndex + 1)}
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-bold transition cursor-pointer"
-                  >
-                    Próximo
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
+                  {isLastContent ? (
+                    <button
+                      type="button"
+                      disabled={proximoBloqueado}
+                      title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para concluir o curso' : undefined}
+                      onClick={() => {
+                        marcarConcluido()
+                        if (onProgress) onProgress(100)
+                        if (onCompleteCourse) {
+                          onCompleteCourse()
+                        } else {
+                          onClose?.()
+                        }
+                      }}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] disabled:opacity-40 disabled:cursor-not-allowed text-[#002B49] text-base font-cta font-bold transition shadow-lg cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-[#002B49]" />
+                      <span>Concluir Curso</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={proximoBloqueado}
+                      title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para continuar' : undefined}
+                      onClick={() => goTo(currentIndex + 1)}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-bold transition cursor-pointer"
+                    >
+                      Próximo
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
               </>
             )}
