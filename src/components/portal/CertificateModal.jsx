@@ -1,5 +1,4 @@
-import { useRef } from 'react'
-import { Award, CheckCircle2, Download, Printer, ShieldCheck, X } from 'lucide-react'
+import { Award, CheckCircle2, Download, ShieldCheck, X } from 'lucide-react'
 
 export default function CertificateModal({ certificate, onClose, onDownload }) {
   const certRef = useRef(null)
@@ -187,15 +186,6 @@ export default function CertificateModal({ certificate, onClose, onDownload }) {
             className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-cta font-bold uppercase tracking-wider transition cursor-pointer text-center"
           >
             Fechar
-          </button>
-
-          <button
-            type="button"
-            onClick={handlePrint}
-            className="px-5 py-2.5 rounded-full bg-white hover:bg-slate-100 text-[#002B49] text-xs font-cta font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-md transition text-center"
-          >
-            <Printer className="w-4 h-4 text-[#002B49]" />
-            <span>Imprimir Certificado</span>
           </button>
 
           <button
