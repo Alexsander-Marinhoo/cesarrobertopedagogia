@@ -478,7 +478,7 @@ export const siteData = {
     },
     {
       question: "Como os pacientes e escolas acessam os laudos e relatórios na plataforma?",
-      answer: "Através da Área Restrita do Paciente e do Portal de Escolas Conveniadas, disponibilizamos acesso seguro e criptografado para visualização e download dos documentos emitidos pelo Prof. Cesar Loureiro."
+      answer: "Através da Área Restrita do Paciente e do Portal de Escolas Conveniadas, disponibilizamos acesso seguro e criptografado para visualização e download dos documentos emitidos pelo Prof. Cesar Roberto Loureiro."
     }
   ]
 }

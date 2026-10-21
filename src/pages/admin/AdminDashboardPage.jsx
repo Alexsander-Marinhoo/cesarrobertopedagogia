@@ -733,7 +733,7 @@ export default function AdminDashboardPage() {
             >
               <img
                 src="/logo.svg"
-                alt="Logo Prof. Cesar Loureiro"
+                alt="Logo Prof. Cesar Roberto Loureiro"
                 className="h-14 sm:h-16 lg:h-18 w-auto max-w-[200px] sm:max-w-[250px] lg:max-w-[300px] object-contain group-hover:scale-105 transition-transform"
               />
             </button>
@@ -2340,8 +2340,8 @@ export default function AdminDashboardPage() {
                               const cleanPhone = ag.usuario.telefone.replace(/\D/g, '')
                               const isSchool = ag.usuario.tipo_usuario === 'ESCOLA'
                               const msg = isSchool
-                                ? `Olá equipe da ${ag.usuario.instituicao_nome || ag.usuario.nome_completo}! Aqui é o Prof. Cesar Loureiro. Gostaria de confirmar nossa reunião/consultoria pedagógica.`
-                                : `Olá ${ag.usuario.nome_completo}! Aqui é o Prof. Cesar Loureiro. Gostaria de confirmar nossa sessão de atendimento.`
+                                ? `Olá equipe da ${ag.usuario.instituicao_nome || ag.usuario.nome_completo}! Aqui é o Prof. Cesar Roberto Loureiro. Gostaria de confirmar nossa reunião/consultoria pedagógica.`
+                                : `Olá ${ag.usuario.nome_completo}! Aqui é o Prof. Cesar Roberto Loureiro. Gostaria de confirmar nossa sessão de atendimento.`
                               window.open(`https://wa.me/55${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank')
                             }}
                             className="px-3 py-1.5 rounded-xl sm:rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-cta font-bold transition cursor-pointer flex items-center gap-1 border border-emerald-200/60"

@@ -203,13 +203,16 @@ export default function CoursesAvaPage() {
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="rounded-3xl p-6 bg-white border border-slate-200 shadow-sm space-y-4"
+                  className="rounded-[24px] sm:rounded-[28px] overflow-hidden bg-white border border-slate-200 shadow-sm flex flex-col"
                 >
-                  <Skeleton height={26} width="75%" />
-                  <Skeleton count={2} height={14} />
-                  <Skeleton height={1} />
-                  <Skeleton height={32} width="40%" />
-                  <Skeleton height={42} borderRadius={999} />
+                  <Skeleton height={190} className="w-full !block" />
+                  <div className="p-5 sm:p-6 space-y-4">
+                    <Skeleton height={26} width="75%" />
+                    <Skeleton count={2} height={14} />
+                    <Skeleton height={1} />
+                    <Skeleton height={32} width="40%" />
+                    <Skeleton height={42} borderRadius={999} />
+                  </div>
                 </div>
               ))}
             </div>
@@ -233,76 +236,93 @@ export default function CoursesAvaPage() {
               {filteredCourses.map((course, idx) => (
                 <div
                   key={course.id || idx}
-                  className="bg-white rounded-[28px] p-6 sm:p-7 border border-[#002B49]/15 shadow-md shadow-[#002B49]/4 hover:shadow-xl hover:border-[#002B49]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
+                  className="bg-white rounded-[24px] sm:rounded-[28px] border border-slate-200/90 shadow-lg shadow-slate-200/40 hover:shadow-xl hover:border-slate-300 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group overflow-hidden"
                 >
-                  <div>
-                    {/* Badge de Início 2027 */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase tracking-wider bg-[#002B49]/5 text-[#002B49] border border-[#002B49]/15">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
-                        Início: {course.startDate || 'Janeiro de 2027'}
-                      </span>
-
-                      <span className="text-[11px] font-sans font-medium text-slate-500">
-                        {course.workload}
-                      </span>
+                  {/* Cover Image — topo sem padding, idêntico ao card da página principal */}
+                  {course.thumbnail_url && (
+                    <div className="relative w-full aspect-[16/9] overflow-hidden shrink-0 bg-slate-100">
+                      <img
+                        src={course.thumbnail_url}
+                        alt={course.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      {/* Gradient sutil no rodapé da imagem para transição suave */}
+                      <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white/30 to-transparent" />
                     </div>
+                  )}
 
-                    {/* Title */}
-                    <h3 className="text-lg sm:text-xl font-serif font-bold text-[#002B49] leading-snug group-hover:text-[#073B63] transition">
-                      {course.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-xs font-sans text-slate-600 mt-2 leading-relaxed line-clamp-3">
-                      {course.description}
-                    </p>
-
-                    {/* Divider */}
-                    <div className="border-t border-slate-100 my-4" />
-
-                    {/* Investment / Price */}
+                  {/* Conteúdo com padding */}
+                  <div className="flex flex-col flex-1 justify-between p-5 sm:p-6">
                     <div>
-                      <div className="text-2xl font-serif font-bold text-[#002B49]">
-                        {course.price}
+                      {/* Badge de Início 2027 e Carga Horária */}
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase tracking-wider bg-[#002B49]/5 text-[#002B49] border border-[#002B49]/15">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+                          Início: {course.startDate || 'Janeiro de 2027'}
+                        </span>
+
+                        <span className="text-[11px] font-sans font-medium text-slate-500">
+                          {course.workload}
+                        </span>
                       </div>
 
-                      {/* WhatsApp CTA Button */}
-                      <a
-                        href={`https://wa.me/5532987252421?text=${encodeURIComponent(
-                          `Olá, Professor Cesar Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
-                        )}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-3 w-full py-3 px-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold inline-flex items-center justify-center gap-2 transition shadow-sm hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
-                      >
-                        <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
-                        <span>Garantir Vaga • {course.startDate || 'Inscrições Abertas'}</span>
-                      </a>
-                    </div>
+                      {/* Title */}
+                      <h3 className="text-lg sm:text-xl font-serif font-bold text-[#002B49] leading-snug group-hover:text-[#073B63] transition">
+                        {course.title}
+                      </h3>
 
-                    {/* Modules Checklist */}
-                    <div className="space-y-2 mt-5">
-                      <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-400">
-                        Ementa &amp; Conteúdo Programático:
-                      </div>
-                      {(course.modules || []).slice(0, 4).map((mod, mIdx) => (
-                        <div key={mIdx} className="flex items-center gap-2 text-xs font-sans text-slate-700">
-                          <div className="w-4 h-4 rounded-full bg-[#D4AF37]/20 text-[#002B49] flex items-center justify-center shrink-0">
-                            <Check className="w-2.5 h-2.5 stroke-[3]" />
-                          </div>
-                          <span className="truncate">{mod}</span>
+                      {/* Description */}
+                      <p className="text-xs font-sans text-slate-600 mt-2 leading-relaxed line-clamp-3">
+                        {course.description}
+                      </p>
+
+                      {/* Divider */}
+                      <div className="border-t border-slate-100 my-4" />
+
+                      {/* Investment / Price */}
+                      <div>
+                        <div className="text-2xl font-serif font-bold text-[#002B49]">
+                          {course.price}
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Card Footer */}
-                  <div className="pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs font-sans text-slate-500 font-medium">
-                    <span className="flex items-center gap-1.5">
-                      <Award className="w-3.5 h-3.5 text-[#D4AF37]" />
-                      <span>{course.certificate}</span>
-                    </span>
+                        {/* WhatsApp CTA Button */}
+                        <a
+                          href={`https://wa.me/5532987252421?text=${encodeURIComponent(
+                            `Olá, Professor Cesar Roberto Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-3 w-full py-3 px-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-cta font-bold inline-flex items-center justify-center gap-2 transition shadow-sm hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                        >
+                          <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
+                          <span>Garantir Vaga • {course.startDate || 'Inscrições Abertas'}</span>
+                        </a>
+                      </div>
+
+                      {/* Modules Checklist */}
+                      <div className="space-y-2 mt-5">
+                        <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-400">
+                          Ementa &amp; Conteúdo Programático:
+                        </div>
+                        {(course.modules || []).slice(0, 4).map((mod, mIdx) => (
+                          <div key={mIdx} className="flex items-center gap-2 text-xs font-sans text-slate-700">
+                            <div className="w-4 h-4 rounded-full bg-[#D4AF37]/20 text-[#002B49] flex items-center justify-center shrink-0">
+                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            </div>
+                            <span className="truncate">{mod}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Card Footer */}
+                    <div className="pt-4 mt-5 border-t border-slate-100 flex items-center justify-between text-xs font-sans text-slate-500 font-medium">
+                      <span className="flex items-center gap-1.5">
+                        <Award className="w-3.5 h-3.5 text-[#D4AF37]" />
+                        <span>{course.certificate}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}

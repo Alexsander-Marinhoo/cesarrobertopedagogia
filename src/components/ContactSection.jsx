@@ -37,7 +37,7 @@ export default function ContactSection() {
     }
 
     const msg = encodeURIComponent(
-      `Olá, Prof. Cesar Loureiro! Mensagem enviada pelo formulário de contato:\n\n` +
+      `Olá, Prof. Cesar Roberto Loureiro! Mensagem enviada pelo formulário de contato:\n\n` +
       `👤 *Nome:* ${formData.name}\n` +
       `🏷️ *Perfil:* ${formData.role}\n` +
       `📱 *Telefone/WhatsApp:* ${formData.phone}\n` +

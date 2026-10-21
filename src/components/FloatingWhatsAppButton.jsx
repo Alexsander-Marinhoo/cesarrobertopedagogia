@@ -20,7 +20,7 @@ export default function FloatingWhatsAppButton() {
   }, [])
 
   const defaultMessage = encodeURIComponent(
-    'Olá, Prof. Cesar Roberto! Gostaria de informações sobre atendimentos e consultoria.'
+    'Olá, Prof. Cesar Roberto Loureiro! Gostaria de informações sobre atendimentos e consultoria.'
   )
   const whatsappUrl = `https://wa.me/5532987252421?text=${defaultMessage}`
 
@@ -37,7 +37,7 @@ export default function FloatingWhatsAppButton() {
         href={whatsappUrl}
         target="_blank"
         rel="noreferrer"
-        aria-label="Conversar com o Prof. Cesar Roberto no WhatsApp"
+        aria-label="Conversar com o Prof. Cesar Roberto Loureiro no WhatsApp"
         className="group relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-2xl shadow-[#25D366]/40 hover:shadow-[#25D366]/60 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
       >
         {/* Subtle pulsating radar ring */}

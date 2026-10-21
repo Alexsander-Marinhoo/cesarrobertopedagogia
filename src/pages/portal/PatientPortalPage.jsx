@@ -521,8 +521,8 @@ export default function PatientPortalPage() {
     )
 
     const msg = isSchool
-      ? `Olá Prof. Cesar! Aqui é da equipe gestora da ${schoolData.nome} (${user?.email}).\n\n*Solicitação de Consultoria / Alinhamento Institucional:*\n• Pauta/Serviço: ${rescheduleForm.motivo}\n• Data: ${formattedDate} (${weekdayName})\n• Horário: ${rescheduleForm.horarioSugerido}\n• Detalhes: ${rescheduleForm.observacoes || 'Nenhum'}`
-      : `Olá Prof. Cesar! Aqui é ${patientData.nome} (${user?.email}).\n\n*Solicitação de Atendimento:*\n• Assunto: ${rescheduleForm.motivo}\n• Data: ${formattedDate} (${weekdayName})\n• Horário: ${rescheduleForm.horarioSugerido}\n• Mensagem: ${rescheduleForm.observacoes || 'Nenhuma'}`
+      ? `Olá, Prof. Cesar Roberto Loureiro! Aqui é da equipe gestora da ${schoolData.nome} (${user?.email}).\n\n*Solicitação de Consultoria / Alinhamento Institucional:*\n• Pauta/Serviço: ${rescheduleForm.motivo}\n• Data: ${formattedDate} (${weekdayName})\n• Horário: ${rescheduleForm.horarioSugerido}\n• Detalhes: ${rescheduleForm.observacoes || 'Nenhum'}`
+      : `Olá, Prof. Cesar Roberto Loureiro! Aqui é ${patientData.nome} (${user?.email}).\n\n*Solicitação de Atendimento:*\n• Assunto: ${rescheduleForm.motivo}\n• Data: ${formattedDate} (${weekdayName})\n• Horário: ${rescheduleForm.horarioSugerido}\n• Mensagem: ${rescheduleForm.observacoes || 'Nenhuma'}`
 
     const finalWhatsappUrl = `https://wa.me/5532987252421?text=${encodeURIComponent(msg)}`
     setRescheduleWhatsappUrl(finalWhatsappUrl)
@@ -549,7 +549,7 @@ export default function PatientPortalPage() {
             >
               <img
                 src="/logo.svg"
-                alt="Logo Prof. Cesar Loureiro"
+                alt="Logo Prof. Cesar Roberto Loureiro"
                 className="h-14 sm:h-16 lg:h-18 w-auto max-w-[200px] sm:max-w-[250px] lg:max-w-[300px] object-contain group-hover:scale-105 transition-transform"
               />
             </button>
@@ -851,8 +851,8 @@ export default function PatientPortalPage() {
                 <a
                   href={`https://wa.me/5532987252421?text=${encodeURIComponent(
                     isSchool
-                      ? `Olá Prof. Cesar! Aqui é da equipe da ${schoolData.nome}. Gostaria de confirmar nossa reunião/consultoria do dia ${nextSession.data}.`
-                      : `Olá Prof. Cesar! Aqui é ${patientData.nome}. Gostaria de confirmar o nosso encontro de ${nextSession.data}.`
+                      ? `Olá, Prof. Cesar Roberto Loureiro! Aqui é da equipe da ${schoolData.nome}. Gostaria de confirmar nossa reunião/consultoria do dia ${nextSession.data}.`
+                      : `Olá, Prof. Cesar Roberto Loureiro! Aqui é ${patientData.nome}. Gostaria de confirmar o nosso encontro de ${nextSession.data}.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -1438,8 +1438,8 @@ export default function PatientPortalPage() {
                 <a
                   href={`https://wa.me/5532987252421?text=${encodeURIComponent(
                     isSchool
-                      ? `Olá Prof. Cesar! Aqui é da equipe gestora da ${schoolData.nome}. Gostaríamos de informações sobre os cursos de capacitação docente e oficinas pedagógicas para nossos professores.`
-                      : `Olá Prof. Cesar! Aqui é ${patientData.nome} (${user?.email}). Gostaria de informações sobre a matrícula nos seus cursos de formação.`
+                      ? `Olá, Prof. Cesar Roberto Loureiro! Aqui é da equipe gestora da ${schoolData.nome}. Gostaríamos de informações sobre os cursos de capacitação docente e oficinas pedagógicas para nossos professores.`
+                      : `Olá, Prof. Cesar Roberto Loureiro! Aqui é ${patientData.nome} (${user?.email}). Gostaria de informações sobre a matrícula nos seus cursos de formação.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

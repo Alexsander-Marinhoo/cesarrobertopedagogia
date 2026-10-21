@@ -287,7 +287,7 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                               {/* Primary Full-Width CTA Button */}
                               <a
                                 href={`https://wa.me/5532987252421?text=${encodeURIComponent(
-                                  `Olá, Professor Cesar Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
+                                  `Olá, Professor Cesar Roberto Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
                                 )}`}
                                 target="_blank"
                                 rel="noreferrer"
@@ -527,7 +527,7 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
 
                 <a
                   href={`https://wa.me/5532987252421?text=${encodeURIComponent(
-                    `Olá, Professor Cesar Loureiro! Gostaria de informações para pré-inscrição na turma de ${selectedCourseModal.startDate || 'Janeiro de 2027'} do curso: "${selectedCourseModal.title}".`
+                    `Olá, Professor Cesar Roberto Loureiro! Gostaria de informações para pré-inscrição na turma de ${selectedCourseModal.startDate || 'Janeiro de 2027'} do curso: "${selectedCourseModal.title}".`
                   )}`}
                   target="_blank"
                   rel="noreferrer"

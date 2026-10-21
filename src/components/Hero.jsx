@@ -260,7 +260,7 @@ export default function Hero({ onOpenBooking }) {
             <div className="lg:col-span-5 relative z-20 mt-4 sm:mt-6 lg:mt-0 flex justify-center lg:justify-end">
               <div className="gsap-hero-photo-card -mb-24 sm:-mb-32 md:-mb-36 lg:my-0 lg:-mt-32 lg:-mb-32 xl:-mt-40 xl:-mb-40 2xl:-mt-44 2xl:-mb-44 relative rounded-[28px] sm:rounded-[36px] md:rounded-[48px] lg:rounded-[56px] overflow-hidden shadow-2xl bg-[#00182A] border-[4px] sm:border-[6px] border-[#002B49] w-[88%] sm:w-full max-w-[320px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[500px] xl:max-w-[580px] h-[400px] sm:h-[500px] md:h-[560px] lg:h-[700px] xl:h-[780px]">
 
-                {/* Fotografia Oficial do Professor Cesar Loureiro */}
+                {/* Fotografia Oficial do Professor Cesar Roberto Loureiro */}
                 <img
                   src="/images/cesar-perfil-casual.jpg"
                   alt="Prof. Cesar Roberto Loureiro - Neuropsicopedagogo Clínico"
