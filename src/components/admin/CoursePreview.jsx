@@ -14,7 +14,8 @@ import {
   ExternalLink,
   Loader2,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Menu
 } from 'lucide-react'
 import { parseVideoUrl, isExternalUrl, getPdfEmbedUrl } from '../../utils/courseMedia'
 import { getCursoPdfSignedUrl } from '../../services/adminService'
@@ -158,6 +159,7 @@ export default function CoursePreview({
   // selected: null = página de apresentação | { m, c } = conteúdo
   const [selected, setSelected] = useState(null)
   const [openMaterias, setOpenMaterias] = useState(() => new Set(materias.map((_, i) => i)))
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // Conteúdos concluídos (chave "matéria-conteúdo"): vídeos que atingiram 90% e textos/PDFs já abertos.
   // No modo aluno, retoma do progresso salvo (os primeiros N conteúdos, na ordem do curso).
   const [concluidos, setConcluidos] = useState(() => {
@@ -232,112 +234,181 @@ export default function CoursePreview({
     if (idx >= flat.length) return
     setSelected(flat[idx])
     setOpenMaterias((prev) => new Set(prev).add(flat[idx].m))
+    setMobileMenuOpen(false)
   }
+
+  // Componente interno reutilizável da lista de matérias (Sidebar no Desktop & Drawer no Mobile)
+  const renderMateriasList = () => (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setSelected(null)
+          setMobileMenuOpen(false)
+        }}
+        className={`w-full text-left p-5 border-b border-slate-100 transition cursor-pointer ${
+          !selected ? 'bg-[#002B49] text-white' : 'hover:bg-slate-50 text-[#002B49]'
+        }`}
+      >
+        <span className={`text-xs font-bold uppercase tracking-wider ${!selected ? 'text-[#D4AF37]' : 'text-slate-500'}`}>
+          Apresentação
+        </span>
+        <p className="font-heading font-extrabold text-base leading-snug line-clamp-2">
+          {curso?.titulo || 'Curso sem título'}
+        </p>
+        <p className={`text-sm mt-1 ${!selected ? 'text-slate-200' : 'text-slate-500'}`}>
+          {materias.length} {materias.length === 1 ? 'matéria' : 'matérias'} · {totalConteudos}{' '}
+          {totalConteudos === 1 ? 'conteúdo' : 'conteúdos'}
+        </p>
+      </button>
+
+      {materias.length === 0 && (
+        <p className="p-5 text-base text-slate-500">Nenhuma matéria adicionada ainda.</p>
+      )}
+
+      {materias.map((m, mi) => {
+        const open = openMaterias.has(mi)
+        return (
+          <div key={mi} className="border-b border-slate-100">
+            <button
+              type="button"
+              onClick={() => toggleMateria(mi)}
+              className="w-full flex items-center justify-between gap-3 px-5 py-4 hover:bg-slate-50 transition cursor-pointer text-left"
+            >
+              <div className="min-w-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#A88319]">Matéria {mi + 1}</span>
+                <p className="font-bold text-[#002B49] text-base leading-snug">{m.titulo || `Matéria ${mi + 1}`}</p>
+              </div>
+              <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
+
+            {open && (
+              <ul className="pb-2">
+                {(m.conteudos || []).length === 0 && (
+                  <li className="px-5 py-2 text-sm text-slate-400">Sem conteúdos nesta matéria.</li>
+                )}
+                {(m.conteudos || []).map((c, ci) => {
+                  const meta = TIPO_META[c.tipo] || TIPO_META.TEXTO
+                  const active = selected?.m === mi && selected?.c === ci
+                  return (
+                    <li key={ci}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelected({ m: mi, c: ci })
+                          setMobileMenuOpen(false)
+                        }}
+                        className={`w-full flex items-center gap-3 px-5 py-3 text-left transition cursor-pointer border-l-4 ${
+                          active ? 'bg-[#FAF2D8] border-[#D4AF37]' : 'border-transparent hover:bg-slate-50'
+                        }`}
+                      >
+                        <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${meta.bg}`}>
+                          <meta.Icon className={`w-5 h-5 ${meta.color}`} />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold text-[#002B49] leading-snug line-clamp-2">
+                            {c.titulo || meta.label}
+                          </span>
+                          <span className="block text-xs text-slate-500">
+                            {meta.label}
+                            {conteudoVazio(c) && <span className="text-amber-600 font-bold"> · incompleto</span>}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </div>
+        )
+      })}
+    </>
+  )
 
   return (
     <div className="fixed inset-0 z-[70] bg-[#F4F6F8] flex flex-col" data-lenis-prevent>
       {/* Faixa superior: aviso de pré-visualização (admin) ou título do curso (aluno) */}
-      <div className={`${isAluno ? 'bg-[#002B49] text-white' : 'bg-[#D4AF37] text-[#002B49]'} px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-md`}>
-        <div className="flex items-center gap-2.5 min-w-0">
-          {isAluno ? <BookOpen className="w-5 h-5 shrink-0 text-[#D4AF37]" /> : <Eye className="w-5 h-5 shrink-0" />}
-          <p className="text-sm sm:text-base font-bold truncate">
-            {isAluno
-              ? `${curso?.titulo || 'Curso'} • ${percentualAtual}% concluído`
-              : 'Pré-visualização — é assim que o aluno verá o curso. Nada foi publicado.'}
-          </p>
-        </div>
-        <button
-          id="preview-close-btn"
-          type="button"
-          onClick={onClose}
-          className={`shrink-0 inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold transition cursor-pointer ${isAluno ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-[#002B49] hover:bg-[#073B63] text-white'}`}
-        >
-          <X className="w-4 h-4" />
-          <span>{isAluno ? 'Fechar' : 'Fechar e voltar a editar'}</span>
-        </button>
-      </div>
-
-      <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
-        {/* Barra lateral: matérias */}
-        <aside className="lg:w-[340px] xl:w-[380px] shrink-0 bg-white border-b lg:border-b-0 lg:border-r border-slate-200 overflow-y-auto max-h-[40vh] lg:max-h-none">
+      <div className={`${isAluno ? 'bg-[#002B49] text-white' : 'bg-[#D4AF37] text-[#002B49]'} px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2.5 sm:gap-3 shadow-md shrink-0`}>
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+          {/* Botão Hambúrguer Mobile para abrir lista de matérias */}
           <button
             type="button"
-            onClick={() => setSelected(null)}
-            className={`w-full text-left p-5 border-b border-slate-100 transition cursor-pointer ${
-              !selected ? 'bg-[#002B49] text-white' : 'hover:bg-slate-50 text-[#002B49]'
-            }`}
+            onClick={() => setMobileMenuOpen(true)}
+            className="lg:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 text-current transition cursor-pointer shrink-0"
+            aria-label="Abrir menu de matérias e aulas"
           >
-            <span className={`text-xs font-bold uppercase tracking-wider ${!selected ? 'text-[#D4AF37]' : 'text-slate-500'}`}>
-              Apresentação
-            </span>
-            <p className="font-heading font-extrabold text-base leading-snug line-clamp-2">
-              {curso?.titulo || 'Curso sem título'}
-            </p>
-            <p className={`text-sm mt-1 ${!selected ? 'text-slate-200' : 'text-slate-500'}`}>
-              {materias.length} {materias.length === 1 ? 'matéria' : 'matérias'} · {totalConteudos}{' '}
-              {totalConteudos === 1 ? 'conteúdo' : 'conteúdos'}
-            </p>
+            <Menu className="w-5 h-5" />
           </button>
 
-          {materias.length === 0 && (
-            <p className="p-5 text-base text-slate-500">Nenhuma matéria adicionada ainda.</p>
-          )}
+          {isAluno ? <BookOpen className="w-5 h-5 shrink-0 text-[#D4AF37]" /> : <Eye className="w-5 h-5 shrink-0" />}
+          <p className="text-xs sm:text-base font-bold truncate">
+            {isAluno
+              ? `${curso?.titulo || 'Curso'} • ${percentualAtual}%`
+              : 'Pré-visualização — é assim que o aluno verá o curso.'}
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Atalho mobile para ver matérias */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(true)}
+            className="lg:hidden text-xs font-bold px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/25 transition cursor-pointer"
+          >
+            Aulas ({totalConteudos})
+          </button>
 
-          {materias.map((m, mi) => {
-            const open = openMaterias.has(mi)
-            return (
-              <div key={mi} className="border-b border-slate-100">
+          <button
+            id="preview-close-btn"
+            type="button"
+            onClick={onClose}
+            className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition cursor-pointer ${isAluno ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-[#002B49] hover:bg-[#073B63] text-white'}`}
+          >
+            <X className="w-4 h-4" />
+            <span className="hidden sm:inline">{isAluno ? 'Fechar' : 'Fechar e voltar a editar'}</span>
+            <span className="sm:hidden">Sair</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row relative">
+        {/* Barra lateral DESKTOP: matérias fixa à esquerda */}
+        <aside className="hidden lg:block lg:w-[340px] xl:w-[380px] shrink-0 bg-white border-r border-slate-200 overflow-y-auto">
+          {renderMateriasList()}
+        </aside>
+
+        {/* DRAWER / GAVETA MOBILE: Abre como modal deslizante quando clica no menu hambúrguer */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 flex">
+            {/* Backdrop escurecido */}
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs animate-in fade-in"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+
+            {/* Painel lateral da gaveta */}
+            <div className="relative w-4/5 max-w-sm bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-200">
+              <div className="bg-[#002B49] text-white p-4 flex items-center justify-between border-b border-white/10 shrink-0">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-[#D4AF37]" />
+                  <span className="font-heading font-extrabold text-sm">Matérias do Curso</span>
+                </div>
                 <button
                   type="button"
-                  onClick={() => toggleMateria(mi)}
-                  className="w-full flex items-center justify-between gap-3 px-5 py-4 hover:bg-slate-50 transition cursor-pointer text-left"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-1.5 rounded-lg bg-white/10 text-white"
                 >
-                  <div className="min-w-0">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#A88319]">Matéria {mi + 1}</span>
-                    <p className="font-bold text-[#002B49] text-base leading-snug">{m.titulo || `Matéria ${mi + 1}`}</p>
-                  </div>
-                  <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+                  <X className="w-5 h-5" />
                 </button>
-
-                {open && (
-                  <ul className="pb-2">
-                    {(m.conteudos || []).length === 0 && (
-                      <li className="px-5 py-2 text-sm text-slate-400">Sem conteúdos nesta matéria.</li>
-                    )}
-                    {(m.conteudos || []).map((c, ci) => {
-                      const meta = TIPO_META[c.tipo] || TIPO_META.TEXTO
-                      const active = selected?.m === mi && selected?.c === ci
-                      return (
-                        <li key={ci}>
-                          <button
-                            type="button"
-                            onClick={() => setSelected({ m: mi, c: ci })}
-                            className={`w-full flex items-center gap-3 px-5 py-3 text-left transition cursor-pointer border-l-4 ${
-                              active ? 'bg-[#FAF2D8] border-[#D4AF37]' : 'border-transparent hover:bg-slate-50'
-                            }`}
-                          >
-                            <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${meta.bg}`}>
-                              <meta.Icon className={`w-5 h-5 ${meta.color}`} />
-                            </span>
-                            <span className="min-w-0">
-                              <span className="block text-sm font-semibold text-[#002B49] leading-snug line-clamp-2">
-                                {c.titulo || meta.label}
-                              </span>
-                              <span className="block text-xs text-slate-500">
-                                {meta.label}
-                                {conteudoVazio(c) && <span className="text-amber-600 font-bold"> · incompleto</span>}
-                              </span>
-                            </span>
-                          </button>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                )}
               </div>
-            )
-          })}
-        </aside>
+
+              <div className="flex-1 overflow-y-auto">
+                {renderMateriasList()}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Área principal */}
         <main className="flex-1 min-h-0 overflow-y-auto">
