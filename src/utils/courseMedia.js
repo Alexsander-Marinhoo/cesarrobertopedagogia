@@ -21,7 +21,7 @@ export function getGoogleDriveId(url = '') {
 
 /**
  * Analisa um link de vídeo e devolve como exibi-lo.
- * @returns {{ provider: 'youtube'|'vimeo'|'drive'|'arquivo', embedUrl: string, thumbnail?: string } | null}
+ * @returns {{ provider: 'youtube'|'vimeo'|'drive'|'arquivo', embedUrl: string, thumbnail?: string, videoId?: string } | null}
  */
 export function parseVideoUrl(url = '') {
   const s = String(url).trim()
@@ -34,6 +34,7 @@ export function parseVideoUrl(url = '') {
   if (yt) {
     return {
       provider: 'youtube',
+      videoId: yt[1],
       embedUrl: `https://www.youtube-nocookie.com/embed/${yt[1]}?rel=0&modestbranding=1`,
       thumbnail: `https://i.ytimg.com/vi/${yt[1]}/hqdefault.jpg`
     }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   X,
   PlayCircle,
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { parseVideoUrl, isExternalUrl, getPdfEmbedUrl } from '../../utils/courseMedia'
 import { getCursoPdfSignedUrl } from '../../services/adminService'
+import TrackedYouTubePlayer from '../TrackedYouTubePlayer'
 
 const DEFAULT_THUMB =
   'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=1200&auto=format&fit=crop'
@@ -33,13 +34,24 @@ function conteudoVazio(c) {
   return !c.conteudo_texto?.trim()
 }
 
-function VideoView({ url }) {
+function VideoView({ url, onComplete, alreadyCompleted }) {
   const video = parseVideoUrl(url)
   if (!video) {
     return (
       <EmptyBox
         title="Vídeo não reconhecido"
         text="Cole um link do YouTube, Vimeo ou Google Drive para o vídeo aparecer aqui."
+      />
+    )
+  }
+  if (video.provider === 'youtube' && video.videoId) {
+    return (
+      <TrackedYouTubePlayer
+        key={video.videoId}
+        videoId={video.videoId}
+        threshold={0.9}
+        startCompleted={alreadyCompleted}
+        onComplete={onComplete}
       />
     )
   }
@@ -128,13 +140,33 @@ function EmptyBox({ title, text }) {
 }
 
 /**
- * Pré-visualização do curso exatamente como o aluno verá.
- * Funciona com os dados do formulário (sem precisar salvar/publicar).
+ * Visualizador do curso (matérias, vídeos, apostilas e textos).
+ * - modo 'preview' (admin): funciona com os dados do formulário, sem salvar/publicar.
+ * - modo 'aluno': mesmo layout, com progresso retomado e reportado via onProgress (0-100).
  */
-export default function CoursePreview({ curso, materias = [], onClose }) {
+export default function CoursePreview({
+  curso,
+  materias = [],
+  onClose,
+  modo = 'preview',
+  initialProgress = 0,
+  onProgress
+}) {
+  const isAluno = modo === 'aluno'
   // selected: null = página de apresentação | { m, c } = conteúdo
   const [selected, setSelected] = useState(null)
   const [openMaterias, setOpenMaterias] = useState(() => new Set(materias.map((_, i) => i)))
+  // Conteúdos concluídos (chave "matéria-conteúdo"): vídeos que atingiram 90% e textos/PDFs já abertos.
+  // No modo aluno, retoma do progresso salvo (os primeiros N conteúdos, na ordem do curso).
+  const [concluidos, setConcluidos] = useState(() => {
+    const set = new Set()
+    if (!isAluno || !initialProgress) return set
+    const keys = []
+    materias.forEach((m, mi) => (m.conteudos || []).forEach((_, ci) => keys.push(`${mi}-${ci}`)))
+    const n = Math.round((initialProgress / 100) * keys.length)
+    keys.slice(0, n).forEach((k) => set.add(k))
+    return set
+  })
 
   // Lista "achatada" para navegação anterior/próximo
   const flat = useMemo(() => {
@@ -147,6 +179,32 @@ export default function CoursePreview({ curso, materias = [], onClose }) {
   const currentIndex = selected ? flat.findIndex((f) => f.m === selected.m && f.c === selected.c) : -1
   const materia = selected ? materias[selected.m] : null
   const conteudo = selected ? materia?.conteudos?.[selected.c] : null
+
+  const chaveAtual = selected ? `${selected.m}-${selected.c}` : null
+  // Só vídeos do YouTube podem ser medidos; os demais não bloqueiam a navegação
+  const exigeMeta = conteudo?.tipo === 'VIDEO' && parseVideoUrl(conteudo.video_url)?.provider === 'youtube'
+  const proximoBloqueado = exigeMeta && !concluidos.has(chaveAtual)
+  const marcarConcluido = () => {
+    if (!chaveAtual) return
+    setConcluidos((prev) => (prev.has(chaveAtual) ? prev : new Set(prev).add(chaveAtual)))
+  }
+
+  // Textos e PDFs contam como concluídos assim que são abertos (não há como medir leitura)
+  useEffect(() => {
+    if (!chaveAtual || !conteudo || exigeMeta) return
+    setConcluidos((prev) => (prev.has(chaveAtual) ? prev : new Set(prev).add(chaveAtual)))
+  }, [chaveAtual, conteudo, exigeMeta])
+
+  // Reporta o progresso (somente se aumentou) para ser salvo
+  const percentualAtual = totalConteudos ? Math.round((concluidos.size / totalConteudos) * 100) : 0
+  const ultimoEnviadoRef = useRef(initialProgress)
+  useEffect(() => {
+    if (!isAluno || !onProgress) return
+    if (percentualAtual > ultimoEnviadoRef.current) {
+      ultimoEnviadoRef.current = percentualAtual
+      onProgress(percentualAtual)
+    }
+  }, [isAluno, onProgress, percentualAtual])
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose?.()
@@ -175,22 +233,24 @@ export default function CoursePreview({ curso, materias = [], onClose }) {
 
   return (
     <div className="fixed inset-0 z-[70] bg-[#F4F6F8] flex flex-col" data-lenis-prevent>
-      {/* Faixa de aviso do modo pré-visualização */}
-      <div className="bg-[#D4AF37] text-[#002B49] px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-md">
+      {/* Faixa superior: aviso de pré-visualização (admin) ou título do curso (aluno) */}
+      <div className={`${isAluno ? 'bg-[#002B49] text-white' : 'bg-[#D4AF37] text-[#002B49]'} px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-md`}>
         <div className="flex items-center gap-2.5 min-w-0">
-          <Eye className="w-5 h-5 shrink-0" />
+          {isAluno ? <BookOpen className="w-5 h-5 shrink-0 text-[#D4AF37]" /> : <Eye className="w-5 h-5 shrink-0" />}
           <p className="text-sm sm:text-base font-bold truncate">
-            Pré-visualização — é assim que o aluno verá o curso. Nada foi publicado.
+            {isAluno
+              ? `${curso?.titulo || 'Curso'} • ${percentualAtual}% concluído`
+              : 'Pré-visualização — é assim que o aluno verá o curso. Nada foi publicado.'}
           </p>
         </div>
         <button
           id="preview-close-btn"
           type="button"
           onClick={onClose}
-          className="shrink-0 inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-sm font-bold transition cursor-pointer"
+          className={`shrink-0 inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-sm font-bold transition cursor-pointer ${isAluno ? 'bg-white/10 hover:bg-white/20 text-white' : 'bg-[#002B49] hover:bg-[#073B63] text-white'}`}
         >
           <X className="w-4 h-4" />
-          <span>Fechar e voltar a editar</span>
+          <span>{isAluno ? 'Fechar' : 'Fechar e voltar a editar'}</span>
         </button>
       </div>
 
@@ -339,7 +399,13 @@ export default function CoursePreview({ curso, materias = [], onClose }) {
                   ) : null}
                 </div>
 
-                {conteudo?.tipo === 'VIDEO' && <VideoView url={conteudo.video_url} />}
+                {conteudo?.tipo === 'VIDEO' && (
+                  <VideoView
+                    url={conteudo.video_url}
+                    alreadyCompleted={concluidos.has(chaveAtual)}
+                    onComplete={marcarConcluido}
+                  />
+                )}
                 {conteudo?.tipo === 'PDF' && (
                   <PdfView
                     value={conteudo.pdf_apoio_url}
@@ -370,7 +436,8 @@ export default function CoursePreview({ curso, materias = [], onClose }) {
                   </span>
                   <button
                     type="button"
-                    disabled={currentIndex >= totalConteudos - 1}
+                    disabled={currentIndex >= totalConteudos - 1 || proximoBloqueado}
+                    title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para continuar' : undefined}
                     onClick={() => goTo(currentIndex + 1)}
                     className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-bold transition cursor-pointer"
                   >

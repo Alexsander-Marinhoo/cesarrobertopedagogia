@@ -16,17 +16,21 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
     profile,
     loading: authLoading,
     signInWithPassword,
+    signOut,
     signUp,
     resetPassword,
     updateUserPassword
   } = useAuth()
+
+  // Evita o redirect automático enquanto o envio do formulário de login está em andamento
+  const submittingRef = useRef(false)
 
   // Verifica se o usuário está na rota de recuperação de senha
   const isRecovery = location.pathname.includes('redefinir-senha') || location.hash.includes('type=recovery')
 
   // Se já estiver logado (e não estiver redefinindo senha), redireciona automaticamente para o portal correspondente
   useEffect(() => {
-    if (!authLoading && user && !isRecovery) {
+    if (!authLoading && user && !isRecovery && !submittingRef.current) {
       if (profile?.tipo_usuario === 'ADMIN') {
         navigate('/admin', { replace: true })
       } else if (profile?.tipo_usuario === 'ESCOLA') {
@@ -172,6 +176,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
     setLoading(true)
     setErrorMsg('')
     setSuccessMsg('')
+    submittingRef.current = true
 
     try {
       if (mode === 'recovery') {
@@ -196,11 +201,15 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
         }
         const res = await signInWithPassword(formData.email, formData.password)
         const userProf = res?.profile || profile
+        if (userProf?.tipo_usuario === 'ADMIN') {
+          await signOut()
+          setFormData((prev) => ({ ...prev, password: '' }))
+          setErrorMsg('Esta é a área de acesso de alunos e escolas. Contas administrativas não podem entrar por aqui: use o acesso restrito em /admin.')
+          return
+        }
         setSuccessMsg('Login realizado com sucesso! Redirecionando...')
         setTimeout(() => {
-          if (userProf?.tipo_usuario === 'ADMIN') {
-            navigate('/admin')
-          } else if (userProf?.tipo_usuario === 'ESCOLA') {
+          if (userProf?.tipo_usuario === 'ESCOLA') {
             navigate('/portal/escola')
           } else {
             navigate('/portal/paciente')
@@ -239,6 +248,7 @@ export default function AuthPage({ initialRole: _initialRole = 'PACIENTE' }) {
     } catch (err) {
       setErrorMsg(translateAuthError(err))
     } finally {
+      submittingRef.current = false
       setLoading(false)
     }
   }

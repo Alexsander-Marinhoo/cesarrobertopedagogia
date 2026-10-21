@@ -25,6 +25,7 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
     signInWithMagicLink,
     resetPassword,
     loginWithDemo,
+    signOut,
     isConfigured
   } = useAuth()
 
@@ -77,7 +78,13 @@ export default function AuthModal({ isOpen, onClose, initialRole = 'PACIENTE', i
         if (!formData.email || !formData.password) {
           throw new Error('Preencha seu e-mail e senha.')
         }
-        await signInWithPassword(formData.email, formData.password)
+        const res = await signInWithPassword(formData.email, formData.password)
+        if (res?.profile?.tipo_usuario === 'ADMIN') {
+          await signOut()
+          setFormData((prev) => ({ ...prev, password: '' }))
+          setErrorMsg('Esta é a área de acesso de alunos e escolas. Contas administrativas não podem entrar por aqui: use o acesso restrito em /admin.')
+          return
+        }
         setSuccessMsg('Login realizado com sucesso!')
         setTimeout(() => {
           onClose()

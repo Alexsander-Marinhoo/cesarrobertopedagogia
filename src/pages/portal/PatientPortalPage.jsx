@@ -49,9 +49,12 @@ import {
   createAppointmentRequest,
   cancelUserAppointment,
   getSecureDownloadUrl,
-  fetchCourseModulesAndLessons,
+  fetchCursoMaterias,
+  fetchCursosTotalConteudos,
+  updateCourseProgress,
   fetchBookedSlotsForDate
 } from '../../services/portalService'
+import CoursePreview from '../../components/admin/CoursePreview'
 
 export default function PatientPortalPage() {
   const navigate = useNavigate()
@@ -75,6 +78,9 @@ export default function PatientPortalPage() {
   const [selectedLaudoPreview, setSelectedLaudoPreview] = useState(null)
   const [selectedCertificate, setSelectedCertificate] = useState(null)
   const [selectedCourseLesson, setSelectedCourseLesson] = useState(null)
+  const [courseMaterias, setCourseMaterias] = useState(null) // null = carregando
+  const [courseLoadError, setCourseLoadError] = useState('')
+  const [courseTotals, setCourseTotals] = useState({}) // { [cursoId]: total de conteúdos }
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [downloadingId, setDownloadingId] = useState(null)
   const [notification, setNotification] = useState('')
@@ -111,6 +117,20 @@ export default function PatientPortalPage() {
   useEffect(() => {
     loadSupabaseData()
   }, [user?.id, isSchool])
+
+  // Total real de conteúdos de cada curso matriculado (para "X de Y aulas")
+  const matriculaCursoIds = dbData.matriculas.map((m) => m.curso_id).join(',')
+  useEffect(() => {
+    const ids = matriculaCursoIds ? matriculaCursoIds.split(',') : []
+    if (ids.length === 0) return
+    let active = true
+    fetchCursosTotalConteudos(ids).then((totals) => {
+      if (active) setCourseTotals(totals)
+    })
+    return () => {
+      active = false
+    }
+  }, [matriculaCursoIds])
 
   const handleLogout = async () => {
     try {
@@ -308,14 +328,16 @@ export default function PatientPortalPage() {
   // 5. Cursos e Matrículas Reais no Supabase
   const enrolledCourses = dbData.matriculas.map((m) => {
     const cursoInfo = m.curso || {}
+    const totalAulas = courseTotals[m.curso_id] || 0
     return {
       id: m.id,
+      cursoId: m.curso_id,
       titulo: cursoInfo.titulo || (isSchool ? 'Capacitação Docente & Inclusão na Prática' : 'Formação Continuada'),
       instrutor: 'Prof. Cesar Roberto Loureiro',
       cargaHoraria: cursoInfo.carga_horaria || '30 horas',
       progresso: m.progresso || 0,
-      aulasConcluidas: Math.round(((m.progresso || 0) / 100) * 12),
-      totalAulas: 12,
+      aulasConcluidas: Math.round(((m.progresso || 0) / 100) * totalAulas),
+      totalAulas,
       status: m.progresso === 100 ? 'Concluído' : 'Em Andamento',
       categoria: isSchool ? 'Formação Docente & BNCC' : 'Educação & Neurociência',
       imagem: cursoInfo.miniatura_url || cursoInfo.thumbnail_url || (isSchool
@@ -324,7 +346,6 @@ export default function PatientPortalPage() {
       descricao: cursoInfo.descricao || (isSchool
         ? 'Curso prático para professores e gestores: estratégias de inclusão, manejo em sala de aula e adequações da BNCC.'
         : 'Curso prático focado em neuroeducação e adaptações pedagógicas.'),
-      proximaAula: 'Aula 1: Fundamentos e Metodologias Práticas',
       certificado: m.certificado_emitido ? {
         codigo: m.codigo_certificado || `CERT-${m.id.substring(0, 8).toUpperCase()}`,
         dataEmissao: m.data_conclusao ? new Date(m.data_conclusao).toLocaleDateString('pt-BR') : 'Data de Emissão',
@@ -332,12 +353,7 @@ export default function PatientPortalPage() {
         livro: 'Livro de Extensão Vol. 04 / Registro Oficial',
         aluno: displayName,
         curso: cursoInfo.titulo || 'Formação Continuada'
-      } : null,
-      modulos: [
-        { nome: 'Módulo 1: Fundamentos e Práticas Inclusivas na BNCC', aulas: 4, concluido: (m.progresso || 0) >= 30 },
-        { nome: 'Módulo 2: Estratégias e Manejo em Sala de Aula', aulas: 4, concluido: (m.progresso || 0) >= 70 },
-        { nome: 'Módulo 3: Avaliação Formativa e Devolutivas', aulas: 4, concluido: (m.progresso || 0) === 100 }
-      ]
+      } : null
     }
   })
 
@@ -383,24 +399,42 @@ export default function PatientPortalPage() {
     }
   }
 
+  // Abre o curso com as matérias e conteúdos reais cadastrados no painel admin
   const handleOpenCourseModal = async (curso) => {
+    setCourseLoadError('')
+    setCourseMaterias(null)
     setSelectedCourseLesson(curso)
-    if (curso?.curso_id || curso?.id) {
-      try {
-        const liveMods = await fetchCourseModulesAndLessons(curso.curso_id || curso.id)
-        if (liveMods && liveMods.length > 0) {
-          setSelectedCourseLesson((prev) => ({
-            ...prev,
-            modulos: liveMods.map((m) => ({
-              nome: m.titulo,
-              aulas: m.aulas?.length || 0,
-              concluido: (prev?.progresso || 0) >= 50
-            }))
-          }))
-        }
-      } catch (err) {
-        console.warn('Aviso ao carregar módulos do curso:', err)
-      }
+    try {
+      const materias = await fetchCursoMaterias(curso.cursoId)
+      setCourseMaterias(materias)
+    } catch (err) {
+      console.warn('Aviso ao carregar matérias do curso:', err)
+      setCourseLoadError('Não foi possível carregar as aulas deste curso. Tente novamente em instantes.')
+      setCourseMaterias([])
+    }
+  }
+
+  const handleCloseCourse = () => {
+    setSelectedCourseLesson(null)
+    setCourseMaterias(null)
+    setCourseLoadError('')
+  }
+
+  // Salva o progresso (0-100) do aluno na matrícula e atualiza os cards sem recarregar a página
+  const handleCourseProgress = async (percent) => {
+    const cursoId = selectedCourseLesson?.cursoId
+    if (!user?.id || !cursoId) return
+    const saved = await updateCourseProgress(user.id, cursoId, percent)
+    if (!saved) return
+    setDbData((prev) => ({
+      ...prev,
+      matriculas: prev.matriculas.map((m) =>
+        m.curso_id === cursoId ? { ...m, progresso: Math.max(m.progresso || 0, percent) } : m
+      )
+    }))
+    if (percent >= 100) {
+      setNotification('Parabéns! Curso concluído. Seu certificado foi liberado.')
+      await loadSupabaseData()
     }
   }
 
@@ -1876,94 +1910,37 @@ export default function PatientPortalPage() {
       {/* ========================================================================= */}
       {/* MODAL 3: GRADE DE AULAS & PLAYER */}
       {/* ========================================================================= */}
-      {selectedCourseLesson && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-3xl bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-slate-300 space-y-6 relative max-h-[92vh] overflow-y-auto">
-            
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-1">
-                <span className="px-3 py-1 rounded-full bg-[#002B49] text-white text-[10px] font-cta font-bold uppercase">
-                  {selectedCourseLesson.categoria}
-                </span>
-                <h3 className="font-heading font-extrabold text-xl text-[#002B49]">
-                  {selectedCourseLesson.titulo}
-                </h3>
-                <p className="text-xs sm:text-sm font-sans text-slate-600 font-medium">
-                  {selectedCourseLesson.cargaHoraria} • Instrutor: {selectedCourseLesson.instrutor}
-                </p>
-              </div>
-
-              <button
-                onClick={() => setSelectedCourseLesson(null)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-500 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="w-full aspect-video rounded-2xl bg-[#00182A] text-white flex flex-col items-center justify-center p-6 text-center space-y-3 relative overflow-hidden shadow-inner border border-slate-700">
-              <img
-                src={selectedCourseLesson.imagem}
-                alt="Prévia da aula"
-                onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop' }}
-                className="absolute inset-0 w-full h-full object-cover opacity-30"
-              />
-              <div className="relative z-10 w-14 h-14 rounded-full bg-[#D4AF37] text-[#002B49] flex items-center justify-center shadow-lg cursor-pointer hover:scale-105 transition">
-                <Play className="w-7 h-7 fill-current ml-0.5" />
-              </div>
-              <div className="relative z-10 space-y-1">
-                <div className="text-xs font-cta font-bold uppercase tracking-wider text-[#D4AF37]">
-                  Aula Disponível
-                </div>
-                <div className="font-heading font-bold text-sm sm:text-base text-white">
-                  {selectedCourseLesson.proximaAula || selectedCourseLesson.modulos?.[0]?.nome}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#002B49]">
-                Grade de Módulos:
-              </div>
-              <div className="space-y-2.5">
-                {selectedCourseLesson.modulos?.map((mod, i) => (
-                  <div
-                    key={i}
-                    className="p-4 rounded-2xl bg-slate-50 border-2 border-slate-300 flex items-center justify-between gap-3 shadow-2xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                        mod.concluido ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-slate-200 text-slate-800 border border-slate-300'
-                      }`}>
-                        {mod.concluido ? '✓' : i + 1}
-                      </div>
-                      <div className="space-y-0.5">
-                        <div className="font-heading font-bold text-xs sm:text-sm text-[#002B49]">{mod.nome}</div>
-                        <div className="text-xs font-sans text-slate-600">{mod.aulas} aulas gravadas • Material incluso</div>
-                      </div>
-                    </div>
-
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase shrink-0 ${
-                      mod.concluido ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-900 border border-amber-200'
-                    }`}>
-                      {mod.concluido ? 'Concluído' : 'Disponível'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                onClick={() => setSelectedCourseLesson(null)}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-cta font-bold cursor-pointer text-center"
-              >
-                Fechar
-              </button>
-            </div>
-
+      {selectedCourseLesson && courseMaterias === null && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#00182A]/80 backdrop-blur-sm">
+          <div className="flex items-center gap-3 rounded-2xl bg-white px-6 py-4 shadow-2xl text-[#002B49] font-bold">
+            <div className="w-5 h-5 border-2 border-[#002B49] border-t-transparent rounded-full animate-spin" />
+            Carregando aulas do curso...
           </div>
         </div>
+      )}
+
+      {selectedCourseLesson && courseMaterias !== null && (
+        <>
+          {courseLoadError && (
+            <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[80] rounded-xl bg-rose-600 text-white text-sm font-bold px-5 py-3 shadow-xl">
+              {courseLoadError}
+            </div>
+          )}
+          <CoursePreview
+            modo="aluno"
+            curso={{
+              titulo: selectedCourseLesson.titulo,
+              descricao: selectedCourseLesson.descricao,
+              thumbnail_url: selectedCourseLesson.imagem,
+              carga_horaria: selectedCourseLesson.cargaHoraria,
+              certificado_info: selectedCourseLesson.certificado ? 'Certificado emitido' : ''
+            }}
+            materias={courseMaterias}
+            initialProgress={selectedCourseLesson.progresso || 0}
+            onProgress={handleCourseProgress}
+            onClose={handleCloseCourse}
+          />
+        </>
       )}
 
       {/* ========================================================================= */}

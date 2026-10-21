@@ -169,6 +169,9 @@ export default function CourseEditorModal({
 
   if (!isOpen) return null
 
+  // Edição somente quando o curso já existe no banco (curso novo recebe um UUID pré-gerado em cursoData.id)
+  const isEditing = Boolean(curso?.id)
+
   // Atualizar campo do curso
   const updateCursoField = (field, value) => {
     setCursoData((prev) => {
@@ -430,7 +433,7 @@ export default function CourseEditorModal({
       if (capaPendingFile) {
         setSaveProgressMsg('Enviando imagem de capa...')
         finalThumbnailUrl = await uploadCursoCapa(courseId, capaPendingFile)
-      } else if (capaRemovida && cursoData.id) {
+      } else if (capaRemovida && isEditing) {
         // Se removeu a capa personalizada pré-existente
         await deleteCursoCapa(cursoData.id)
         finalThumbnailUrl = DEFAULT_COVER
@@ -453,7 +456,7 @@ export default function CourseEditorModal({
       }
 
       let cursoSalvo = null
-      if (cursoData.id) {
+      if (isEditing) {
         // Atualiza curso existente
         cursoSalvo = await updateAdminCurso(cursoData.id, payloadCurso)
       } else {
@@ -551,7 +554,7 @@ export default function CourseEditorModal({
                   Painel do Professor / Administrador
                 </span>
                 <h2 id="course-modal-title" className="text-xl sm:text-2xl font-heading font-extrabold text-white leading-tight">
-                  {cursoData.id ? 'Editar Curso' : 'Cadastrar Novo Curso'}
+                  {isEditing ? 'Editar Curso' : 'Cadastrar Novo Curso'}
                 </h2>
               </div>
             </div>
@@ -1308,7 +1311,7 @@ export default function CourseEditorModal({
                   ) : (
                     <>
                       <Check className="w-4 h-4 text-[#002B49] stroke-[3]" />
-                      <span>{cursoData.id ? 'Salvar Alterações' : 'Salvar e Publicar Curso'}</span>
+                      <span>{isEditing ? 'Salvar Alterações' : 'Salvar e Publicar Curso'}</span>
                     </>
                   )}
                 </button>

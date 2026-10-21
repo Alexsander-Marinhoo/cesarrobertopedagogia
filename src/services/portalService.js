@@ -154,6 +154,58 @@ export async function fetchCourseModulesAndLessons(cursoId) {
   }
 }
 
+/**
+ * Matérias e conteúdos (vídeo / PDF / texto) de um curso, exatamente como gravados no painel admin.
+ * Formato: [{ id, titulo, descricao, conteudos: [{ tipo, titulo, video_url, pdf_apoio_url, ... }] }]
+ */
+export async function fetchCursoMaterias(cursoId) {
+  if (!isSupabaseConfigured || !cursoId) return []
+
+  const { data, error } = await supabase
+    .from('modulos_curso')
+    .select(`
+      id, titulo, descricao, ordem,
+      conteudos:aulas_curso ( id, titulo, tipo, video_url, pdf_apoio_url, arquivo_nome, conteudo_texto, duracao, ordem )
+    `)
+    .eq('curso_id', cursoId)
+    .order('ordem', { ascending: true })
+
+  if (error) throw error
+
+  return (data || []).map((m) => ({
+    ...m,
+    conteudos: (m.conteudos || [])
+      .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+      .map((c) => ({
+        ...c,
+        tipo: c.tipo || (c.video_url ? 'VIDEO' : c.pdf_apoio_url ? 'PDF' : 'TEXTO')
+      }))
+  }))
+}
+
+/** Total de conteúdos de cada curso informado: { [cursoId]: number } */
+export async function fetchCursosTotalConteudos(cursoIds = []) {
+  const ids = [...new Set(cursoIds.filter(Boolean))]
+  if (!isSupabaseConfigured || ids.length === 0) return {}
+
+  try {
+    const { data, error } = await supabase
+      .from('modulos_curso')
+      .select('curso_id, aulas:aulas_curso ( id )')
+      .in('curso_id', ids)
+
+    if (error) throw error
+
+    return (data || []).reduce((acc, m) => {
+      acc[m.curso_id] = (acc[m.curso_id] || 0) + (m.aulas?.length || 0)
+      return acc
+    }, {})
+  } catch (err) {
+    console.warn('Aviso ao contar conteúdos dos cursos:', err)
+    return {}
+  }
+}
+
 // ----------------------------------------------------------------------------
 // 4. ATUALIZAR PROGRESSO DE CURSO DO ALUNO
 // ----------------------------------------------------------------------------
