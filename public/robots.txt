@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Bloqueia áreas administrativas privadas da indexação pública
+Disallow: /admin
+Disallow: /portal/
+
+# Mapa do Site Oficial
+Sitemap: https://cesarrobertopedagogia.vercel.app/sitemap.xml
