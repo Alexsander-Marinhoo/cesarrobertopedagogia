@@ -105,6 +105,144 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
     }
   }, [])
 
+  const renderCourseCard = (course, idx) => {
+    const isFeatured = course.isFeatured ?? (idx === 0)
+
+    return (
+      <div
+        className={`gsap-card rounded-[24px] sm:rounded-[28px] transition-all duration-300 flex flex-col w-full h-full group overflow-hidden ${
+          isFeatured
+            ? 'bg-[#002B49] text-white border border-[#073B63] shadow-2xl shadow-[#002B49]/20 hover:border-[#D4AF37]/50'
+            : 'bg-white border border-slate-200/90 shadow-lg shadow-slate-200/40 hover:shadow-xl hover:border-slate-300'
+        }`}
+      >
+        {/* Cover Image — topo sem padding, proporção correta */}
+        {course.thumbnail_url && (
+          <div className="relative w-full aspect-[16/9] overflow-hidden shrink-0 bg-slate-100">
+            <img
+              src={course.thumbnail_url}
+              alt={course.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            />
+            {/* Gradient sutil no rodapé da imagem para transição suave */}
+            <div className={`absolute inset-x-0 bottom-0 h-8 ${isFeatured ? 'bg-gradient-to-t from-[#002B49] to-transparent' : 'bg-gradient-to-t from-white/30 to-transparent'}`} />
+          </div>
+        )}
+
+        {/* Conteúdo com padding */}
+        <div className="flex flex-col flex-1 justify-between p-5 sm:p-6">
+          <div>
+            {/* Tag de Início / Turma */}
+            <div className="mb-2.5">
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase tracking-wider ${
+                  isFeatured
+                    ? 'bg-white/15 text-[#D4AF37] border border-[#D4AF37]/30'
+                    : 'bg-[#002B49]/5 text-[#002B49] border border-[#002B49]/15'
+                }`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+                Início: {course.startDate || 'Janeiro de 2027'}
+              </span>
+            </div>
+
+            {/* Top: Title & Description */}
+            <div>
+              <h3
+                className={`text-lg sm:text-xl font-serif font-bold leading-snug tracking-tight ${
+                  isFeatured ? 'text-white' : 'text-[#002B49]'
+                }`}
+              >
+                {course.title}
+              </h3>
+              <p
+                className={`text-xs font-sans mt-1.5 leading-relaxed line-clamp-2 min-h-[32px] ${
+                  isFeatured ? 'text-slate-300' : 'text-slate-500'
+                }`}
+              >
+                {course.description}
+              </p>
+            </div>
+
+            {/* Divider 1 */}
+            <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
+
+            {/* Price / Investment Header */}
+            <div>
+              <div
+                className={`text-2xl sm:text-3xl font-serif font-bold tracking-tight ${
+                  isFeatured ? 'text-white' : 'text-[#002B49]'
+                }`}
+              >
+                {course.price}
+              </div>
+
+              {/* Primary Full-Width CTA Button */}
+              <a
+                href={`https://wa.me/5532987252421?text=${encodeURIComponent(
+                  `Olá, Professor Cesar Roberto Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className={`mt-3.5 w-full py-3 px-4 rounded-full text-xs font-cta font-bold inline-flex items-center justify-center gap-2 transition shadow-sm hover:scale-[1.01] active:scale-[0.99] cursor-pointer ${
+                  isFeatured
+                    ? 'bg-white hover:bg-[#D4AF37] text-[#002B49] shadow-md'
+                    : 'bg-[#002B49] hover:bg-[#073B63] text-white'
+                }`}
+              >
+                <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
+                <span>Garantir Vaga • {course.startDate || 'Inscrições Abertas'}</span>
+              </a>
+            </div>
+
+            {/* Checkpoints / Modules List */}
+            <div className="space-y-2.5 mt-5">
+              {(course.modules || []).slice(0, 4).map((mod, modIdx) => (
+                <div
+                  key={modIdx}
+                  className={`flex items-center gap-2.5 text-xs font-sans ${
+                    isFeatured ? 'text-slate-200' : 'text-slate-700'
+                  }`}
+                >
+                  <div
+                    className={`w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0 ${
+                      isFeatured
+                        ? 'bg-white/20 text-white'
+                        : 'bg-slate-200/90 text-slate-700'
+                    }`}
+                  >
+                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                  </div>
+                  <span className="truncate">{mod}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Partition & Metadata */}
+          <div>
+            {/* Divider 2 */}
+            <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
+
+            <div>
+              <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-400">
+                Turma &amp; Carga Horária
+              </div>
+              <div
+                className={`text-[11px] font-sans mt-0.5 ${
+                  isFeatured ? 'text-slate-300' : 'text-slate-600'
+                }`}
+              >
+                Início: {course.startDate || 'Janeiro de 2027'} • {course.workload}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <SkeletonTheme baseColor="#EDE8DF" highlightColor="#FAF7F2">
       <section id="cursos" className="py-20 bg-[#F4F6F8] bg-pattern-grid border-b border-slate-200 overflow-hidden relative text-[#1E293B]">
@@ -174,6 +312,14 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                   </p>
                 </div>
               </div>
+            ) : courses.length <= 2 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 max-w-3xl gap-6 pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
+                {courses.map((course, idx) => (
+                  <div key={course.id || idx} className="w-full max-w-[390px] flex">
+                    {renderCourseCard(course, idx)}
+                  </div>
+                ))}
+              </div>
             ) : (
               <Swiper
                 modules={[Navigation, Pagination, A11y]}
@@ -184,32 +330,32 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 grabCursor={true}
                 breakpoints={{
                   500: {
-                    slidesPerView: courses.length < 2 ? 1 : 1.5,
+                    slidesPerView: 1.5,
                     spaceBetween: 16,
                     slidesOffsetAfter: 24,
                   },
                   640: {
-                    slidesPerView: courses.length < 2 ? 1 : 2.2,
+                    slidesPerView: 2.2,
                     spaceBetween: 18,
                     slidesOffsetAfter: 28,
                   },
                   768: {
-                    slidesPerView: courses.length < 3 ? Math.min(courses.length, 2) : 2.5,
+                    slidesPerView: 2.5,
                     spaceBetween: 20,
                     slidesOffsetAfter: 32,
                   },
                   1024: {
-                    slidesPerView: courses.length < 3 ? Math.min(courses.length, 2.5) : 3.2,
+                    slidesPerView: 3.2,
                     spaceBetween: 20,
                     slidesOffsetAfter: 36,
                   },
                   1280: {
-                    slidesPerView: courses.length < 4 ? Math.min(courses.length, 3) : 3.5,
+                    slidesPerView: 3.5,
                     spaceBetween: 22,
                     slidesOffsetAfter: 48,
                   },
                   1536: {
-                    slidesPerView: courses.length < 4 ? Math.min(courses.length, 3.2) : 3.5,
+                    slidesPerView: 3.5,
                     spaceBetween: 24,
                     slidesOffsetAfter: 64,
                   },
@@ -222,150 +368,16 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                 onSlideChange={handleSwiper}
                 className="pb-4 pt-1 !overflow-visible"
               >
-                {courses.map((course, idx) => {
-                  const isFeatured = course.isFeatured ?? (idx === 0)
-
-                  return (
-                    <SwiperSlide key={course.id || idx} className="!h-auto flex">
-                      <div
-                        className={`gsap-card rounded-[24px] sm:rounded-[28px] transition-all duration-300 flex flex-col w-full h-full group overflow-hidden ${
-                          isFeatured
-                            ? 'bg-[#002B49] text-white border border-[#073B63] shadow-2xl shadow-[#002B49]/20 hover:border-[#D4AF37]/50'
-                            : 'bg-white border border-slate-200/90 shadow-lg shadow-slate-200/40 hover:shadow-xl hover:border-slate-300'
-                        }`}
-                      >
-                        {/* Cover Image — topo sem padding, igual ao card de materiais */}
-                        {course.thumbnail_url && (
-                          <div className="relative w-full aspect-[16/9] overflow-hidden shrink-0">
-                            <img
-                              src={course.thumbnail_url}
-                              alt={course.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                              loading="lazy"
-                            />
-                            {/* Gradient sutil no rodapé da imagem para transição suave */}
-                            <div className={`absolute inset-x-0 bottom-0 h-8 ${isFeatured ? 'bg-gradient-to-t from-[#002B49] to-transparent' : 'bg-gradient-to-t from-white/30 to-transparent'}`} />
-                          </div>
-                        )}
-
-                        {/* Conteúdo com padding */}
-                        <div className="flex flex-col flex-1 justify-between p-5 sm:p-6">
-                          <div>
-                            {/* Tag de Início / Turma */}
-                            <div className="mb-2.5">
-                              <span
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-cta font-bold uppercase tracking-wider ${
-                                  isFeatured
-                                    ? 'bg-white/15 text-[#D4AF37] border border-[#D4AF37]/30'
-                                    : 'bg-[#002B49]/5 text-[#002B49] border border-[#002B49]/15'
-                                }`}
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
-                                Início: {course.startDate || 'Janeiro de 2027'}
-                              </span>
-                            </div>
-
-                            {/* Top: Title & Description */}
-                            <div>
-                              <h3
-                                className={`text-lg sm:text-xl font-serif font-bold leading-snug tracking-tight ${
-                                  isFeatured ? 'text-white' : 'text-[#002B49]'
-                                }`}
-                              >
-                                {course.title}
-                              </h3>
-                              <p
-                                className={`text-xs font-sans mt-1.5 leading-relaxed line-clamp-2 min-h-[32px] ${
-                                  isFeatured ? 'text-slate-300' : 'text-slate-500'
-                                }`}
-                              >
-                                {course.description}
-                              </p>
-                            </div>
-
-                            {/* Divider 1 */}
-                            <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
-
-                            {/* Price / Investment Header */}
-                            <div>
-                              <div
-                                className={`text-2xl sm:text-3xl font-serif font-bold tracking-tight ${
-                                  isFeatured ? 'text-white' : 'text-[#002B49]'
-                                }`}
-                              >
-                                {course.price}
-                              </div>
-
-                              {/* Primary Full-Width CTA Button */}
-                              <a
-                                href={`https://wa.me/5532987252421?text=${encodeURIComponent(
-                                  `Olá, Professor Cesar Roberto Loureiro! Gostaria de informações para inscrição na turma de ${course.startDate || 'Janeiro de 2027'} do curso: "${course.title}".`
-                                )}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className={`mt-3.5 w-full py-3 px-4 rounded-full text-xs font-cta font-bold inline-flex items-center justify-center gap-2 transition shadow-sm hover:scale-[1.01] active:scale-[0.99] cursor-pointer ${
-                                  isFeatured
-                                    ? 'bg-white hover:bg-[#D4AF37] text-[#002B49] shadow-md'
-                                    : 'bg-[#002B49] hover:bg-[#073B63] text-white'
-                                }`}
-                              >
-                                <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 object-contain" />
-                                <span>Garantir Vaga • {course.startDate || 'Inscrições Abertas'}</span>
-                              </a>
-                            </div>
-
-                            {/* Checkpoints / Modules List */}
-                            <div className="space-y-2.5 mt-5">
-                              {(course.modules || []).slice(0, 4).map((mod, modIdx) => (
-                                <div
-                                  key={modIdx}
-                                  className={`flex items-center gap-2.5 text-xs font-sans ${
-                                    isFeatured ? 'text-slate-200' : 'text-slate-700'
-                                  }`}
-                                >
-                                  <div
-                                    className={`w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0 ${
-                                      isFeatured
-                                        ? 'bg-white/20 text-white'
-                                        : 'bg-slate-200/90 text-slate-700'
-                                    }`}
-                                  >
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                  </div>
-                                  <span className="truncate">{mod}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Bottom Partition & Metadata */}
-                          <div>
-                            {/* Divider 2 */}
-                            <div className={`border-t my-4 ${isFeatured ? 'border-white/15' : 'border-slate-200/90'}`} />
-
-                            <div>
-                              <div className="text-[10px] font-sans font-bold uppercase tracking-wider text-slate-400">
-                                Turma &amp; Carga Horária
-                              </div>
-                              <div
-                                className={`text-[11px] font-sans mt-0.5 ${
-                                  isFeatured ? 'text-slate-300' : 'text-slate-600'
-                                }`}
-                              >
-                                Início: {course.startDate || 'Janeiro de 2027'} • {course.workload}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </SwiperSlide>
-                  )
-                })}
+                {courses.map((course, idx) => (
+                  <SwiperSlide key={course.id || idx} className="!h-auto flex">
+                    {renderCourseCard(course, idx)}
+                  </SwiperSlide>
+                ))}
               </Swiper>
             )}
 
-            {/* Bottom Controls */}
-            {courses.length > 0 && (
+            {/* Bottom Controls — visíveis apenas para carrossel com mais de 2 itens */}
+            {courses.length > 2 && (
               <div className="mt-6 flex items-center justify-center gap-3 pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
                 <button
                   type="button"
