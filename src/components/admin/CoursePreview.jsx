@@ -15,7 +15,8 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
-  Menu
+  Menu,
+  ClipboardCheck
 } from 'lucide-react'
 import { parseVideoUrl, isExternalUrl, getPdfEmbedUrl } from '../../utils/courseMedia'
 import { getCursoPdfSignedUrl } from '../../services/adminService'
@@ -27,12 +28,14 @@ const DEFAULT_THUMB =
 export const TIPO_META = {
   VIDEO: { label: 'Vídeo', Icon: PlayCircle, color: 'text-rose-600', bg: 'bg-rose-50', ring: 'ring-rose-200' },
   PDF: { label: 'Apostila (PDF)', Icon: FileText, color: 'text-sky-700', bg: 'bg-sky-50', ring: 'ring-sky-200' },
-  TEXTO: { label: 'Texto', Icon: AlignLeft, color: 'text-emerald-700', bg: 'bg-emerald-50', ring: 'ring-emerald-200' }
+  TEXTO: { label: 'Texto', Icon: AlignLeft, color: 'text-emerald-700', bg: 'bg-emerald-50', ring: 'ring-emerald-200' },
+  PROVA: { label: 'Prova', Icon: ClipboardCheck, color: 'text-purple-700', bg: 'bg-purple-50', ring: 'ring-purple-200' }
 }
 
 function conteudoVazio(c) {
   if (c.tipo === 'VIDEO') return !c.video_url?.trim()
   if (c.tipo === 'PDF') return !c.pdf_apoio_url?.trim() && !c._pendingFile && !c._localPreviewUrl
+  if (c.tipo === 'PROVA') return !c.link_prova?.trim() && !c.video_url?.trim()
   return !c.conteudo_texto?.trim()
 }
 
@@ -137,6 +140,105 @@ function EmptyBox({ title, text }) {
       <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
       <p className="text-lg font-bold text-[#002B49]">{title}</p>
       <p className="text-base text-slate-600">{text}</p>
+    </div>
+  )
+}
+
+function formatGoogleFormsUrl(rawUrl) {
+  if (!rawUrl) return ''
+  let trimmed = rawUrl.trim()
+  // Se o usuário colou o link de edição (/edit), troca por /viewform
+  if (trimmed.includes('docs.google.com/forms')) {
+    trimmed = trimmed.replace(/\/edit(\?.*)?$/i, '/viewform')
+    if (!trimmed.includes('embedded=true')) {
+      trimmed += (trimmed.includes('?') ? '&' : '?') + 'embedded=true'
+    }
+  }
+  return trimmed
+}
+
+function ProvaView({ url, onComplete, isCompleted }) {
+  const cleanUrl = (url || '').trim()
+  const embedUrl = formatGoogleFormsUrl(cleanUrl)
+
+  if (!cleanUrl) {
+    return (
+      <EmptyBox
+        title="Prova não configurada"
+        text="Adicione o link do Google Forms no editor para que a avaliação apareça aqui."
+      />
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Banner Superior com Orientações e Ações */}
+      <div className="rounded-2xl p-5 bg-gradient-to-r from-purple-900 to-[#002B49] text-white shadow-lg border border-purple-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-200 border border-purple-400/30 text-xs font-bold uppercase tracking-wider">
+            <ClipboardCheck className="w-3.5 h-3.5 text-[#D4AF37]" />
+            Avaliação de Conhecimentos
+          </div>
+          <p className="text-sm sm:text-base font-semibold text-slate-100">
+            Responda atentamente a todas as questões no formulário abaixo.
+          </p>
+          <p className="text-xs text-slate-300">
+            Caso prefira, você também pode abrir o formulário em tela cheia na nova aba.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <a
+            href={cleanUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold transition border border-white/20 cursor-pointer shadow-sm"
+          >
+            <ExternalLink className="w-4 h-4 text-[#D4AF37]" />
+            Abrir em Nova Aba
+          </a>
+
+          <button
+            type="button"
+            onClick={onComplete}
+            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-xs sm:text-sm font-bold transition cursor-pointer shadow-md ${
+              isCompleted
+                ? 'bg-emerald-500 text-white'
+                : 'bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49]'
+            }`}
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            {isCompleted ? 'Prova Concluída' : 'Marcar como Concluída'}
+          </button>
+        </div>
+      </div>
+
+      {/* Frame Integrado do Google Forms */}
+      <div className="w-full min-h-[580px] h-[72vh] rounded-2xl overflow-hidden border border-slate-300 bg-white shadow-xl relative">
+        <iframe
+          src={embedUrl}
+          title="Formulário da Prova"
+          className="w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        >
+          Carregando formulário da prova...
+        </iframe>
+      </div>
+
+      {/* Confirmação pós-envio */}
+      <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div className="text-xs sm:text-sm text-purple-900 font-medium">
+          Após enviar suas respostas no Google Forms acima, confirme aqui para salvar a conclusão.
+        </div>
+        <button
+          type="button"
+          onClick={onComplete}
+          className="px-5 py-2.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs sm:text-sm font-bold transition shrink-0 cursor-pointer shadow-sm flex items-center gap-1.5"
+        >
+          <CheckCircle2 className="w-4 h-4 text-[#D4AF37]" />
+          Confirmar Envio da Prova
+        </button>
+      </div>
     </div>
   )
 }
@@ -495,6 +597,13 @@ export default function CoursePreview({
                   ) : (
                     <EmptyBox title="Texto vazio" text="Escreva o texto desta parte no editor." />
                   ))}
+                {conteudo?.tipo === 'PROVA' && (
+                  <ProvaView
+                    url={conteudo.link_prova || conteudo.video_url}
+                    isCompleted={concluidos.has(chaveAtual)}
+                    onComplete={marcarConcluido}
+                  />
+                )}
 
                 <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-200">
                   <button

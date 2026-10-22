@@ -165,7 +165,7 @@ export async function fetchCursoMaterias(cursoId) {
     .from('modulos_curso')
     .select(`
       id, titulo, descricao, ordem,
-      conteudos:aulas_curso ( id, titulo, tipo, video_url, pdf_apoio_url, arquivo_nome, conteudo_texto, duracao, ordem )
+      conteudos:aulas_curso ( id, titulo, tipo, video_url, pdf_apoio_url, arquivo_nome, conteudo_texto, link_prova, duracao, ordem )
     `)
     .eq('curso_id', cursoId)
     .order('ordem', { ascending: true })
@@ -178,7 +178,8 @@ export async function fetchCursoMaterias(cursoId) {
       .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
       .map((c) => ({
         ...c,
-        tipo: c.tipo || (c.video_url ? 'VIDEO' : c.pdf_apoio_url ? 'PDF' : 'TEXTO')
+        tipo: c.tipo || (c.link_prova ? 'PROVA' : c.video_url ? 'VIDEO' : c.pdf_apoio_url ? 'PDF' : 'TEXTO'),
+        link_prova: c.link_prova || (c.tipo === 'PROVA' ? c.video_url : '')
       }))
   }))
 }

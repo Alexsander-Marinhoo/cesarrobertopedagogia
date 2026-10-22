@@ -617,7 +617,7 @@ export async function fetchAdminCursoMaterias(cursoId) {
     .from('modulos_curso')
     .select(`
       id, titulo, descricao, ordem,
-      conteudos:aulas_curso ( id, titulo, tipo, video_url, pdf_apoio_url, arquivo_nome, conteudo_texto, duracao, ordem )
+      conteudos:aulas_curso ( id, titulo, tipo, video_url, pdf_apoio_url, arquivo_nome, conteudo_texto, link_prova, duracao, ordem )
     `)
     .eq('curso_id', cursoId)
     .order('ordem', { ascending: true })
@@ -634,7 +634,8 @@ export async function fetchAdminCursoMaterias(cursoId) {
       .map((c) => ({
         ...c,
         // Compatibilidade com aulas antigas (antes do campo "tipo")
-        tipo: c.tipo || (c.video_url ? 'VIDEO' : c.pdf_apoio_url ? 'PDF' : 'TEXTO')
+        tipo: c.tipo || (c.link_prova ? 'PROVA' : c.video_url ? 'VIDEO' : c.pdf_apoio_url ? 'PDF' : 'TEXTO'),
+        link_prova: c.link_prova || (c.tipo === 'PROVA' ? c.video_url : '')
       }))
   }))
 }
@@ -652,7 +653,8 @@ export async function saveAdminCursoMaterias(cursoId, materias = []) {
       video_url: c.tipo === 'VIDEO' ? c.video_url || '' : '',
       pdf_apoio_url: c.tipo === 'PDF' ? c.pdf_apoio_url || '' : '',
       arquivo_nome: c.tipo === 'PDF' ? c.arquivo_nome || '' : '',
-      conteudo_texto: c.tipo === 'TEXTO' ? c.conteudo_texto || '' : ''
+      conteudo_texto: c.tipo === 'TEXTO' ? c.conteudo_texto || '' : '',
+      link_prova: c.tipo === 'PROVA' ? (c.link_prova || c.video_url || '') : ''
     }))
   }))
 

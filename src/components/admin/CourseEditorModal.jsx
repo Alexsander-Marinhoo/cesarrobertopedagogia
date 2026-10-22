@@ -24,7 +24,8 @@ import {
   Link2,
   ExternalLink,
   HelpCircle,
-  Layers
+  Layers,
+  ClipboardCheck
 } from 'lucide-react'
 import CoursePreview from './CoursePreview'
 import {
@@ -302,7 +303,8 @@ export default function CourseEditorModal({
     const defaultTitles = {
       VIDEO: 'Vídeo da Aula',
       PDF: 'Apostila em PDF',
-      TEXTO: 'Texto e Orientações de Estudo'
+      TEXTO: 'Texto e Orientações de Estudo',
+      PROVA: 'Prova de Avaliação'
     }
 
     setMaterias((prev) =>
@@ -318,7 +320,8 @@ export default function CourseEditorModal({
               video_url: '',
               pdf_apoio_url: '',
               arquivo_nome: '',
-              conteudo_texto: ''
+              conteudo_texto: '',
+              link_prova: ''
             }
           ]
         }
@@ -1006,6 +1009,7 @@ export default function CourseEditorModal({
                                 const isVideo = conteudo.tipo === 'VIDEO'
                                 const isPdf = conteudo.tipo === 'PDF'
                                 const isTexto = conteudo.tipo === 'TEXTO'
+                                const isProva = conteudo.tipo === 'PROVA'
 
                                 return (
                                   <div
@@ -1015,6 +1019,8 @@ export default function CourseEditorModal({
                                         ? 'bg-rose-50/40 border-rose-200'
                                         : isPdf
                                         ? 'bg-sky-50/40 border-sky-200'
+                                        : isProva
+                                        ? 'bg-purple-50/40 border-purple-200'
                                         : 'bg-emerald-50/40 border-emerald-200'
                                     }`}
                                   >
@@ -1027,13 +1033,16 @@ export default function CourseEditorModal({
                                               ? 'bg-rose-600 text-white'
                                               : isPdf
                                               ? 'bg-sky-700 text-white'
+                                              : isProva
+                                              ? 'bg-purple-700 text-white'
                                               : 'bg-emerald-700 text-white'
                                           }`}
                                         >
                                           {isVideo && <Video className="w-3.5 h-3.5" />}
                                           {isPdf && <FileText className="w-3.5 h-3.5" />}
                                           {isTexto && <AlignLeft className="w-3.5 h-3.5" />}
-                                          <span>{isVideo ? 'Vídeo' : isPdf ? 'Apostila (PDF)' : 'Texto'}</span>
+                                          {isProva && <ClipboardCheck className="w-3.5 h-3.5" />}
+                                          <span>{isVideo ? 'Vídeo' : isPdf ? 'Apostila (PDF)' : isProva ? 'Prova' : 'Texto'}</span>
                                         </span>
 
                                         <span className="text-xs text-slate-500 font-semibold">
@@ -1191,6 +1200,46 @@ export default function CourseEditorModal({
                                       </div>
                                     )}
 
+                                    {/* CAMPO ESPECÍFICO: PROVA (GOOGLE FORMS) */}
+                                    {isProva && (
+                                      <div className="space-y-2 pt-1">
+                                        <label className="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                                          <ClipboardCheck className="w-3.5 h-3.5 text-purple-700" />
+                                          Link do Google Forms (Prova / Avaliação)
+                                        </label>
+                                        <input
+                                          type="url"
+                                          value={conteudo.link_prova || conteudo.video_url || ''}
+                                          onChange={(e) => {
+                                            const val = e.target.value
+                                            updateConteudo(mIndex, cIndex, 'link_prova', val)
+                                            updateConteudo(mIndex, cIndex, 'video_url', val)
+                                          }}
+                                          placeholder="https://docs.google.com/forms/d/e/.../viewform ou https://forms.gle/..."
+                                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 text-xs sm:text-sm text-slate-800 focus:outline-none focus:border-purple-600 font-mono"
+                                        />
+                                        <p className="text-[11px] text-slate-500">
+                                          Cole o link do Google Forms gerado para esta avaliação. O formulário será apresentado diretamente para o aluno responder no painel do curso.
+                                        </p>
+                                        {(conteudo.link_prova || conteudo.video_url) && (
+                                          <div className="flex items-center justify-between text-[11px] text-purple-800 font-semibold bg-purple-50 px-3 py-1.5 rounded-lg border border-purple-200">
+                                            <span className="flex items-center gap-1">
+                                              <Check className="w-3.5 h-3.5 text-purple-600" />
+                                              Link da prova configurado.
+                                            </span>
+                                            <a
+                                              href={conteudo.link_prova || conteudo.video_url}
+                                              target="_blank"
+                                              rel="noreferrer"
+                                              className="inline-flex items-center gap-1 text-purple-700 hover:text-purple-900 underline"
+                                            >
+                                              Abrir link <ExternalLink className="w-3 h-3" />
+                                            </a>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+
                                   </div>
                                 )
                               })}
@@ -1228,6 +1277,15 @@ export default function CourseEditorModal({
                               >
                                 <AlignLeft className="w-4 h-4 text-emerald-700" />
                                 <span>+ Texto</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => addConteudoToMateria(mIndex, 'PROVA')}
+                                className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-800 font-bold text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer transition"
+                              >
+                                <ClipboardCheck className="w-4 h-4 text-purple-700" />
+                                <span>+ Prova</span>
                               </button>
                             </div>
                           </div>
