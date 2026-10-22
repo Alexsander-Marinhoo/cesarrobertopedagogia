@@ -15,6 +15,7 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
+  Check,
   Menu,
   ClipboardCheck
 } from 'lucide-react'
@@ -392,6 +393,8 @@ export default function CoursePreview({
                 {(m.conteudos || []).map((c, ci) => {
                   const meta = TIPO_META[c.tipo] || TIPO_META.TEXTO
                   const active = selected?.m === mi && selected?.c === ci
+                  const concluido = concluidos.has(`${mi}-${ci}`)
+
                   return (
                     <li key={ci}>
                       <button
@@ -404,18 +407,40 @@ export default function CoursePreview({
                           active ? 'bg-[#FAF2D8] border-[#D4AF37]' : 'border-transparent hover:bg-slate-50'
                         }`}
                       >
-                        <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${meta.bg}`}>
-                          <meta.Icon className={`w-5 h-5 ${meta.color}`} />
+                        <span className="relative shrink-0">
+                          <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${meta.bg}`}>
+                            <meta.Icon className={`w-5 h-5 ${meta.color}`} />
+                          </span>
+                          {concluido && (
+                            <span
+                              className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-xs ring-2 ring-white"
+                              title="Conteúdo concluído"
+                            >
+                              <Check className="w-2.5 h-2.5 stroke-[3.5]" />
+                            </span>
+                          )}
                         </span>
-                        <span className="min-w-0">
+
+                        <span className="min-w-0 flex-1">
                           <span className="block text-sm font-semibold text-[#002B49] leading-snug line-clamp-2">
                             {c.titulo || meta.label}
                           </span>
-                          <span className="block text-xs text-slate-500">
-                            {meta.label}
+                          <span className="flex items-center gap-1 text-xs text-slate-500">
+                            <span>{meta.label}</span>
+                            {concluido && (
+                              <span className="text-blue-600 font-bold inline-flex items-center gap-0.5 text-[11px]">
+                                · Concluído
+                              </span>
+                            )}
                             {conteudoVazio(c) && <span className="text-amber-600 font-bold"> · incompleto</span>}
                           </span>
                         </span>
+
+                        {concluido && (
+                          <span className="shrink-0 text-blue-600 pl-1" title="Conteúdo concluído">
+                            <Check className="w-4 h-4 text-blue-600 stroke-[2.5]" />
+                          </span>
+                        )}
                       </button>
                     </li>
                   )
@@ -564,9 +589,17 @@ export default function CoursePreview({
             ) : (
               <>
                 <div className="space-y-1">
-                  <span className="text-sm font-bold uppercase tracking-wider text-[#A88319]">
-                    Matéria {selected.m + 1} · {materia?.titulo || `Matéria ${selected.m + 1}`}
-                  </span>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-bold uppercase tracking-wider text-[#A88319]">
+                      Matéria {selected.m + 1} · {materia?.titulo || `Matéria ${selected.m + 1}`}
+                    </span>
+                    {concluidos.has(chaveAtual) && (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold shrink-0">
+                        <Check className="w-3 h-3 stroke-[3] text-blue-600" />
+                        Concluído
+                      </span>
+                    )}
+                  </div>
                   <h1 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#002B49] leading-tight">
                     {conteudo?.titulo || TIPO_META[conteudo?.tipo]?.label}
                   </h1>
