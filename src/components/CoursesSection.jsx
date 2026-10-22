@@ -312,50 +312,42 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
                   </p>
                 </div>
               </div>
-            ) : courses.length <= 2 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 max-w-3xl gap-6 pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
-                {courses.map((course, idx) => (
-                  <div key={course.id || idx} className="w-full max-w-[390px] flex">
-                    {renderCourseCard(course, idx)}
-                  </div>
-                ))}
-              </div>
             ) : (
               <Swiper
                 modules={[Navigation, Pagination, A11y]}
                 spaceBetween={20}
-                slidesPerView={1.15}
+                slidesPerView={1.2}
                 slidesOffsetAfter={20}
                 loop={false}
                 grabCursor={true}
                 breakpoints={{
                   500: {
-                    slidesPerView: 1.5,
+                    slidesPerView: 1.6,
                     spaceBetween: 16,
                     slidesOffsetAfter: 24,
                   },
                   640: {
-                    slidesPerView: 2.2,
+                    slidesPerView: 2.3,
                     spaceBetween: 18,
                     slidesOffsetAfter: 28,
                   },
                   768: {
-                    slidesPerView: 2.5,
+                    slidesPerView: 2.8,
                     spaceBetween: 20,
                     slidesOffsetAfter: 32,
                   },
                   1024: {
-                    slidesPerView: 3.2,
+                    slidesPerView: 3.5,
                     spaceBetween: 20,
                     slidesOffsetAfter: 36,
                   },
                   1280: {
-                    slidesPerView: 3.5,
+                    slidesPerView: 4.5,
                     spaceBetween: 22,
                     slidesOffsetAfter: 48,
                   },
                   1536: {
-                    slidesPerView: 3.5,
+                    slidesPerView: 4.5,
                     spaceBetween: 24,
                     slidesOffsetAfter: 64,
                   },
@@ -376,8 +368,8 @@ export default function CoursesSection({ onOpenPortalWithTab }) {
               </Swiper>
             )}
 
-            {/* Bottom Controls — visíveis apenas para carrossel com mais de 2 itens */}
-            {courses.length > 2 && (
+            {/* Bottom Controls */}
+            {courses.length > 1 && (
               <div className="mt-6 flex items-center justify-center gap-3 pr-4 sm:pr-6 lg:pr-8 xl:pr-[max(2rem,calc((100vw-1440px)/2+2rem))]">
                 <button
                   type="button"
