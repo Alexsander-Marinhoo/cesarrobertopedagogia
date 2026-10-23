@@ -210,21 +210,30 @@ export async function fetchCursosTotalConteudos(cursoIds = []) {
 // ----------------------------------------------------------------------------
 // 4. ATUALIZAR PROGRESSO DE CURSO DO ALUNO
 // ----------------------------------------------------------------------------
-export async function updateCourseProgress(userId, cursoId, newProgress) {
+export async function updateCourseProgress(userId, cursoId, newProgress, progressDetails = null, lastLessonKey = null) {
   if (!isSupabaseConfigured || !userId || !cursoId) return null
 
   try {
     const certificadoEmitido = newProgress >= 100
     const codigoCertificado = certificadoEmitido ? `CERT-${new Date().getFullYear()}-CR-${Math.floor(1000 + Math.random() * 9000)}` : null
 
+    const updatePayload = {
+      progresso: newProgress,
+      certificado_emitido: certificadoEmitido,
+      codigo_certificado: codigoCertificado,
+      data_conclusao: certificadoEmitido ? new Date().toISOString() : null
+    }
+
+    if (progressDetails !== null) {
+      updatePayload.progresso_detalhes = progressDetails
+    }
+    if (lastLessonKey !== null) {
+      updatePayload.ultima_aula_chave = lastLessonKey
+    }
+
     const { data, error } = await supabase
       .from('matriculas')
-      .update({
-        progresso: newProgress,
-        certificado_emitido: certificadoEmitido,
-        codigo_certificado: codigoCertificado,
-        data_conclusao: certificadoEmitido ? new Date().toISOString() : null
-      })
+      .update(updatePayload)
       .eq('usuario_id', userId)
       .eq('curso_id', cursoId)
       .select()

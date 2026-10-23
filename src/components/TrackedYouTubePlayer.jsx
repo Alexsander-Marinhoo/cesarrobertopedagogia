@@ -40,7 +40,9 @@ const SAVE_EVERY_MS = 10000
  * @param {string} props.videoId  ID do vídeo no YouTube
  * @param {number} [props.threshold=0.9]  Fração mínima assistida (0 a 1)
  * @param {number[]} [props.initialSeen]  Segundos já assistidos (retomar progresso)
- * @param {(info: {percent: number, seen: number[], duration: number}) => void} [props.onProgress]
+ * @param {number} [props.initialPercent=0]  Porcentagem inicial já computada (0 a 1)
+ * @param {number} [props.lastPosition=0]  Último segundo reproduzido para retomar
+ * @param {(info: {percent: number, seen: number[], duration: number, currentTime: number}) => void} [props.onProgress]
  *        Chamado periodicamente (a cada ~10s), ao pausar e ao terminar
  * @param {() => void} [props.onComplete]  Chamado uma única vez ao atingir o limite
  * @param {boolean} [props.showMeter=true]  Exibe a barra de progresso abaixo do vídeo
@@ -49,6 +51,8 @@ export default function TrackedYouTubePlayer({
   videoId,
   threshold = 0.9,
   initialSeen = [],
+  initialPercent = 0,
+  lastPosition = 0,
   onProgress,
   onComplete,
   showMeter = true,
@@ -58,7 +62,7 @@ export default function TrackedYouTubePlayer({
   const seenRef = useRef(new Set(initialSeen))
   const completedRef = useRef(startCompleted)
   const callbacksRef = useRef({ onProgress, onComplete })
-  const [percent, setPercent] = useState(() => (startCompleted ? 1 : 0))
+  const [percent, setPercent] = useState(() => (startCompleted ? 1 : initialPercent > 0 ? initialPercent : 0))
   const [completed, setCompleted] = useState(startCompleted)
   const [error, setError] = useState('')
 
@@ -83,10 +87,12 @@ export default function TrackedYouTubePlayer({
       const now = Date.now()
       if (!force && now - lastSave < SAVE_EVERY_MS) return
       lastSave = now
+      const curTime = player?.getCurrentTime ? player.getCurrentTime() : null
       callbacksRef.current.onProgress?.({
         percent: computePercent(duration),
         seen: Array.from(seenRef.current),
-        duration
+        duration,
+        currentTime: curTime !== null ? Math.floor(curTime) : 0
       })
     }
 
@@ -145,10 +151,17 @@ export default function TrackedYouTubePlayer({
               const d = player.getDuration?.() || 0
               if (d) {
                 const p = computePercent(d)
-                if (!completedRef.current) setPercent(p)
+                if (!completedRef.current) setPercent(Math.max(p, initialPercent || 0))
                 if (p >= threshold) {
                   completedRef.current = true
                   setCompleted(true)
+                }
+                if (lastPosition > 0 && lastPosition < d - 5 && !completedRef.current) {
+                  try {
+                    player.seekTo(lastPosition, true)
+                  } catch (err) {
+                    console.warn('Aviso ao buscar posição do vídeo:', err)
+                  }
                 }
               }
             },

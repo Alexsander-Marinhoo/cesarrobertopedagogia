@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import {
   X,
   PlayCircle,
@@ -40,7 +40,15 @@ function conteudoVazio(c) {
   return !c.conteudo_texto?.trim()
 }
 
-function VideoView({ url, onComplete, alreadyCompleted }) {
+function VideoView({
+  url,
+  onComplete,
+  alreadyCompleted,
+  initialSeen = [],
+  initialPercent = 0,
+  lastPosition = 0,
+  onProgress
+}) {
   const video = parseVideoUrl(url)
   if (!video) {
     return (
@@ -57,6 +65,10 @@ function VideoView({ url, onComplete, alreadyCompleted }) {
         videoId={video.videoId}
         threshold={0.9}
         startCompleted={alreadyCompleted}
+        initialSeen={initialSeen}
+        initialPercent={initialPercent}
+        lastPosition={lastPosition}
+        onProgress={onProgress}
         onComplete={onComplete}
       />
     )
@@ -78,7 +90,7 @@ function VideoView({ url, onComplete, alreadyCompleted }) {
   )
 }
 
-function PdfView({ value, nome, localUrl }) {
+function PdfView({ value, nome, localUrl, isCompleted, onToggleComplete }) {
   const [url, setUrl] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -118,19 +130,36 @@ function PdfView({ value, nome, localUrl }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="w-full h-[60vh] min-h-[420px] rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 shadow-lg">
         <iframe src={url} title={nome || 'Apostila'} className="w-full h-full" />
       </div>
-      <a
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-sm font-bold transition"
-      >
-        <ExternalLink className="w-4 h-4 text-[#D4AF37]" />
-        Abrir apostila em tela cheia
-      </a>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-[#002B49] text-xs sm:text-sm font-bold transition cursor-pointer"
+        >
+          <ExternalLink className="w-4 h-4 text-[#D4AF37]" />
+          Abrir apostila em nova aba
+        </a>
+
+        {onToggleComplete && (
+          <button
+            type="button"
+            onClick={onToggleComplete}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition cursor-pointer shadow-sm ${
+              isCompleted
+                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                : 'bg-[#002B49] hover:bg-[#073B63] text-white'
+            }`}
+          >
+            <CheckCircle2 className={`w-4 h-4 ${isCompleted ? 'text-white' : 'text-[#D4AF37]'}`} />
+            {isCompleted ? 'Apostila Concluída ✓' : 'Marcar Apostila como Concluída'}
+          </button>
+        )}
+      </div>
     </div>
   )
 }
@@ -255,25 +284,25 @@ export default function CoursePreview({
   onClose,
   modo = 'preview',
   initialProgress = 0,
+  initialProgressDetails = null,
+  initialLessonKey = null,
   onProgress,
+  onProgressDetails,
   onCompleteCourse
 }) {
   const isAluno = modo === 'aluno'
-  // selected: null = página de apresentação | { m, c } = conteúdo
-  const [selected, setSelected] = useState(null)
-  const [openMaterias, setOpenMaterias] = useState(() => new Set(materias.map((_, i) => i)))
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  // Conteúdos concluídos (chave "matéria-conteúdo"): vídeos que atingiram 90% e textos/PDFs já abertos.
-  // No modo aluno, retoma do progresso salvo (os primeiros N conteúdos, na ordem do curso).
-  const [concluidos, setConcluidos] = useState(() => {
-    const set = new Set()
-    if (!isAluno || !initialProgress) return set
-    const keys = []
-    materias.forEach((m, mi) => (m.conteudos || []).forEach((_, ci) => keys.push(`${mi}-${ci}`)))
-    const n = Math.round((initialProgress / 100) * keys.length)
-    keys.slice(0, n).forEach((k) => set.add(k))
-    return set
-  })
+  const courseStorageKey = (curso?.id || curso?.cursoId) ? `cr_curso_progresso_${curso.id || curso.cursoId}` : null
+
+  // Cache local imediato para resiliência instantânea em F5
+  const cachedDetails = useMemo(() => {
+    if (!isAluno || !courseStorageKey) return null
+    try {
+      const raw = localStorage.getItem(courseStorageKey)
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  }, [isAluno, courseStorageKey])
 
   // Lista "achatada" para navegação anterior/próximo
   const flat = useMemo(() => {
@@ -282,6 +311,82 @@ export default function CoursePreview({
     return list
   }, [materias])
 
+  // Progresso individual de cada aula / vídeo (segundos assistidos e % da aula)
+  const [aulasProgress, setAulasProgress] = useState(() => {
+    const fromProps = initialProgressDetails?.aulas || {}
+    const fromCache = cachedDetails?.aulas || {}
+    return { ...fromProps, ...fromCache }
+  })
+
+  // Retomada da aula onde parou
+  const [selected, setSelected] = useState(() => {
+    if (!isAluno) return null
+    const targetKey = initialLessonKey || initialProgressDetails?.ultima_chave || cachedDetails?.ultimaChave
+    if (!targetKey) return null
+
+    // Caso chave "m-c"
+    const parts = String(targetKey).split('-').map(Number)
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      if (materias[parts[0]]?.conteudos?.[parts[1]]) {
+        return { m: parts[0], c: parts[1] }
+      }
+    }
+    // Caso ID da aula
+    for (let mi = 0; mi < materias.length; mi++) {
+      const cIdx = (materias[mi].conteudos || []).findIndex((c) => c.id === targetKey)
+      if (cIdx !== -1) {
+        return { m: mi, c: cIdx }
+      }
+    }
+    return null
+  })
+
+  const [openMaterias, setOpenMaterias] = useState(() => {
+    const base = new Set(materias.map((_, i) => i))
+    return base
+  })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Conteúdos concluídos (chave "matéria-conteúdo")
+  const [concluidos, setConcluidos] = useState(() => {
+    const set = new Set()
+    if (!isAluno) return set
+
+    // 1. Concluídos vindos das props de progresso detalhado
+    if (Array.isArray(initialProgressDetails?.concluidos)) {
+      initialProgressDetails.concluidos.forEach((k) => set.add(k))
+    }
+    // 2. Concluídos vindos do cache
+    if (Array.isArray(cachedDetails?.concluidos)) {
+      cachedDetails.concluidos.forEach((k) => set.add(k))
+    }
+    // 3. Concluídos por IDs
+    const idList = [
+      ...(initialProgressDetails?.concluidos_ids || []),
+      ...(cachedDetails?.concluidos_ids || [])
+    ]
+    if (idList.length > 0) {
+      materias.forEach((m, mi) => {
+        (m.conteudos || []).forEach((c, ci) => {
+          if (idList.includes(c.id)) {
+            set.add(`${mi}-${ci}`)
+          }
+        })
+      })
+    }
+
+    // 4. Fallback retrocompatível apenas para matrículas antigas sem nenhum detalhe salvo e 100% concluídas
+    const hasDetailedRecord = Boolean(
+      (initialProgressDetails && typeof initialProgressDetails === 'object' && Object.keys(initialProgressDetails).length > 0) ||
+      (cachedDetails && typeof cachedDetails === 'object' && Object.keys(cachedDetails).length > 0)
+    )
+    if (!hasDetailedRecord && set.size === 0 && initialProgress === 100) {
+      materias.forEach((m, mi) => (m.conteudos || []).forEach((_, ci) => set.add(`${mi}-${ci}`)))
+    }
+
+    return set
+  })
+
   const totalConteudos = flat.length
   const currentIndex = selected ? flat.findIndex((f) => f.m === selected.m && f.c === selected.c) : -1
   const isLastContent = totalConteudos > 0 && currentIndex === totalConteudos - 1
@@ -289,30 +394,100 @@ export default function CoursePreview({
   const conteudo = selected ? materia?.conteudos?.[selected.c] : null
 
   const chaveAtual = selected ? `${selected.m}-${selected.c}` : null
+  const progressoAulaAtual = chaveAtual ? aulasProgress[chaveAtual] || (conteudo?.id ? aulasProgress[conteudo.id] : null) : null
+
   // Só vídeos do YouTube podem ser medidos; os demais não bloqueiam a navegação
   const exigeMeta = conteudo?.tipo === 'VIDEO' && parseVideoUrl(conteudo.video_url)?.provider === 'youtube'
-  const proximoBloqueado = exigeMeta && !concluidos.has(chaveAtual)
-  const marcarConcluido = () => {
-    if (!chaveAtual) return
-    setConcluidos((prev) => (prev.has(chaveAtual) ? prev : new Set(prev).add(chaveAtual)))
-  }
+  const isAulaConcluida = chaveAtual ? (concluidos.has(chaveAtual) || (progressoAulaAtual?.percent >= 0.9)) : false
+  const proximoBloqueado = exigeMeta && !isAulaConcluida
 
-  // Textos e PDFs contam como concluídos assim que são abertos (não há como medir leitura)
-  useEffect(() => {
-    if (!chaveAtual || !conteudo || exigeMeta) return
-    setConcluidos((prev) => (prev.has(chaveAtual) ? prev : new Set(prev).add(chaveAtual)))
-  }, [chaveAtual, conteudo, exigeMeta])
+  // Dispara salvamento detalhado local e remoto
+  const emitProgressUpdate = useCallback((currentConcluidos, currentAulas, activeKey) => {
+    if (!isAluno) return
+    const pct = totalConteudos ? Math.round((currentConcluidos.size / totalConteudos) * 100) : 0
+    const concluidosArray = Array.from(currentConcluidos)
+    const concluidosIds = []
+    materias.forEach((m, mi) => {
+      (m.conteudos || []).forEach((c, ci) => {
+        if (currentConcluidos.has(`${mi}-${ci}`) && c.id) {
+          concluidosIds.push(c.id)
+        }
+      })
+    })
 
-  // Reporta o progresso (somente se aumentou) para ser salvo
-  const percentualAtual = totalConteudos ? Math.round((concluidos.size / totalConteudos) * 100) : 0
-  const ultimoEnviadoRef = useRef(initialProgress)
-  useEffect(() => {
-    if (!isAluno || !onProgress) return
-    if (percentualAtual > ultimoEnviadoRef.current) {
-      ultimoEnviadoRef.current = percentualAtual
-      onProgress(percentualAtual)
+    const payload = {
+      percentualTotal: pct,
+      concluidos: concluidosArray,
+      concluidos_ids: concluidosIds,
+      aulas: currentAulas,
+      ultimaChave: activeKey || chaveAtual,
+      conteudoId: conteudo?.id || null
     }
-  }, [isAluno, onProgress, percentualAtual])
+
+    // Salva instantaneamente no localStorage
+    if (courseStorageKey) {
+      try {
+        localStorage.setItem(courseStorageKey, JSON.stringify(payload))
+      } catch (err) {
+        console.warn('Aviso ao persistir progresso no cache:', err)
+      }
+    }
+
+    onProgressDetails?.(payload)
+    onProgress?.(pct)
+  }, [isAluno, totalConteudos, materias, chaveAtual, conteudo, courseStorageKey, onProgressDetails, onProgress])
+
+  const alternarConcluido = useCallback((chave = chaveAtual) => {
+    if (!chave) return
+    setConcluidos((prev) => {
+      const next = new Set(prev)
+      if (next.has(chave)) {
+        next.delete(chave)
+      } else {
+        next.add(chave)
+      }
+      emitProgressUpdate(next, aulasProgress, chave)
+      return next
+    })
+  }, [chaveAtual, aulasProgress, emitProgressUpdate])
+
+  const marcarConcluido = useCallback((chave = chaveAtual) => {
+    if (!chave) return
+    setConcluidos((prev) => {
+      if (prev.has(chave)) return prev
+      const next = new Set(prev).add(chave)
+      emitProgressUpdate(next, aulasProgress, chave)
+      return next
+    })
+  }, [chaveAtual, aulasProgress, emitProgressUpdate])
+
+  // Progresso reportado continuamente pelo TrackedYouTubePlayer
+  const handleLessonProgress = useCallback((chave, info) => {
+    if (!chave || !isAluno) return
+    setAulasProgress((prev) => {
+      const prevAula = prev[chave] || {}
+      const newPercent = Math.max(prevAula.percent || 0, info.percent || 0)
+      const seenSet = new Set([...(prevAula.seen || []), ...(info.seen || [])])
+      const updatedAula = {
+        ...prevAula,
+        percent: newPercent,
+        seen: Array.from(seenSet),
+        duration: info.duration || prevAula.duration,
+        currentTime: info.currentTime ?? prevAula.currentTime,
+        updated_at: new Date().toISOString()
+      }
+      const nextAulas = { ...prev, [chave]: updatedAula }
+
+      let nextConcluidos = concluidos
+      if (newPercent >= 0.9 && !concluidos.has(chave)) {
+        nextConcluidos = new Set(concluidos).add(chave)
+        setConcluidos(nextConcluidos)
+      }
+
+      emitProgressUpdate(nextConcluidos, nextAulas, chave)
+      return nextAulas
+    })
+  }, [isAluno, concluidos, emitProgressUpdate])
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose?.()
@@ -332,12 +507,26 @@ export default function CoursePreview({
       return next
     })
 
-  const goTo = (idx) => {
-    if (idx < 0) return setSelected(null)
-    if (idx >= flat.length) return
-    setSelected(flat[idx])
-    setOpenMaterias((prev) => new Set(prev).add(flat[idx].m))
+  const handleSelectContent = (mi, ci) => {
+    const nextKey = `${mi}-${ci}`
+    setSelected({ m: mi, c: ci })
+    setOpenMaterias((prev) => new Set(prev).add(mi))
     setMobileMenuOpen(false)
+    emitProgressUpdate(concluidos, aulasProgress, nextKey)
+  }
+
+  const goTo = (idx) => {
+    if (idx < 0) {
+      setSelected(null)
+      return
+    }
+    if (idx >= flat.length) return
+    const nextSelected = flat[idx]
+    setSelected(nextSelected)
+    setOpenMaterias((prev) => new Set(prev).add(nextSelected.m))
+    setMobileMenuOpen(false)
+    const nextKey = `${nextSelected.m}-${nextSelected.c}`
+    emitProgressUpdate(concluidos, aulasProgress, nextKey)
   }
 
   // Componente interno reutilizável da lista de matérias (Sidebar no Desktop & Drawer no Mobile)
@@ -399,10 +588,7 @@ export default function CoursePreview({
                     <li key={ci}>
                       <button
                         type="button"
-                        onClick={() => {
-                          setSelected({ m: mi, c: ci })
-                          setMobileMenuOpen(false)
-                        }}
+                        onClick={() => handleSelectContent(mi, ci)}
                         className={`w-full flex items-center gap-3 px-5 py-3 text-left transition cursor-pointer border-l-4 ${
                           active ? 'bg-[#FAF2D8] border-[#D4AF37]' : 'border-transparent hover:bg-slate-50'
                         }`}
@@ -593,11 +779,29 @@ export default function CoursePreview({
                     <span className="text-sm font-bold uppercase tracking-wider text-[#A88319]">
                       Matéria {selected.m + 1} · {materia?.titulo || `Matéria ${selected.m + 1}`}
                     </span>
-                    {concluidos.has(chaveAtual) && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold shrink-0">
-                        <Check className="w-3 h-3 stroke-[3] text-blue-600" />
-                        Concluído
-                      </span>
+                    {concluidos.has(chaveAtual) ? (
+                      <button
+                        type="button"
+                        onClick={() => alternarConcluido(chaveAtual)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 hover:bg-rose-50 border border-emerald-200 hover:border-rose-300 text-emerald-700 hover:text-rose-700 text-xs font-bold shrink-0 transition cursor-pointer group shadow-xs"
+                        title="Conteúdo concluído. Clique caso queira desmarcar."
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-600 group-hover:hidden" />
+                        <span className="group-hover:hidden">Concluído</span>
+                        <span className="hidden group-hover:inline">Desmarcar</span>
+                      </button>
+                    ) : (
+                      conteudo?.tipo !== 'VIDEO' && (
+                        <button
+                          type="button"
+                          onClick={() => alternarConcluido(chaveAtual)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] hover:bg-[#D4AF37]/20 border border-[#D4AF37] text-[#002B49] text-xs font-bold shrink-0 transition cursor-pointer shadow-xs"
+                          title="Clique para marcar este conteúdo como concluído"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+                          <span>Marcar como concluído</span>
+                        </button>
+                      )
                     )}
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#002B49] leading-tight">
@@ -610,9 +814,14 @@ export default function CoursePreview({
 
                 {conteudo?.tipo === 'VIDEO' && (
                   <VideoView
+                    key={conteudo.id || chaveAtual}
                     url={conteudo.video_url}
-                    alreadyCompleted={concluidos.has(chaveAtual)}
-                    onComplete={marcarConcluido}
+                    alreadyCompleted={isAulaConcluida}
+                    initialSeen={progressoAulaAtual?.seen || []}
+                    initialPercent={progressoAulaAtual?.percent || 0}
+                    lastPosition={progressoAulaAtual?.currentTime || 0}
+                    onProgress={(info) => handleLessonProgress(chaveAtual, info)}
+                    onComplete={() => marcarConcluido(chaveAtual)}
                   />
                 )}
                 {conteudo?.tipo === 'PDF' && (
@@ -620,12 +829,36 @@ export default function CoursePreview({
                     value={conteudo.pdf_apoio_url}
                     nome={conteudo.arquivo_nome}
                     localUrl={conteudo._localPreviewUrl}
+                    isCompleted={concluidos.has(chaveAtual)}
+                    onToggleComplete={() => alternarConcluido(chaveAtual)}
                   />
                 )}
                 {conteudo?.tipo === 'TEXTO' &&
                   (conteudo.conteudo_texto?.trim() ? (
-                    <article className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-8">
+                    <article className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-8 space-y-6 shadow-sm">
                       <p className="text-lg leading-relaxed text-slate-800 whitespace-pre-line">{conteudo.conteudo_texto}</p>
+
+                      <div className={`pt-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left ${
+                        concluidos.has(chaveAtual) ? 'text-emerald-800' : 'text-slate-600'
+                      }`}>
+                        <div className="text-xs sm:text-sm font-medium">
+                          {concluidos.has(chaveAtual)
+                            ? '✓ Você marcou este texto como lido e concluído.'
+                            : 'Terminou a leitura? Marque o texto como concluído para atualizar seu progresso.'}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => alternarConcluido(chaveAtual)}
+                          className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold transition cursor-pointer shadow-sm flex items-center gap-2 shrink-0 ${
+                            concluidos.has(chaveAtual)
+                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                              : 'bg-[#002B49] hover:bg-[#073B63] text-white'
+                          }`}
+                        >
+                          <CheckCircle2 className={`w-4 h-4 ${concluidos.has(chaveAtual) ? 'text-white' : 'text-[#D4AF37]'}`} />
+                          {concluidos.has(chaveAtual) ? 'Texto Concluído ✓' : 'Marcar Texto como Concluído'}
+                        </button>
+                      </div>
                     </article>
                   ) : (
                     <EmptyBox title="Texto vazio" text="Escreva o texto desta parte no editor." />
@@ -634,7 +867,7 @@ export default function CoursePreview({
                   <ProvaView
                     url={conteudo.link_prova || conteudo.video_url}
                     isCompleted={concluidos.has(chaveAtual)}
-                    onComplete={marcarConcluido}
+                    onComplete={() => alternarConcluido(chaveAtual)}
                   />
                 )}
 
@@ -651,35 +884,56 @@ export default function CoursePreview({
                     {currentIndex + 1} de {totalConteudos}
                   </span>
                   {isLastContent ? (
-                    <button
-                      type="button"
-                      disabled={proximoBloqueado}
-                      title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para concluir o curso' : undefined}
-                      onClick={() => {
-                        marcarConcluido()
-                        if (onProgress) onProgress(100)
-                        if (onCompleteCourse) {
-                          onCompleteCourse()
-                        } else {
-                          onClose?.()
-                        }
-                      }}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] disabled:opacity-40 disabled:cursor-not-allowed text-[#002B49] text-base font-cta font-bold transition shadow-lg cursor-pointer"
-                    >
-                      <CheckCircle2 className="w-5 h-5 text-[#002B49]" />
-                      <span>Concluir Curso</span>
-                    </button>
+                    isAulaConcluida ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onProgress) onProgress(100)
+                          if (onCompleteCourse) {
+                            onCompleteCourse()
+                          } else {
+                            onClose?.()
+                          }
+                        }}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-base font-cta font-bold transition shadow-lg cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-5 h-5 text-[#002B49]" />
+                        <span>Concluir Curso</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={proximoBloqueado}
+                        title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para concluir' : undefined}
+                        onClick={() => marcarConcluido(chaveAtual)}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-bold transition shadow-md cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
+                        <span>Concluir</span>
+                      </button>
+                    )
                   ) : (
-                    <button
-                      type="button"
-                      disabled={proximoBloqueado}
-                      title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para continuar' : undefined}
-                      onClick={() => goTo(currentIndex + 1)}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-bold transition cursor-pointer"
-                    >
-                      Próximo
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
+                    isAulaConcluida ? (
+                      <button
+                        type="button"
+                        onClick={() => goTo(currentIndex + 1)}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-base font-bold transition cursor-pointer shadow-md"
+                      >
+                        <span>Próximo</span>
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={proximoBloqueado}
+                        title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para continuar' : undefined}
+                        onClick={() => marcarConcluido(chaveAtual)}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-bold transition shadow-md cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
+                        <span>Concluir</span>
+                      </button>
+                    )
                   )}
                 </div>
               </>

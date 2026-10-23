@@ -715,7 +715,9 @@ export async function deleteCursoCapa(cursoId) {
 /** Envia a imagem de capa para o bucket público 'cursos' e devolve a URL pública. */
 export async function uploadCursoCapa(cursoId, file) {
   if (!isSupabaseConfigured) throw new Error('Supabase não configurado.')
-  if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error('Envie uma imagem JPG, PNG ou WEBP.')
+  if (!file || !/^image\/(jpeg|jpg|png|webp|pjpeg)$/i.test(file.type)) {
+    throw new Error('Envie uma imagem JPG, PNG ou WEBP.')
+  }
   if (file.size > 15 * 1024 * 1024) throw new Error('A imagem é maior que 15 MB. Escolha uma imagem menor.')
 
   // Remove capa anterior para não deixar arquivo órfão no bucket
@@ -724,7 +726,7 @@ export async function uploadCursoCapa(cursoId, file) {
   const path = `${cursoId}/${safeFileName(file.name)}`
   const { error } = await supabase.storage
     .from(CAPAS_BUCKET)
-    .upload(path, file, { contentType: file.type, upsert: true })
+    .upload(path, file, { contentType: file.type || 'image/jpeg', upsert: true })
 
   if (error) throw error
   const { data } = supabase.storage.from(CAPAS_BUCKET).getPublicUrl(path)

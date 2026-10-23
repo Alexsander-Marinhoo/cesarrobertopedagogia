@@ -97,16 +97,161 @@ export default function PatientPortalPage() {
     cursos: []
   })
 
+  const lastSavedProgressRef = useRef({ time: 0, percent: -1, aulaKey: '' })
+
+  // Abre o curso com as matérias e conteúdos reais cadastrados no painel admin
+  const handleOpenCourseModal = async (curso) => {
+    setCourseLoadError('')
+    setCourseMaterias(null)
+    setSelectedCourseLesson(curso)
+    try {
+      if (curso?.cursoId) {
+        sessionStorage.setItem('cr_active_course_id', curso.cursoId)
+      }
+    } catch (err) {
+      console.warn('Aviso ao armazenar curso ativo em sessionStorage:', err)
+    }
+    try {
+      const materias = await fetchCursoMaterias(curso.cursoId)
+      setCourseMaterias(materias)
+    } catch (err) {
+      console.warn('Aviso ao carregar matérias do curso:', err)
+      setCourseLoadError('Não foi possível carregar as aulas deste curso. Tente novamente em instantes.')
+      setCourseMaterias([])
+    }
+  }
+
+  const handleCloseCourse = () => {
+    try {
+      sessionStorage.removeItem('cr_active_course_id')
+    } catch (err) {
+      console.warn('Aviso ao remover curso ativo em sessionStorage:', err)
+    }
+    setSelectedCourseLesson(null)
+    setCourseMaterias(null)
+    setCourseLoadError('')
+  }
+
+  // Salva o progresso detalhado de cada aula (segundos assistidos e aulas concluídas)
+  const handleCourseProgressDetails = async (details) => {
+    const cursoId = selectedCourseLesson?.cursoId
+    if (!user?.id || !cursoId) return
+
+    const { percentualTotal, concluidos, concluidos_ids, aulas, ultimaChave, conteudoId } = details
+    const progressDetails = {
+      concluidos,
+      concluidos_ids,
+      aulas,
+      ultima_chave: ultimaChave,
+      ultimo_conteudo_id: conteudoId,
+      updated_at: new Date().toISOString()
+    }
+
+    setDbData((prev) => ({
+      ...prev,
+      matriculas: prev.matriculas.map((m) =>
+        m.curso_id === cursoId
+          ? {
+              ...m,
+              progresso: Math.max(m.progresso || 0, percentualTotal),
+              progresso_detalhes: progressDetails,
+              ultima_aula_chave: ultimaChave
+            }
+          : m
+      )
+    }))
+
+    setSelectedCourseLesson((prev) =>
+      prev && prev.cursoId === cursoId
+        ? {
+            ...prev,
+            progresso: Math.max(prev.progresso || 0, percentualTotal),
+            progressoDetalhes: progressDetails,
+            ultimaAulaChave: ultimaChave
+          }
+        : prev
+    )
+
+    const now = Date.now()
+    const isImmediate =
+      percentualTotal >= 100 ||
+      ultimaChave !== lastSavedProgressRef.current.aulaKey ||
+      now - lastSavedProgressRef.current.time > 4000
+
+    if (isImmediate) {
+      lastSavedProgressRef.current = { time: now, percent: percentualTotal, aulaKey: ultimaChave }
+      await updateCourseProgress(user.id, cursoId, percentualTotal, progressDetails, ultimaChave)
+    }
+
+    if (percentualTotal >= 100) {
+      setNotification('Parabéns! Curso concluído. Seu certificado foi liberado.')
+      await loadSupabaseData()
+    }
+  }
+
+  // Salva o progresso (0-100) do aluno na matrícula
+  const handleCourseProgress = async (percent) => {
+    const cursoId = selectedCourseLesson?.cursoId
+    if (!user?.id || !cursoId) return
+    setDbData((prev) => ({
+      ...prev,
+      matriculas: prev.matriculas.map((m) =>
+        m.curso_id === cursoId ? { ...m, progresso: Math.max(m.progresso || 0, percent) } : m
+      )
+    }))
+    setSelectedCourseLesson((prev) =>
+      prev && prev.cursoId === cursoId ? { ...prev, progresso: Math.max(prev.progresso || 0, percent) } : prev
+    )
+    await updateCourseProgress(user.id, cursoId, percent)
+    if (percent >= 100) {
+      setNotification('Parabéns! Curso concluído. Seu certificado foi liberado.')
+      await loadSupabaseData()
+    }
+  }
+
   const loadSupabaseData = async () => {
     if (!user?.id) return
     setDbLoading(true)
     try {
-      if (isSchool) {
-        const res = await fetchSchoolPortalData(user.id)
-        setDbData((prev) => ({ ...prev, ...res }))
-      } else {
-        const res = await fetchPatientPortalData(user.id)
-        setDbData((prev) => ({ ...prev, ...res }))
+      const res = isSchool
+        ? await fetchSchoolPortalData(user.id)
+        : await fetchPatientPortalData(user.id)
+      setDbData((prev) => ({ ...prev, ...res }))
+
+      // Se o aluno estava assistindo a um curso e deu F5, retoma a aula onde parou
+      try {
+        const activeCourseId = sessionStorage.getItem('cr_active_course_id')
+        if (activeCourseId && !selectedCourseLesson) {
+          const matricula = (res.matriculas || []).find((m) => m.curso_id === activeCourseId)
+          if (matricula) {
+            const cursoInfo = matricula.curso || {}
+            const cursoFormatted = {
+              id: matricula.id,
+              cursoId: matricula.curso_id,
+              titulo: cursoInfo.titulo || (isSchool ? 'Capacitação Docente & Inclusão na Prática' : 'Formação Continuada'),
+              instrutor: 'Prof. Cesar Roberto Loureiro',
+              cargaHoraria: cursoInfo.carga_horaria || '30 horas',
+              progresso: matricula.progresso || 0,
+              progressoDetalhes: matricula.progresso_detalhes || {},
+              ultimaAulaChave: matricula.ultima_aula_chave || null,
+              imagem: cursoInfo.miniatura_url || cursoInfo.thumbnail_url || (isSchool
+                ? 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop'
+                : 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop'),
+              descricao: cursoInfo.descricao || '',
+              certificado: matricula.certificado_emitido ? {
+                codigo: matricula.codigo_certificado || `CERT-${matricula.id.substring(0, 8).toUpperCase()}`,
+                dataEmissao: matricula.data_conclusao ? new Date(matricula.data_conclusao).toLocaleDateString('pt-BR') : 'Data de Emissão',
+                carga: cursoInfo.carga_horaria || '30 Horas',
+                livro: 'Livro de Extensão Vol. 04 / Registro Oficial',
+                aluno: displayName,
+                curso: cursoInfo.titulo || 'Formação Continuada'
+              } : null
+            }
+            handleOpenCourseModal(cursoFormatted)
+          }
+        }
+      } catch (resumeErr) {
+        console.warn('Aviso ao auto-retomar curso ativo:', resumeErr)
       }
     } catch (err) {
       console.error('Erro ao buscar dados do Supabase:', err)
@@ -337,6 +482,8 @@ export default function PatientPortalPage() {
       instrutor: 'Prof. Cesar Roberto Loureiro',
       cargaHoraria: cursoInfo.carga_horaria || '30 horas',
       progresso: m.progresso || 0,
+      progressoDetalhes: m.progresso_detalhes || {},
+      ultimaAulaChave: m.ultima_aula_chave || null,
       aulasConcluidas: Math.round(((m.progresso || 0) / 100) * totalAulas),
       totalAulas,
       status: m.progresso === 100 ? 'Concluído' : 'Em Andamento',
@@ -397,45 +544,6 @@ export default function PatientPortalPage() {
     } catch (err) {
       console.error('Erro ao cancelar agendamento:', err)
       alert('Erro ao cancelar agendamento.')
-    }
-  }
-
-  // Abre o curso com as matérias e conteúdos reais cadastrados no painel admin
-  const handleOpenCourseModal = async (curso) => {
-    setCourseLoadError('')
-    setCourseMaterias(null)
-    setSelectedCourseLesson(curso)
-    try {
-      const materias = await fetchCursoMaterias(curso.cursoId)
-      setCourseMaterias(materias)
-    } catch (err) {
-      console.warn('Aviso ao carregar matérias do curso:', err)
-      setCourseLoadError('Não foi possível carregar as aulas deste curso. Tente novamente em instantes.')
-      setCourseMaterias([])
-    }
-  }
-
-  const handleCloseCourse = () => {
-    setSelectedCourseLesson(null)
-    setCourseMaterias(null)
-    setCourseLoadError('')
-  }
-
-  // Salva o progresso (0-100) do aluno na matrícula e atualiza os cards sem recarregar a página
-  const handleCourseProgress = async (percent) => {
-    const cursoId = selectedCourseLesson?.cursoId
-    if (!user?.id || !cursoId) return
-    const saved = await updateCourseProgress(user.id, cursoId, percent)
-    if (!saved) return
-    setDbData((prev) => ({
-      ...prev,
-      matriculas: prev.matriculas.map((m) =>
-        m.curso_id === cursoId ? { ...m, progresso: Math.max(m.progresso || 0, percent) } : m
-      )
-    }))
-    if (percent >= 100) {
-      setNotification('Parabéns! Curso concluído. Seu certificado foi liberado.')
-      await loadSupabaseData()
     }
   }
 
@@ -1860,6 +1968,8 @@ export default function PatientPortalPage() {
           <CoursePreview
             modo="aluno"
             curso={{
+              id: selectedCourseLesson.cursoId,
+              cursoId: selectedCourseLesson.cursoId,
               titulo: selectedCourseLesson.titulo,
               descricao: selectedCourseLesson.descricao,
               thumbnail_url: selectedCourseLesson.imagem,
@@ -1868,7 +1978,10 @@ export default function PatientPortalPage() {
             }}
             materias={courseMaterias}
             initialProgress={selectedCourseLesson.progresso || 0}
+            initialProgressDetails={selectedCourseLesson.progressoDetalhes}
+            initialLessonKey={selectedCourseLesson.ultimaAulaChave}
             onProgress={handleCourseProgress}
+            onProgressDetails={handleCourseProgressDetails}
             onCompleteCourse={async () => {
               await handleCourseProgress(100)
               handleCloseCourse()
