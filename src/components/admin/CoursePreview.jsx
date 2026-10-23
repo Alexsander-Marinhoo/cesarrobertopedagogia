@@ -401,6 +401,9 @@ export default function CoursePreview({
   const isAulaConcluida = chaveAtual ? (concluidos.has(chaveAtual) || (progressoAulaAtual?.percent >= 0.9)) : false
   const proximoBloqueado = exigeMeta && !isAulaConcluida
 
+  // Percentual atual concluído
+  const percentualAtual = totalConteudos ? Math.round((concluidos.size / totalConteudos) * 100) : (initialProgress || 0)
+
   // Dispara salvamento detalhado local e remoto
   const emitProgressUpdate = useCallback((currentConcluidos, currentAulas, activeKey) => {
     if (!isAluno) return
