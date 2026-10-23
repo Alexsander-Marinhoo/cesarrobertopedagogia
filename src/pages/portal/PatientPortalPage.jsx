@@ -105,13 +105,6 @@ export default function PatientPortalPage() {
     setCourseMaterias(null)
     setSelectedCourseLesson(curso)
     try {
-      if (curso?.cursoId) {
-        sessionStorage.setItem('cr_active_course_id', curso.cursoId)
-      }
-    } catch (err) {
-      console.warn('Aviso ao armazenar curso ativo em sessionStorage:', err)
-    }
-    try {
       const materias = await fetchCursoMaterias(curso.cursoId)
       setCourseMaterias(materias)
     } catch (err) {
@@ -122,11 +115,6 @@ export default function PatientPortalPage() {
   }
 
   const handleCloseCourse = () => {
-    try {
-      sessionStorage.removeItem('cr_active_course_id')
-    } catch (err) {
-      console.warn('Aviso ao remover curso ativo em sessionStorage:', err)
-    }
     setSelectedCourseLesson(null)
     setCourseMaterias(null)
     setCourseLoadError('')
@@ -218,41 +206,10 @@ export default function PatientPortalPage() {
         : await fetchPatientPortalData(user.id)
       setDbData((prev) => ({ ...prev, ...res }))
 
-      // Se o aluno estava assistindo a um curso e deu F5, retoma a aula onde parou
+      // Limpa qualquer resquício de curso ativo anterior do sessionStorage
       try {
-        const activeCourseId = sessionStorage.getItem('cr_active_course_id')
-        if (activeCourseId && !selectedCourseLesson) {
-          const matricula = (res.matriculas || []).find((m) => m.curso_id === activeCourseId)
-          if (matricula) {
-            const cursoInfo = matricula.curso || {}
-            const cursoFormatted = {
-              id: matricula.id,
-              cursoId: matricula.curso_id,
-              titulo: cursoInfo.titulo || (isSchool ? 'Capacitação Docente & Inclusão na Prática' : 'Formação Continuada'),
-              instrutor: 'Prof. Cesar Roberto Loureiro',
-              cargaHoraria: cursoInfo.carga_horaria || '30 horas',
-              progresso: matricula.progresso || 0,
-              progressoDetalhes: matricula.progresso_detalhes || {},
-              ultimaAulaChave: matricula.ultima_aula_chave || null,
-              imagem: cursoInfo.miniatura_url || cursoInfo.thumbnail_url || (isSchool
-                ? 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop'
-                : 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?q=80&w=800&auto=format&fit=crop'),
-              descricao: cursoInfo.descricao || '',
-              certificado: matricula.certificado_emitido ? {
-                codigo: matricula.codigo_certificado || `CERT-${matricula.id.substring(0, 8).toUpperCase()}`,
-                dataEmissao: matricula.data_conclusao ? new Date(matricula.data_conclusao).toLocaleDateString('pt-BR') : 'Data de Emissão',
-                carga: cursoInfo.carga_horaria || '30 Horas',
-                livro: 'Livro de Extensão Vol. 04 / Registro Oficial',
-                aluno: displayName,
-                curso: cursoInfo.titulo || 'Formação Continuada'
-              } : null
-            }
-            handleOpenCourseModal(cursoFormatted)
-          }
-        }
-      } catch (resumeErr) {
-        console.warn('Aviso ao auto-retomar curso ativo:', resumeErr)
-      }
+        sessionStorage.removeItem('cr_active_course_id')
+      } catch {}
     } catch (err) {
       console.error('Erro ao buscar dados do Supabase:', err)
     } finally {
