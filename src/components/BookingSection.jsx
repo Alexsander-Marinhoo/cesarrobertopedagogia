@@ -135,13 +135,6 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
   const [submitted, setSubmitted] = useState(false)
   const [whatsappUrlGenerated, setWhatsappUrlGenerated] = useState('')
 
-  const handlePhoneChange = (e) => {
-    const val = e.target.value
-    setFormData((prev) => ({
-      ...prev,
-      phone: formatPhoneNumber(val)
-    }))
-  }
 
   // Handle Date Selection with Monday to Friday (Dias Úteis) restriction
   const handleDateChange = (e) => {
@@ -173,8 +166,8 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
   const handleBookingSubmit = async (e) => {
     e.preventDefault()
 
-    if (!formData.name || !formData.phone) {
-      alert('Por favor, informe seu nome e número de WhatsApp para contato.')
+    if (!formData.name) {
+      alert('Por favor, informe seu nome completo.')
       return
     }
 
@@ -341,35 +334,19 @@ export default function BookingSection({ _preselectedAudience, preselectedServic
                   </div>
                 ) : (
                   <form onSubmit={handleBookingSubmit} className="space-y-5">
-                    {/* Row 1: Name & Phone */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                      <div>
-                        <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
-                          Seu Nome Completo *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          placeholder="Ex: João da Silva"
-                          className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
-                          WhatsApp (Com DDD) *
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          value={formData.phone}
-                          onChange={handlePhoneChange}
-                          placeholder="(32) 98725-2421"
-                          className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
-                        />
-                      </div>
+                    {/* Row 1: Name */}
+                    <div>
+                      <label className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide mb-2 block">
+                        Seu Nome Completo *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="Ex: João da Silva"
+                        className="w-full px-4 py-3.5 rounded-2xl bg-white border-2 border-slate-300 hover:border-slate-400 focus:border-[#D4AF37] focus:bg-white focus:ring-3 focus:ring-[#D4AF37]/25 text-sm sm:text-base font-semibold text-[#002B49] placeholder:text-slate-400 focus:outline-none transition shadow-2xs"
+                      />
                     </div>
 
                     {/* Faixa Etária do Paciente */}
