@@ -52,6 +52,7 @@ import {
   fetchCursoMaterias,
   fetchCursosTotalConteudos,
   updateCourseProgress,
+  finalizarEValidarCurso,
   fetchBookedSlotsForDate
 } from '../../services/portalService'
 import CoursePreview from '../../components/admin/CoursePreview'
@@ -170,11 +171,6 @@ export default function PatientPortalPage() {
       lastSavedProgressRef.current = { time: now, percent: percentualTotal, aulaKey: ultimaChave }
       await updateCourseProgress(user.id, cursoId, percentualTotal, progressDetails, ultimaChave)
     }
-
-    if (percentualTotal >= 100) {
-      setNotification('Parabéns! Curso concluído. Seu certificado foi liberado.')
-      await loadSupabaseData()
-    }
   }
 
   // Salva o progresso (0-100) do aluno na matrícula
@@ -191,10 +187,6 @@ export default function PatientPortalPage() {
       prev && prev.cursoId === cursoId ? { ...prev, progresso: Math.max(prev.progresso || 0, percent) } : prev
     )
     await updateCourseProgress(user.id, cursoId, percent)
-    if (percent >= 100) {
-      setNotification('Parabéns! Curso concluído. Seu certificado foi liberado.')
-      await loadSupabaseData()
-    }
   }
 
   const loadSupabaseData = async () => {
@@ -1940,21 +1932,31 @@ export default function PatientPortalPage() {
             onProgress={handleCourseProgress}
             onProgressDetails={handleCourseProgressDetails}
             onCompleteCourse={async () => {
-              await handleCourseProgress(100)
-              handleCloseCourse()
-              // Se já temos os dados do certificado montados para este curso, abre o modal de certificado
-              if (selectedCourseLesson.certificado) {
-                setSelectedCertificate(selectedCourseLesson.certificado)
-              } else {
-                setSelectedCertificate({
-                  codigo: `CERT-${new Date().getFullYear()}-CR-${Math.floor(1000 + Math.random() * 9000)}`,
-                  dataEmissao: new Date().toLocaleDateString('pt-BR'),
-                  carga: selectedCourseLesson.cargaHoraria || '120 horas',
-                  livro: 'Livro de Extensão Vol. 04 / Registro Oficial',
-                  aluno: displayName,
-                  curso: selectedCourseLesson.titulo
-                })
+              const cursoId = selectedCourseLesson?.cursoId
+              if (!user?.id || !cursoId) return
+
+              // 1. Executa a validação server-side integral no Supabase (RPC)
+              const res = await finalizarEValidarCurso(cursoId, user.id)
+
+              if (!res?.sucesso || !res?.pode_finalizar) {
+                setNotification(res?.mensagem || 'Atenção: Ainda existem vídeos ou conteúdos pendentes que precisam ser assistidos.')
+                await loadSupabaseData()
+                return
               }
+
+              // 2. Validação bem-sucedida: recarrega dados do aluno e exibe o certificado oficial autêntico
+              await loadSupabaseData()
+              handleCloseCourse()
+
+              setSelectedCertificate({
+                codigo: res.codigo_certificado || selectedCourseLesson.certificado?.codigo || `CERT-${new Date().getFullYear()}-CR-${Math.floor(1000 + Math.random() * 9000)}`,
+                dataEmissao: res.data_conclusao ? new Date(res.data_conclusao).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR'),
+                carga: selectedCourseLesson.cargaHoraria || '120 horas',
+                livro: 'Livro de Extensão Vol. 04 / Registro Oficial',
+                aluno: displayName,
+                curso: selectedCourseLesson.titulo
+              })
+              setNotification('Parabéns! Todas as aulas e vídeos foram concluídos e seu Certificado Oficial foi emitido.')
             }}
             onClose={handleCloseCourse}
           />

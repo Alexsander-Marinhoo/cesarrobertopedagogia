@@ -214,14 +214,10 @@ export async function updateCourseProgress(userId, cursoId, newProgress, progres
   if (!isSupabaseConfigured || !userId || !cursoId) return null
 
   try {
-    const certificadoEmitido = newProgress >= 100
-    const codigoCertificado = certificadoEmitido ? `CERT-${new Date().getFullYear()}-CR-${Math.floor(1000 + Math.random() * 9000)}` : null
+    const safeProgress = Math.min(Math.max(0, Math.round(Number(newProgress) || 0)), 100)
 
     const updatePayload = {
-      progresso: newProgress,
-      certificado_emitido: certificadoEmitido,
-      codigo_certificado: codigoCertificado,
-      data_conclusao: certificadoEmitido ? new Date().toISOString() : null
+      progresso: safeProgress
     }
 
     if (progressDetails !== null) {
@@ -243,6 +239,32 @@ export async function updateCourseProgress(userId, cursoId, newProgress, progres
   } catch (err) {
     console.error('Erro ao atualizar progresso:', err)
     return null
+  }
+}
+
+// ----------------------------------------------------------------------------
+// 4.1 VALIDAR CONCLUSÃO INTEGRAL DO CURSO NO BANCO DE DADOS (RPC)
+// ----------------------------------------------------------------------------
+export async function finalizarEValidarCurso(cursoId, userId = null) {
+  if (!isSupabaseConfigured || !cursoId) {
+    return { sucesso: false, pode_finalizar: false, mensagem: 'Serviço Supabase não configurado ou curso ausente.' }
+  }
+
+  try {
+    const { data, error } = await supabase.rpc('verificar_e_concluir_curso', {
+      p_curso_id: cursoId,
+      p_usuario_id: userId || undefined
+    })
+
+    if (error) throw error
+    return data
+  } catch (err) {
+    console.error('Erro ao validar e concluir curso no Supabase:', err)
+    return {
+      sucesso: false,
+      pode_finalizar: false,
+      mensagem: err.message || 'Erro ao processar validação no servidor.'
+    }
   }
 }
 

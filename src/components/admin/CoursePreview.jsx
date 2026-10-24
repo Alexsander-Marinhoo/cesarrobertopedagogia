@@ -396,27 +396,155 @@ export default function CoursePreview({
   const chaveAtual = selected ? `${selected.m}-${selected.c}` : null
   const progressoAulaAtual = chaveAtual ? aulasProgress[chaveAtual] || (conteudo?.id ? aulasProgress[conteudo.id] : null) : null
 
-  // Só vídeos do YouTube podem ser medidos; os demais não bloqueiam a navegação
+  // Só vídeos do YouTube podem ser medidos com precisão; exige 90% para serem considerados concluídos
   const exigeMeta = conteudo?.tipo === 'VIDEO' && parseVideoUrl(conteudo.video_url)?.provider === 'youtube'
-  const isAulaConcluida = chaveAtual ? (concluidos.has(chaveAtual) || (progressoAulaAtual?.percent >= 0.9)) : false
-  const proximoBloqueado = exigeMeta && !isAulaConcluida
+  const isAulaConcluida = chaveAtual
+    ? (conteudo?.tipo === 'VIDEO' && exigeMeta
+        ? Boolean((progressoAulaAtual?.percent >= 0.9) || (concluidos.has(chaveAtual) && progressoAulaAtual?.percent >= 0.9))
+        : concluidos.has(chaveAtual))
+    : false
+  const proximoBloqueado = Boolean(exigeMeta && !isAulaConcluida)
 
-  // Percentual atual concluído
-  const percentualAtual = totalConteudos ? Math.round((concluidos.size / totalConteudos) * 100) : (initialProgress || 0)
+  // Analisa minuciosamente se TODOS os conteúdos do curso foram realmente assistidos/concluídos
+  const analyzeCourseCompletion = useCallback(() => {
+    const pendentes = []
+    let total = 0
+    let concluidosCount = 0
 
-  // Dispara salvamento detalhado local e remoto
-  const emitProgressUpdate = useCallback((currentConcluidos, currentAulas, activeKey) => {
-    if (!isAluno) return
-    const pct = totalConteudos ? Math.round((currentConcluidos.size / totalConteudos) * 100) : 0
-    const concluidosArray = Array.from(currentConcluidos)
-    const concluidosIds = []
     materias.forEach((m, mi) => {
       (m.conteudos || []).forEach((c, ci) => {
-        if (currentConcluidos.has(`${mi}-${ci}`) && c.id) {
-          concluidosIds.push(c.id)
+        total++
+        const key = `${mi}-${ci}`
+        const isKeyConcluida = concluidos.has(key) || (c.id && concluidos.has(c.id))
+
+        let estaConcluido = false
+        let motivo = ''
+
+        if (c.tipo === 'VIDEO') {
+          const prog = aulasProgress[key] || (c.id ? aulasProgress[c.id] : null)
+          const pct = Math.round((prog?.percent || 0) * 100)
+          const isYouTube = parseVideoUrl(c.video_url)?.provider === 'youtube'
+
+          // Para vídeos do YouTube, exige medição real de ao menos 90%
+          if (pct >= 90) {
+            estaConcluido = true
+          } else if (isYouTube) {
+            estaConcluido = false
+            motivo = pct > 0
+              ? `Vídeo assistido ${pct}% (é necessário assistir pelo menos 90%)`
+              : 'Vídeo não assistido (necessário assistir pelo menos 90%)'
+          } else {
+            // Outros tipos de vídeo (Drive, Vimeo, MP4)
+            if (isKeyConcluida) {
+              estaConcluido = true
+            } else {
+              estaConcluido = false
+              motivo = 'Vídeo não assistido'
+            }
+          }
+        } else if (c.tipo === 'TEXTO') {
+          if (isKeyConcluida) {
+            estaConcluido = true
+          } else {
+            motivo = 'Leitura do texto não concluída'
+          }
+        } else if (c.tipo === 'PDF') {
+          if (isKeyConcluida) {
+            estaConcluido = true
+          } else {
+            motivo = 'Apostila PDF não concluída'
+          }
+        } else if (c.tipo === 'PROVA') {
+          if (isKeyConcluida) {
+            estaConcluido = true
+          } else {
+            motivo = 'Avaliação pendente'
+          }
+        }
+
+        if (estaConcluido) {
+          concluidosCount++
+        } else {
+          pendentes.push({
+            mIndex: mi,
+            cIndex: ci,
+            key,
+            id: c.id,
+            tipo: c.tipo,
+            titulo: c.titulo || TIPO_META[c.tipo]?.label || `Conteúdo ${ci + 1}`,
+            materiaTitulo: m.titulo || `Matéria ${mi + 1}`,
+            motivo,
+            pctAssistido: c.tipo === 'VIDEO' ? Math.round((aulasProgress[key]?.percent || (c.id ? aulasProgress[c.id]?.percent : 0) || 0) * 100) : null
+          })
         }
       })
     })
+
+    const percentualReal = total > 0 ? Math.round((concluidosCount / total) * 100) : 100
+    const podeFinalizar = total > 0 && pendentes.length === 0
+
+    return {
+      total,
+      concluidosCount,
+      percentualReal,
+      podeFinalizar,
+      pendentes
+    }
+  }, [materias, concluidos, aulasProgress])
+
+  const courseAnalysis = useMemo(() => analyzeCourseCompletion(), [analyzeCourseCompletion])
+
+  // Percentual real e validado
+  const percentualAtual = totalConteudos ? courseAnalysis.percentualReal : (initialProgress || 0)
+
+  const [pendenciasModalOpen, setPendenciasModalOpen] = useState(false)
+
+  const handleTentarConcluirCurso = useCallback(() => {
+    const analysis = analyzeCourseCompletion()
+    if (!analysis.podeFinalizar) {
+      setPendenciasModalOpen(true)
+      return
+    }
+
+    if (onProgress) onProgress(100)
+    if (onCompleteCourse) {
+      onCompleteCourse(analysis)
+    } else {
+      onClose?.()
+    }
+  }, [analyzeCourseCompletion, onProgress, onCompleteCourse, onClose])
+
+  // Dispara salvamento detalhado local e remoto com cálculo real de concluídos válidos
+  const emitProgressUpdate = useCallback((currentConcluidos, currentAulas, activeKey) => {
+    if (!isAluno) return
+    let validCount = 0
+    let totalItems = 0
+    const concluidosArray = Array.from(currentConcluidos)
+    const concluidosIds = []
+
+    materias.forEach((m, mi) => {
+      (m.conteudos || []).forEach((c, ci) => {
+        totalItems++
+        const key = `${mi}-${ci}`
+        const isKeyConcluida = currentConcluidos.has(key) || (c.id && currentConcluidos.has(c.id))
+        if (isKeyConcluida && c.id) concluidosIds.push(c.id)
+
+        if (c.tipo === 'VIDEO') {
+          const prog = currentAulas[key] || (c.id ? currentAulas[c.id] : null)
+          const pct = Math.round((prog?.percent || 0) * 100)
+          const isYT = parseVideoUrl(c.video_url)?.provider === 'youtube'
+          if (pct >= 90) {
+            validCount++
+          } else if (!isYT && isKeyConcluida) {
+            validCount++
+          }
+        } else if (isKeyConcluida) {
+          validCount++
+        }
+      })
+    })
+
+    const pct = totalItems ? Math.round((validCount / totalItems) * 100) : 0
 
     const payload = {
       percentualTotal: pct,
@@ -438,7 +566,7 @@ export default function CoursePreview({
 
     onProgressDetails?.(payload)
     onProgress?.(pct)
-  }, [isAluno, totalConteudos, materias, chaveAtual, conteudo, courseStorageKey, onProgressDetails, onProgress])
+  }, [isAluno, materias, chaveAtual, conteudo, courseStorageKey, onProgressDetails, onProgress])
 
   const alternarConcluido = useCallback((chave = chaveAtual) => {
     if (!chave) return
@@ -585,7 +713,12 @@ export default function CoursePreview({
                 {(m.conteudos || []).map((c, ci) => {
                   const meta = TIPO_META[c.tipo] || TIPO_META.TEXTO
                   const active = selected?.m === mi && selected?.c === ci
-                  const concluido = concluidos.has(`${mi}-${ci}`)
+                  const isVideo = c.tipo === 'VIDEO'
+                  const isYouTube = isVideo && parseVideoUrl(c.video_url)?.provider === 'youtube'
+                  const videoProg = isVideo ? (aulasProgress[`${mi}-${ci}`] || (c.id ? aulasProgress[c.id] : null)) : null
+                  const isVideoWatched = videoProg && typeof videoProg.percent === 'number' && videoProg.percent >= 0.9
+                  const concluido = isYouTube ? isVideoWatched : concluidos.has(`${mi}-${ci}`)
+                  const videoPct = videoProg && typeof videoProg.percent === 'number' ? Math.round(videoProg.percent * 100) : 0
 
                   return (
                     <li key={ci}>
@@ -616,11 +749,15 @@ export default function CoursePreview({
                           </span>
                           <span className="flex items-center gap-1 text-xs text-slate-500">
                             <span>{meta.label}</span>
-                            {concluido && (
+                            {concluido ? (
                               <span className="text-blue-600 font-bold inline-flex items-center gap-0.5 text-[11px]">
                                 · Concluído
                               </span>
-                            )}
+                            ) : isVideo && videoPct > 0 ? (
+                              <span className="text-amber-600 font-bold inline-flex items-center gap-0.5 text-[11px]">
+                                · {videoPct}% assistido
+                              </span>
+                            ) : null}
                             {conteudoVazio(c) && <span className="text-amber-600 font-bold"> · incompleto</span>}
                           </span>
                         </span>
@@ -765,14 +902,42 @@ export default function CoursePreview({
                 ) : null}
 
                 {totalConteudos > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => goTo(0)}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-base font-bold transition shadow-lg cursor-pointer"
-                  >
-                    <PlayCircle className="w-5 h-5 text-[#D4AF37]" />
-                    Começar o curso
-                  </button>
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    {courseAnalysis.podeFinalizar ? (
+                      <button
+                        type="button"
+                        onClick={handleTentarConcluirCurso}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-base font-cta font-bold transition shadow-lg cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-5 h-5 text-[#002B49]" />
+                        <span>Ver / Emitir Certificado</span>
+                      </button>
+                    ) : courseAnalysis.percentualReal > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (courseAnalysis.pendentes.length > 0) {
+                            handleSelectContent(courseAnalysis.pendentes[0].mIndex, courseAnalysis.pendentes[0].cIndex)
+                          } else {
+                            goTo(0)
+                          }
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-base font-bold transition shadow-lg cursor-pointer"
+                      >
+                        <PlayCircle className="w-5 h-5 text-[#D4AF37]" />
+                        <span>Continuar o curso ({courseAnalysis.percentualReal}%)</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => goTo(0)}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-base font-bold transition shadow-lg cursor-pointer"
+                      >
+                        <PlayCircle className="w-5 h-5 text-[#D4AF37]" />
+                        <span>Começar o curso</span>
+                      </button>
+                    )}
+                  </div>
                 )}
               </>
             ) : (
@@ -888,26 +1053,33 @@ export default function CoursePreview({
                   </span>
                   {isLastContent ? (
                     isAulaConcluida ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (onProgress) onProgress(100)
-                          if (onCompleteCourse) {
-                            onCompleteCourse()
-                          } else {
-                            onClose?.()
-                          }
-                        }}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-base font-cta font-bold transition shadow-lg cursor-pointer"
-                      >
-                        <CheckCircle2 className="w-5 h-5 text-[#002B49]" />
-                        <span>Concluir Curso</span>
-                      </button>
+                      courseAnalysis.podeFinalizar ? (
+                        <button
+                          type="button"
+                          id="concluir-curso-btn"
+                          onClick={handleTentarConcluirCurso}
+                          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-base font-cta font-bold transition shadow-lg cursor-pointer"
+                        >
+                          <CheckCircle2 className="w-5 h-5 text-[#002B49]" />
+                          <span>Concluir Curso</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          id="concluir-curso-btn"
+                          onClick={handleTentarConcluirCurso}
+                          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-base font-bold transition shadow-md border border-[#D4AF37]/50 cursor-pointer"
+                          title="Clique para verificar os conteúdos e vídeos pendentes para emissão do certificado"
+                        >
+                          <AlertCircle className="w-5 h-5 text-[#D4AF37]" />
+                          <span>Finalizar Curso ({courseAnalysis.pendentes.length} pendente{courseAnalysis.pendentes.length > 1 ? 's' : ''})</span>
+                        </button>
+                      )
                     ) : (
                       <button
                         type="button"
                         disabled={proximoBloqueado}
-                        title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para concluir' : undefined}
+                        title={proximoBloqueado ? 'Assista pelo menos 90% do vídeo para concluir esta aula' : undefined}
                         onClick={() => marcarConcluido(chaveAtual)}
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#002B49] hover:bg-[#073B63] disabled:opacity-40 disabled:cursor-not-allowed text-white text-base font-bold transition shadow-md cursor-pointer"
                       >
@@ -944,6 +1116,132 @@ export default function CoursePreview({
           </div>
         </main>
       </div>
+
+      {/* MODAL DE ANÁLISE DE PENDÊNCIAS E AULAS NÃO ASSISTIDAS */}
+      {pendenciasModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#00182A]/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+            {/* Cabeçalho do modal */}
+            <div className="bg-[#002B49] text-white p-6 sm:p-7 flex items-start justify-between gap-4 border-b border-white/10 shrink-0">
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/20 border border-[#D4AF37]/40 flex items-center justify-center shrink-0">
+                  <AlertCircle className="w-6 h-6 text-[#D4AF37]" />
+                </div>
+                <div>
+                  <h3 className="font-heading font-extrabold text-xl sm:text-2xl text-white leading-snug">
+                    Aulas e Vídeos Pendentes
+                  </h3>
+                  <p className="text-sm text-slate-300 mt-0.5">
+                    Análise de conclusão obrigatória para emissão do certificado
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPendenciasModalOpen(false)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition cursor-pointer shrink-0"
+                aria-label="Fechar modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Conteúdo rolável */}
+            <div className="p-6 sm:p-7 overflow-y-auto space-y-6">
+              {/* Barra de progresso atual */}
+              <div className="bg-[#FAF8F5] border border-[#E8DEC7] rounded-2xl p-5 space-y-3">
+                <div className="flex items-center justify-between gap-2 text-sm">
+                  <span className="font-bold text-[#002B49]">Progresso Real do Curso</span>
+                  <span className="font-extrabold text-[#A88319]">
+                    {courseAnalysis.percentualReal}% ({courseAnalysis.concluidosCount} de {courseAnalysis.total} concluídos)
+                  </span>
+                </div>
+                <div className="w-full h-3 rounded-full bg-slate-200 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#002B49] to-[#D4AF37] rounded-full transition-all duration-500"
+                    style={{ width: `${Math.max(4, courseAnalysis.percentualReal)}%` }}
+                  />
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Para garantir a conformidade pedagógica e liberar o seu <strong>Certificado Oficial Digital</strong>, todas as videoaulas precisam ser assistidas (mínimo de 90%) e todos os conteúdos devem ser finalizados.
+                </p>
+              </div>
+
+              {/* Lista de pendências detalhadas */}
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                  Conteúdos que você ainda precisa concluir ({courseAnalysis.pendentes.length}):
+                </h4>
+                <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1">
+                  {courseAnalysis.pendentes.map((item) => {
+                    const meta = TIPO_META[item.tipo] || TIPO_META.TEXTO
+                    return (
+                      <div
+                        key={item.key}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-white border border-slate-200 hover:border-[#D4AF37]/60 transition shadow-xs"
+                      >
+                        <div className="flex items-start gap-3 min-w-0">
+                          <span className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${meta.bg}`}>
+                            <meta.Icon className={`w-5 h-5 ${meta.color}`} />
+                          </span>
+                          <div className="min-w-0">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#A88319]">
+                              {item.materiaTitulo}
+                            </span>
+                            <p className="font-bold text-sm text-[#002B49] truncate">{item.titulo}</p>
+                            <span className="inline-flex items-center gap-1.5 text-xs text-rose-600 font-semibold mt-0.5">
+                              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                              {item.motivo}
+                            </span>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleSelectContent(item.mIndex, item.cIndex)
+                            setPendenciasModalOpen(false)
+                          }}
+                          className="self-end sm:self-center inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#002B49] hover:bg-[#073B63] text-white text-xs font-bold transition shrink-0 cursor-pointer shadow-xs"
+                        >
+                          <span>{item.tipo === 'VIDEO' ? 'Assistir' : 'Acessar'}</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Rodapé com botões de ação */}
+            <div className="bg-slate-50 border-t border-slate-200 p-4 sm:p-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setPendenciasModalOpen(false)}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full border border-slate-300 hover:bg-slate-100 text-slate-700 text-sm font-bold transition cursor-pointer"
+              >
+                Voltar ao curso
+              </button>
+
+              {courseAnalysis.pendentes.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const first = courseAnalysis.pendentes[0]
+                    handleSelectContent(first.mIndex, first.cIndex)
+                    setPendenciasModalOpen(false)
+                  }}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#D4AF37] hover:bg-[#C59E27] text-[#002B49] text-sm font-bold transition shadow-md cursor-pointer"
+                >
+                  <PlayCircle className="w-4 h-4 text-[#002B49]" />
+                  <span>Assistir 1ª aula pendente</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
